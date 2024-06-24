@@ -7,17 +7,19 @@ import { onMounted, ref } from 'vue';
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
 import "@logicflow/core/dist/style/index.css";
+import CustomNode  from './node/CustomRect'
 onMounted(()=>{
   if(!container.value) return;
   const lf = new LogicFlow({
     container: container.value,
     grid: true,
   });
+  lf.register(CustomNode)
   lf.render({
     nodes: [
       {
         id: "1",
-        type: "rect",
+        type: "custom-rect",
         x: 100,
         y: 100,
         text: "节点1",
