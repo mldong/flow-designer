@@ -1,11 +1,12 @@
 {
-  "name": "vite-vue-typescript-starter",
+  "name": "flow-designer",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "build:lib": "vue-tsc -b && vite build --config vite.config.lib.ts",
     "preview": "vite preview"
   },
   "dependencies": {
