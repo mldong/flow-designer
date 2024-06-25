@@ -1,5 +1,5 @@
 import { HtmlResize } from "@logicflow/extension";
-import { createApp } from "vue";
+import { createApp, h } from "vue";
 import VueNode from './VueNode.vue'
 class CustomVueModel extends HtmlResize.model {
   setAttributes(): void {
@@ -7,6 +7,26 @@ class CustomVueModel extends HtmlResize.model {
   }
 }
 class CustomVueView extends HtmlResize.view {
+  app: any;
+  vnode: any;
+  isMounted: boolean = false;
+  constructor(props: any) {
+    super(props)
+    this.vnode = h(VueNode, {
+      model: props.model,
+      isHovered: props.model.isHovered,
+      isSelected: props.model.isSelected
+    });
+    // const _this = this;
+    // this.app = createApp({
+    //   render() {
+    //     return _this.vnode
+    //   }
+    // })
+    this.app = createApp({
+      render: () => this.vnode
+    })
+  }
   shouldUpdate(): boolean {
     const data = {
       ...this.props.model.getProperties(),
@@ -20,22 +40,26 @@ class CustomVueView extends HtmlResize.view {
     return true
   }
   setHtml(rootEl: HTMLElement) {
-    rootEl.innerHTML = '';
-    const el: HTMLElement = document.createElement('div');
-    el.style.width = '100%';
-    el.style.height = '100%';
-    if(this.props.model.isHovered) {
-      el.style.background = 'yellow'
+    if(!this.isMounted) {
+      rootEl.innerHTML = '';
+      const el: HTMLElement = document.createElement('div');
+      el.style.width = '100%';
+      el.style.height = '100%';
+      el.style.background = 'red';
+      rootEl.appendChild(el)
+      this.app.mount(el)
+      this.isMounted = true;
     } else {
-      el.style.background = 'red'
+      // 更新组件数据
+      this.vnode.component.props.isHovered = this.props.model.isHovered
+      this.vnode.component.props.isSelected = this.props.model.isSelected
+      this.vnode.component.props.model = {
+        // ...this.props.model,
+        isHovered: this.props.model.isHovered,
+        isSelected: this.props.model.isSelected
+      }
     }
-    const app = createApp(VueNode, {
-      model: this.props.model,
-      isHovered: this.props.model.isHovered,
-      isSelected: this.props.model.isSelected
-    })
-    app.mount(el)
-    rootEl.appendChild(el)
+    
   }
   getText(): ''{
     return ''

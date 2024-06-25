@@ -1,5 +1,5 @@
 <template>
-  <div>isHovered:{{ isHovered }}-isSelected:{{ isSelected }}</div>
+  <div>isHovered:{{ model?.isHovered }}-isSelected:{{ model?.isSelected }}</div>
 </template>
 <script setup lang="ts">
 import { PropType } from 'vue'
