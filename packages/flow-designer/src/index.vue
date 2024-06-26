@@ -14,10 +14,29 @@ onMounted(()=>{
   const lf = new LogicFlow({
     container: container.value,
     grid: true,
+    style: { // 配置默认主题
+      circle: {
+        stroke: "red",
+        fill: "yellow"
+      },
+      baseEdge: {
+        stroke: 'red'
+      }
+    }
   });
   lf.register(CustomVue)
   lf.register(CustomEdge)
   lf.setDefaultEdgeType("custom-edge")
+  // 设置默认主题
+  lf.setTheme({
+    circle: {
+      stroke: "red",
+      fill: "yellow"
+    },
+    edgeText: {
+      fontSize: 30
+    }
+  });
   lf.render({
     nodes: [
       {

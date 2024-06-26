@@ -3,7 +3,7 @@ import { EdgeAnimation } from "@logicflow/core/types/constant/DefaultTheme";
 
 class CustomEdgeModel extends PolylineEdgeModel {
   setAttributes(): void {
-    this.style.stroke = "red";
+    this.style.stroke = "#443399";
     this.isAnimation = true;
   }
   getEdgeAnimationStyle(): EdgeAnimation {
