@@ -8,6 +8,7 @@ const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
 import "@logicflow/core/dist/style/index.css";
 import CustomVue  from './node/CustomVue'
+import CustomEdge from './edge/CustomEdge'
 onMounted(()=>{
   if(!container.value) return;
   const lf = new LogicFlow({
@@ -15,6 +16,8 @@ onMounted(()=>{
     grid: true,
   });
   lf.register(CustomVue)
+  lf.register(CustomEdge)
+  lf.setDefaultEdgeType("custom-edge")
   lf.render({
     nodes: [
       {
@@ -36,7 +39,7 @@ onMounted(()=>{
       {
         sourceNodeId: "1",
         targetNodeId: "2",
-        type: "polyline",
+        type: "custom-edge",
         text: "连线",
       },
     ],
