@@ -97,6 +97,24 @@ onMounted(()=>{
       fontSize: 30
     }
   });
+  // 事件中心
+  const { eventCenter } = lf.graphModel;
+  // 节点点击事件
+  eventCenter.on('node:click',(e) =>{
+    alert(e.data.type)
+    console.log('node:click', e)
+  })
+  // 边点击事件
+  eventCenter.on('edge:click', (e) => {
+    alert(e.data.type)
+    console.log('edge:click', e)
+
+  })
+  // 画布右键事件
+  eventCenter.on('blank:contextmenu', (e) => {
+    alert('blank:contextmenu')
+    console.log('blank:contextmenu', e)
+})
   lf.render({
     nodes: [
     ],
