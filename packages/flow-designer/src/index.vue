@@ -101,6 +101,7 @@ onMounted(()=>{
   const { eventCenter } = lf.graphModel;
   // 节点点击事件
   eventCenter.on('node:click',(e) =>{
+    if(e.data.type === 'custom-vue') return;
     alert(e.data.type)
     console.log('node:click', e)
   })
@@ -114,7 +115,12 @@ onMounted(()=>{
   eventCenter.on('blank:contextmenu', (e) => {
     alert('blank:contextmenu')
     console.log('blank:contextmenu', e)
-})
+  })
+  // 监听自定义事件node-vue:click
+  eventCenter.on('node-vue:click', (e) => {
+    alert(e.data.type)
+    console.log('node-vue:click', e)
+  })
   lf.render({
     nodes: [
     ],

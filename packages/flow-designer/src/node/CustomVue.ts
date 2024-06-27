@@ -56,7 +56,16 @@ class CustomVueView extends HtmlResize.view {
       this.vnode.component.props.model = {
         // ...this.props.model,
         isHovered: this.props.model.isHovered,
-        isSelected: this.props.model.isSelected
+        isSelected: this.props.model.isSelected,
+        graphModel: this.props.model.graphModel,
+        data: {
+          id: this.props.model.id,
+          type: this.props.model.type,
+          x: this.props.model.x,
+          y: this.props.model.y,
+          text: this.props.model.text,
+          properties: this.props.model.properties
+        }
       }
     }
     

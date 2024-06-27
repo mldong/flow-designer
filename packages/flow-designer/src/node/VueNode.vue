@@ -1,10 +1,12 @@
 <template>
-  <div>isHovered:{{ model?.isHovered }}-isSelected:{{ model?.isSelected }}</div>
+  <div>
+    <button @click="handleClick">点我</button>
+  </div>
 </template>
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { BaseNodeModel } from '@logicflow/core'
-defineProps({
+const props = defineProps({
   model: {
     type: Object as PropType<BaseNodeModel>,
     required: true
@@ -18,6 +20,13 @@ defineProps({
     default: false
   }
 })
+const handleClick = (e: any) => {
+  const { eventCenter } = props.model.graphModel
+  eventCenter.emit('node-vue:click', {
+    e,
+    data: props.model.data
+  })
+}
 </script>
 <style lang="less" scoped>
 
