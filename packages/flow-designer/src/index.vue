@@ -1,4 +1,5 @@
 <template>
+  <button @click="handleClick">打印数据</button>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -16,9 +17,10 @@ import CustomVue  from './node/CustomVue'
 import CustomEdge from './edge/CustomEdge'
 LogicFlow.use(DndPanel);
 LogicFlow.use(Control);
+const lfInstance = ref();
 onMounted(()=>{
   if(!container.value) return;
-  const lf = new LogicFlow({
+  lfInstance.value = new LogicFlow({
     container: container.value,
     grid: true,
     style: { // 配置默认主题
@@ -31,6 +33,7 @@ onMounted(()=>{
       }
     }
   });
+  const lf = lfInstance.value;
   lf.register(CustomRect)
   lf.register(CustomHtml)
   lf.register(CustomVue)
@@ -100,31 +103,52 @@ onMounted(()=>{
   // 事件中心
   const { eventCenter } = lf.graphModel;
   // 节点点击事件
-  eventCenter.on('node:click',(e) =>{
+  eventCenter.on('node:click',(e: any) =>{
     if(e.data.type === 'custom-vue') return;
     alert(e.data.type)
     console.log('node:click', e)
   })
   // 边点击事件
-  eventCenter.on('edge:click', (e) => {
+  eventCenter.on('edge:click', (e: any) => {
     alert(e.data.type)
     console.log('edge:click', e)
 
   })
   // 画布右键事件
-  eventCenter.on('blank:contextmenu', (e) => {
+  eventCenter.on('blank:contextmenu', (e: any) => {
     alert('blank:contextmenu')
     console.log('blank:contextmenu', e)
   })
   // 监听自定义事件node-vue:click
-  eventCenter.on('node-vue:click', (e) => {
+  eventCenter.on('node-vue:click', (e: any) => {
     alert(e.data.type)
     console.log('node-vue:click', e)
   })
+  lf.adapterIn = (userData: any) =>{
+    console.log('adapterIn', userData)
+    // 绑定name和displayName到graphModel
+    lf.graphModel.name = userData.name
+    lf.graphModel.displayName = userData.displayName
+    return userData;
+  }
+  lf.adapterOut = (userData: any) =>{
+    // console.log('adapterOut', userData)
+    // 从graphModel取出name和displayName
+    return {
+      ...userData,
+      name: lf.graphModel.name,
+      displayName: lf.graphModel.displayName
+    };
+  }
   lf.render({
+    name: 'leave',
+    displayName: '请假流程',
     nodes: [
     ],
     edges: [],
   });
 })
+const handleClick = () =>{
+  console.log(lfInstance.value.getGraphData())
+}
 </script>
