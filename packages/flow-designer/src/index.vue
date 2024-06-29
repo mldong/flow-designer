@@ -10,13 +10,12 @@ import LogicFlow from "@logicflow/core";
 import "@logicflow/core/dist/style/index.css";
 import { DndPanel, Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
-import CustomRect  from './node/CustomRect'
-import CustomHtml  from './node/CustomHtml'
-import CustomVue  from './node/CustomVue'
-
-import CustomEdge from './edge/CustomEdge'
+import Flow from './plugins/Flow';
 LogicFlow.use(DndPanel);
 LogicFlow.use(Control);
+LogicFlow.use(Flow, {
+  a: 'test'
+});
 const lfInstance = ref();
 onMounted(()=>{
   if(!container.value) return;
@@ -34,11 +33,7 @@ onMounted(()=>{
     }
   });
   const lf = lfInstance.value;
-  lf.register(CustomRect)
-  lf.register(CustomHtml)
-  lf.register(CustomVue)
-  lf.register(CustomEdge)
-  lf.setDefaultEdgeType("custom-edge")
+  console.log(lf.extension.flow)
   // 拖拽面板配置
   lf.extension.dndPanel.setPatternItems([
     {
