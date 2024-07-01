@@ -61,6 +61,23 @@ class Flow {
     if(props.initDndPanel !== false) {
       this.initDndPanel(Flow.defaultDndPanel)
     }
+    const lf = this.lf;
+    lf.adapterIn = (userData: any) =>{
+      console.log('adapterIn', userData)
+      // 绑定name和displayName到graphModel
+      lf.graphModel.name = userData.name
+      lf.graphModel.displayName = userData.displayName
+      return userData;
+    }
+    lf.adapterOut = (userData: any) =>{
+      // console.log('adapterOut', userData)
+      // 从graphModel取出name和displayName
+      return {
+        ...userData,
+        name: lf.graphModel.name,
+        displayName: lf.graphModel.displayName
+      };
+    }
   }
   initDndPanel(data: any){
     this.lf.extension.dndPanel.setPatternItems(data)
