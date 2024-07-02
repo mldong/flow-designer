@@ -2,7 +2,7 @@
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { PropType, onMounted, ref, watch } from 'vue';
 
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
@@ -10,6 +10,7 @@ import "@logicflow/core/dist/style/index.css";
 import {Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
+import { FDConfigData } from './types';
 LogicFlow.use(Control);
 LogicFlow.use(Flow, {
   // defaultEdgeType: 'polyline',
@@ -18,7 +19,7 @@ LogicFlow.use(Flow, {
 });
 const props = defineProps({
   value: {
-    type: Object,
+    type: Object as PropType<FDConfigData>,
     default() {
       return {}
     }
