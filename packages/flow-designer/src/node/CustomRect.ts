@@ -3,11 +3,18 @@ import { h } from "@logicflow/core";
 import { RectResize } from "@logicflow/extension";
 import userTaskSvgStr from '../assets/user-task.svg?raw'
 import { parseSvg } from '../tool'
+import { ColorEnum, NodeStateEnum } from "../types/enums";
 const paths = parseSvg(userTaskSvgStr)
 class CustomRectModel extends RectResize.model {
   getNodeStyle() {
     const style = super.getNodeStyle();
-    style.stroke = "blue";
+    if(this.properties.state == NodeStateEnum.history) {
+      style.stroke = ColorEnum.historyColor;
+    } else if(this.properties.state == NodeStateEnum.active) {
+      style.stroke = ColorEnum.activeColor;
+    } else {
+      style.stroke = ColorEnum.primaryColor;
+    }
     style.strokeDasharray = "3 3";
     return style;
   }

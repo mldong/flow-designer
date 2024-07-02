@@ -1,8 +1,4 @@
 <template>
-  <button @click="handleClick">切换数据</button>
-  <pre>
-    {{ graphData }}
-  </pre>
   <FlowDesigner v-model:value="graphData"/>
 </template>
 <script setup lang="ts">
@@ -12,17 +8,33 @@ const graphData = ref({
     nodes: [
       {
         id: "1",
-        type: "rect",
+        type: "custom-rect",
         x: 100,
         y: 100,
         text: "节点1",
+        properties: {
+          state: 'history'
+        }
       },
       {
         id: "2",
-        type: "circle",
+        type: "custom-rect",
         x: 300,
         y: 200,
         text: "节点2",
+        properties: {
+          state: 'active'
+        }
+      },
+      {
+        id: "3",
+        type: "custom-rect",
+        x: 500,
+        y: 600,
+        text: "节点2",
+        properties: {
+          
+        }
       },
     ],
     edges: [
@@ -34,34 +46,6 @@ const graphData = ref({
       },
     ],
   });
-  const handleClick = () =>{
-    graphData.value = {
-    nodes: [
-      {
-        id: "1",
-        type: "custom-vue",
-        x: 100,
-        y: 100,
-        text: "节点1",
-      },
-      {
-        id: "2",
-        type: "circle",
-        x: 300,
-        y: 200,
-        text: "节点2",
-      },
-    ],
-    edges: [
-      {
-        sourceNodeId: "1",
-        targetNodeId: "2",
-        type: "polyline",
-        text: "连线",
-      },
-    ],
-  }
-  }
 </script>
 <style scoped>
 
