@@ -10,3 +10,13 @@ export declare type FDConfigData = {
   expireTime?: string; // 期待完成时间变量key
   instanceNoClass?: string; // xx.DefaultNoGenerator	实例编号生成器实现类
 } & GraphConfigData
+/**
+ * 主题颜色配置
+ */
+export declare type FDThemeConfig = {
+  primaryColor?: string; // 主题色
+  edgePrimaryColor?: string; // 边主题色
+  activeColor?: string; // 进行时节点颜色
+  historyColor?: string; // 历史节点/边颜色
+  backgroundColor ?: string;// 画布背景颜色
+}

@@ -7,13 +7,14 @@ import { ColorEnum, NodeStateEnum } from "../types/enums";
 const paths = parseSvg(userTaskSvgStr)
 class CustomRectModel extends RectResize.model {
   getNodeStyle() {
+    const theme = this.graphModel.props.theme;
     const style = super.getNodeStyle();
     if(this.properties.state == NodeStateEnum.history) {
-      style.stroke = ColorEnum.historyColor;
+      style.stroke = theme.historyColor || ColorEnum.historyColor;
     } else if(this.properties.state == NodeStateEnum.active) {
-      style.stroke = ColorEnum.activeColor;
+      style.stroke = theme.activeColor || ColorEnum.activeColor;
     } else {
-      style.stroke = ColorEnum.primaryColor;
+      style.stroke = theme.primaryColor || ColorEnum.primaryColor;
     }
     // style.strokeDasharray = "3 3";
     return style;

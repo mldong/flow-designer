@@ -4,13 +4,14 @@ import { ColorEnum, NodeStateEnum } from "../types/enums";
 class CustomEdgeModel extends PolylineEdgeModel {
 
   getEdgeStyle() {
+    const theme = this.graphModel.props.theme;
     const style = super.getEdgeStyle();
     if(this.properties.state == NodeStateEnum.history) {
-      style.stroke = ColorEnum.historyColor;
+      style.stroke = theme.historyColor || ColorEnum.historyColor;
     } else if(this.properties.state == NodeStateEnum.active) {
-      style.stroke = ColorEnum.activeColor;
+      style.stroke = theme.activeColor || ColorEnum.activeColor;
     } else {
-      style.stroke = ColorEnum.edgePrimaryColor;
+      style.stroke = theme.edgePrimaryColor || ColorEnum.edgePrimaryColor;
     }
     return style;
   }

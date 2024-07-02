@@ -78,6 +78,7 @@ class Flow {
         displayName: lf.graphModel.displayName
       };
     }
+    lf.graphModel.props = props;
   }
   initDndPanel(data: any){
     this.lf.extension.dndPanel.setPatternItems(data)

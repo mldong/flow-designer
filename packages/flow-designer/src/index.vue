@@ -7,24 +7,28 @@ import { PropType, onMounted, ref, watch } from 'vue';
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
 import "@logicflow/core/dist/style/index.css";
-import {Control } from '@logicflow/extension';
+import { Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
-import { FDConfigData } from './types';
+import { FDConfigData, FDThemeConfig } from './types';
 LogicFlow.use(Control);
-LogicFlow.use(Flow, {
-  // defaultEdgeType: 'polyline',
-  // 是否初始拖拽面板
-  // initDndPanel: false
-});
 const props = defineProps({
   value: {
     type: Object as PropType<FDConfigData>,
     default() {
       return {}
     }
+  },
+  theme: {
+    type: Object as PropType<FDThemeConfig>,
+    default() {
+      return {
+        
+      }
+    }
   }
 })
+LogicFlow.use(Flow, props);
 const emits = defineEmits(['update:value'])
 const lfInstance = ref();
 onMounted(()=>{
