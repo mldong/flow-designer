@@ -41,8 +41,17 @@ const graphData = ref({
       {
         sourceNodeId: "1",
         targetNodeId: "2",
-        type: "polyline",
+        type: "custom-edge",
         text: "连线",
+        properties: {
+          state: 'history'
+        }
+      },
+      {
+        sourceNodeId: "2",
+        targetNodeId: "3",
+        type: "custom-edge",
+        text: "连线2",
       },
     ],
   });

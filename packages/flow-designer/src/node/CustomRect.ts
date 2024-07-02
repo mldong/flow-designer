@@ -15,7 +15,7 @@ class CustomRectModel extends RectResize.model {
     } else {
       style.stroke = ColorEnum.primaryColor;
     }
-    style.strokeDasharray = "3 3";
+    // style.strokeDasharray = "3 3";
     return style;
   }
 }

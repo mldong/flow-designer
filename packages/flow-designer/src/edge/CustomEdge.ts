@@ -1,17 +1,18 @@
 import { PolylineEdge, PolylineEdgeModel } from "@logicflow/core";
-import { EdgeAnimation } from "@logicflow/core/types/constant/DefaultTheme";
+import { ColorEnum, NodeStateEnum } from "../types/enums";
 
 class CustomEdgeModel extends PolylineEdgeModel {
-  setAttributes(): void {
-    this.style.stroke = "#443399";
-    this.isAnimation = true;
-  }
-  getEdgeAnimationStyle(): EdgeAnimation {
-    const style = super.getEdgeAnimationStyle();
-    return {
-      ...style,
-      stroke: "blue"
+
+  getEdgeStyle() {
+    const style = super.getEdgeStyle();
+    if(this.properties.state == NodeStateEnum.history) {
+      style.stroke = ColorEnum.historyColor;
+    } else if(this.properties.state == NodeStateEnum.active) {
+      style.stroke = ColorEnum.activeColor;
+    } else {
+      style.stroke = ColorEnum.edgePrimaryColor;
     }
+    return style;
   }
 }
 class CustomEdge extends PolylineEdge {
