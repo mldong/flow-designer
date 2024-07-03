@@ -10,7 +10,7 @@ import "@logicflow/core/dist/style/index.css";
 import { Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
-import { FDConfigData, FDThemeConfig } from './types';
+import { FDConfigData, FDHighLightType, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 LogicFlow.use(Control);
 const props = defineProps({
@@ -20,20 +20,59 @@ const props = defineProps({
       return {}
     }
   },
-  theme: {
+  theme: { // 高亮主题配置
     type: Object as PropType<FDThemeConfig>,
     default() {
       return {
         
       }
     }
+  },
+  highLight: { // 高亮数据
+    type: Object as PropType<FDHighLightType>,
+      default() {
+      return {
+        
+      }
+    }
   }
 })
-const highLightNodeId = "1";
-const highLightEdgeId = "1-2"
 LogicFlow.use(Flow, props);
 const emits = defineEmits(['update:value'])
 const lfInstance = ref();
+/**
+ * 设置高亮数据
+ * @param data 
+ */
+const setHighLight = (data: FDHighLightType) =>{
+  if(!data) return;
+  const lf = lfInstance.value;
+  if(!lf) return;
+  // 设置历史节点state属性为history
+  if(Array.isArray(data.historyNodeNames) && data.historyNodeNames.length) {
+    data.historyNodeNames.forEach(nodeId=>{
+      lf.getNodeModelById(nodeId)?.setProperties({
+        state: NodeStateEnum.history,
+      });
+    })
+  }
+  // 设置历史边state属性为history
+  if(Array.isArray(data.historyEdgeNames) &&data.historyEdgeNames.length) {
+    data.historyEdgeNames.forEach(edgeId=>{
+      lf.getEdgeModelById(edgeId)?.setProperties({
+      state: NodeStateEnum.history,
+    });
+    })
+  }
+  // 设置活跃节点state属性为active
+  if(Array.isArray(data.activeNodeNames) && data.activeNodeNames.length) {
+    data.activeNodeNames.forEach(nodeId=>{
+      lf.getNodeModelById(nodeId)?.setProperties({
+        state: NodeStateEnum.active,
+      });
+    })
+  }
+}
 /**
  * 自定义渲染
  * 1.默认渲染
@@ -44,12 +83,8 @@ const myRender = (data: any) =>{
   const lf = lfInstance.value;
   if(!lf) return;
   lf.render(data);
-  lf.getNodeModelById(highLightNodeId)?.setProperties({
-    state: NodeStateEnum.history,
-  });
-  lf.getEdgeModelById(highLightEdgeId)?.setProperties({
-    state: NodeStateEnum.history,
-  });
+  // 设置亮亮数据
+  setHighLight(props.highLight)
 }
 onMounted(()=>{
   if(!container.value) return;
@@ -66,6 +101,11 @@ onMounted(()=>{
 })
 watch(()=>props.value, (newVal)=>{
   myRender(newVal);
+}, {
+  deep: true
+})
+watch(()=>props.highLight, (newVal)=>{
+  setHighLight(newVal)
 }, {
   deep: true
 })

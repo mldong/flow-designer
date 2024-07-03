@@ -20,3 +20,11 @@ export declare type FDThemeConfig = {
   historyColor?: string; // 历史节点/边颜色
   backgroundColor ?: string;// 画布背景颜色
 }
+/**
+ * 高亮数据类型
+ */
+export declare type FDHighLightType = {
+  historyNodeNames?: Array<string>; // 历史节点名称
+  historyEdgeNames?: Array<string>; // 历史边名称
+  activeNodeNames?: Array<string>; // 活跃节点名称
+}
