@@ -15,7 +15,7 @@ const graphData = ref({
         y: 100,
         text: "节点1",
         properties: {
-          state: 'history'
+          // state: 'history'
         }
       },
       {
@@ -25,7 +25,7 @@ const graphData = ref({
         y: 200,
         text: "节点2",
         properties: {
-          state: 'active'
+          // state: 'active'
         }
       },
       {
@@ -41,15 +41,17 @@ const graphData = ref({
     ],
     edges: [
       {
+        id: "1-2",
         sourceNodeId: "1",
         targetNodeId: "2",
         type: "custom-edge",
         text: "连线",
         properties: {
-          state: 'history'
+          // state: 'history'
         }
       },
       {
+        id: "2-3",
         sourceNodeId: "2",
         targetNodeId: "3",
         type: "custom-edge",

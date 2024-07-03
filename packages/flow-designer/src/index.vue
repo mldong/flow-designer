@@ -11,6 +11,7 @@ import { Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
 import { FDConfigData, FDThemeConfig } from './types';
+import { NodeStateEnum } from './types/enums';
 LogicFlow.use(Control);
 const props = defineProps({
   value: {
@@ -28,9 +29,28 @@ const props = defineProps({
     }
   }
 })
+const highLightNodeId = "1";
+const highLightEdgeId = "1-2"
 LogicFlow.use(Flow, props);
 const emits = defineEmits(['update:value'])
 const lfInstance = ref();
+/**
+ * 自定义渲染
+ * 1.默认渲染
+ * 2.设置高亮属性
+ * @param data 
+ */
+const myRender = (data: any) =>{
+  const lf = lfInstance.value;
+  if(!lf) return;
+  lf.render(data);
+  lf.getNodeModelById(highLightNodeId)?.setProperties({
+    state: NodeStateEnum.history,
+  });
+  lf.getEdgeModelById(highLightEdgeId)?.setProperties({
+    state: NodeStateEnum.history,
+  });
+}
 onMounted(()=>{
   if(!container.value) return;
   lfInstance.value = new LogicFlow({
@@ -42,10 +62,10 @@ onMounted(()=>{
   eventCenter.on('history:change', ()=>{
     emits('update:value', lf.getGraphData())
   })
-  lf.render(props.value);
+  myRender(props.value)
 })
 watch(()=>props.value, (newVal)=>{
-  lfInstance.value.render(newVal);
+  myRender(newVal);
 }, {
   deep: true
 })
