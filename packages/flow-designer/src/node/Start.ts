@@ -1,12 +1,20 @@
 // Start.ts
 import { ColorEnum, NodeStateEnum } from "../types/enums";
-import { CircleNode, CircleNodeModel } from "@logicflow/core";
+import { CircleNode, CircleNodeModel, ConnectRule } from "@logicflow/core";
 class StartModel extends CircleNodeModel {
   setAttributes(): void {
     this.r = 24;
     if((this.text && this.text.value == "") || !this.text) {
       this.text.value = "开始";
     }
+  }
+  getConnectedTargetRules(): ConnectRule[] {
+    const rules = super.getConnectedTargetRules();
+    rules.push({
+      message: "开始节点不能是边的目标节点",
+      validate: () => false
+    });
+    return rules;
   }
   getNodeStyle() {
     const theme = this.graphModel.props.theme;

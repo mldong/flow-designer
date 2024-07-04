@@ -32,10 +32,10 @@ const graphData = ref({
       },
       {
         id: "3",
-        type: "task",
+        type: "end",
         x: 500,
         y: 600,
-        text: "节点2",
+        text: "结束",
         properties: {
           
         }

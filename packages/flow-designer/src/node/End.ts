@@ -1,6 +1,6 @@
 // End.ts
 import { ColorEnum, NodeStateEnum } from "../types/enums";
-import { CircleNode, CircleNodeModel, h } from "@logicflow/core";
+import { CircleNode, CircleNodeModel, ConnectRule, h } from "@logicflow/core";
 import endQSvgStr from '../assets/end-q.svg?raw'
 import { parseSvg } from '../tool'
 const paths = parseSvg(endQSvgStr)
@@ -14,6 +14,14 @@ class EndModel extends CircleNodeModel {
       this.text.x = this.x
       this.text.y = this.y + this.height / 2 + 12
     }
+  }
+  getConnectedSourceRules(): ConnectRule[] {
+    const rules = super.getConnectedSourceRules();
+    rules.push({
+      message: "结束节点不能是边的开始节点",
+      validate: () => false
+    });
+    return rules;
   }
   getNodeStyle() {
     const theme = this.graphModel.props.theme;
@@ -53,6 +61,7 @@ class EndView extends CircleNode {
       }),
     );
   }
+
  /**
    * 完全自定义节点外观方法
    */
