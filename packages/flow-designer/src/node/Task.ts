@@ -6,6 +6,11 @@ import { parseSvg } from '../tool'
 import { ColorEnum, NodeStateEnum } from "../types/enums";
 const paths = parseSvg(userTaskSvgStr)
 class TaskModel extends RectResize.model {
+  setAttributes(): void {
+    if((this.text && this.text.value == "") || !this.text) {
+      this.text.value = "用户任务";
+    }
+  }
   getNodeStyle() {
     const theme = this.graphModel.props.theme;
     const style = super.getNodeStyle();

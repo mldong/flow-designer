@@ -24,10 +24,11 @@ class Flow {
     {
       type: 'task',
       label: '用户任务',
+      text: '用户任务',
       icon: UserTaskSvg
     },
     {
-      type: 'circle',
+      type: 'end',
       text: '结束',
       label: '结束节点',
       icon: EndSvg
