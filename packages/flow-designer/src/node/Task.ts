@@ -1,11 +1,11 @@
-// CustomRect.ts
+// Task.ts
 import { h } from "@logicflow/core";
 import { RectResize } from "@logicflow/extension";
 import userTaskSvgStr from '../assets/user-task.svg?raw'
 import { parseSvg } from '../tool'
 import { ColorEnum, NodeStateEnum } from "../types/enums";
 const paths = parseSvg(userTaskSvgStr)
-class CustomRectModel extends RectResize.model {
+class TaskModel extends RectResize.model {
   getNodeStyle() {
     const theme = this.graphModel.props.theme;
     const style = super.getNodeStyle();
@@ -21,7 +21,7 @@ class CustomRectModel extends RectResize.model {
   }
 }
 
-class CustomRectView extends RectResize.view {
+class TaskView extends RectResize.view {
   private getLabelShape() {
     const { model } = this.props;
     const { x, y, width, height } = model;
@@ -67,7 +67,7 @@ class CustomRectView extends RectResize.view {
 }
 
 export default {
-  type: "custom-rect",
-  view: CustomRectView,
-  model: CustomRectModel,
+  type: "task",
+  view: TaskView,
+  model: TaskModel,
 };

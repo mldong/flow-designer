@@ -13,17 +13,16 @@ const graphData = ref({
     nodes: [
       {
         id: "1",
-        type: "custom-rect",
+        type: "start",
         x: 100,
         y: 100,
-        text: "节点1",
         properties: {
           // state: 'history'
         }
       },
       {
         id: "2",
-        type: "custom-rect",
+        type: "task",
         x: 300,
         y: 200,
         text: "节点2",
@@ -33,7 +32,7 @@ const graphData = ref({
       },
       {
         id: "3",
-        type: "custom-rect",
+        type: "task",
         x: 500,
         y: 600,
         text: "节点2",

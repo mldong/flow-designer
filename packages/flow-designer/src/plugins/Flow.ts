@@ -16,24 +16,14 @@ class Flow {
   static defaultEdgeType = 'custom-edge'
   static defaultDndPanel = [
     {
-      type: 'circle',
+      type: 'start',
       text: '开始',
       label: '开始节点',
       icon: StartSvg
     },
     {
-      type: 'custom-rect',
-      label: '自定义矩形',
-      icon: UserTaskSvg
-    },
-    {
-      type: 'custom-html',
-      label: 'html节点',
-      icon: UserTaskSvg
-    },
-    {
-      type: 'custom-vue',
-      label: 'Vue节点',
+      type: 'task',
+      label: '用户任务',
       icon: UserTaskSvg
     },
     {
