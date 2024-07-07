@@ -6,6 +6,9 @@ import UserTaskSvg from './../assets/user-task.svg'
 import CustomSvg from './../assets/custom.svg'
 import EndSvg from './../assets/end.svg'
 import DecisionSvg from './../assets/decision.svg'
+import ForkSvg from './../assets/fork.svg'
+import JoinSvg from './../assets/join.svg'
+
 LogicFlow.use(DndPanel)
 const nodes = import.meta.glob('../node/*.ts',{
   eager: true
@@ -40,6 +43,18 @@ class Flow {
       label: '条件判断',
       text: '条件判断',
       icon: DecisionSvg
+    },
+    {
+      type: 'fork',
+      label: '分支',
+      text: '分支',
+      icon: ForkSvg
+    },
+    {
+      type: 'join',
+      label: '合并',
+      text: '合并',
+      icon: JoinSvg
     },
     {
       type: 'end',
