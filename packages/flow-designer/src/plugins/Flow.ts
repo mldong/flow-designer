@@ -8,6 +8,7 @@ import EndSvg from './../assets/end.svg'
 import DecisionSvg from './../assets/decision.svg'
 import ForkSvg from './../assets/fork.svg'
 import JoinSvg from './../assets/join.svg'
+import SubProcessSvg from './../assets/subProcess.svg'
 
 LogicFlow.use(DndPanel)
 const nodes = import.meta.glob('../node/*.ts',{
@@ -55,6 +56,12 @@ class Flow {
       label: '合并',
       text: '合并',
       icon: JoinSvg
+    },
+    {
+      type: 'subProcess',
+      label: '子流程',
+      text: '子流程',
+      icon: SubProcessSvg
     },
     {
       type: 'end',
