@@ -10,7 +10,7 @@ import "@logicflow/core/dist/style/index.css";
 import { Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
-import { FDConfigData, FDHighLightType, FDThemeConfig } from './types';
+import { FDConfigData, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 LogicFlow.use(Control);
 const props = defineProps({
@@ -35,6 +35,9 @@ const props = defineProps({
         
       }
     }
+  },
+  dndPanel: { // 拖拽面板
+    type: Array as PropType<Array<FDPatternItem>>,
   }
 })
 LogicFlow.use(Flow, props);

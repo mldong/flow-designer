@@ -86,7 +86,11 @@ class Flow {
     })
     this.lf.setDefaultEdgeType(props.defaultEdgeType || Flow.defaultEdgeType)
     if(props.initDndPanel !== false) {
-      this.initDndPanel(Flow.defaultDndPanel)
+      if(props.dndPanel && props.dndPanel.length) {
+        this.initDndPanel(props.dndPanel)
+      } else {
+        this.initDndPanel(Flow.defaultDndPanel)
+      }
     }
     const lf = this.lf;
     lf.adapterIn = (userData: any) =>{

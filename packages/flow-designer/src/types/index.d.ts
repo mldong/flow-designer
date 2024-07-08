@@ -28,3 +28,16 @@ export declare type FDHighLightType = {
   historyEdgeNames?: Array<string>; // 历史边名称
   activeNodeNames?: Array<string>; // 活跃节点名称
 }
+/**
+ * 拖拽面板数据类型
+ */
+export declare type FDPatternItem = {
+  type?: string;
+  text?: string;
+  label?: string;
+  icon?: string;
+  className?: string;
+  properties?: object;
+  callback?: () => void;
+  hide?: boolean; // 是否隐藏
+};

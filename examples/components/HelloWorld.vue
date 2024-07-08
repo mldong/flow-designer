@@ -1,14 +1,25 @@
 <template>
   <button @click="handleClick">设置高亮</button>
-  <FlowDesigner v-model:value="graphData" :theme="theme" :highLight="highLightData"/>
+  <FlowDesigner 
+  v-model:value="graphData" 
+  :theme="theme" 
+  :highLight="highLightData" 
+  :dndPanel="dndPanel"/>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
 import { FDHighLightType } from '../../packages/flow-designer/src/types';
+import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 const theme = {
   activeColor: 'red'
 }
 const highLightData = ref<FDHighLightType>()
+const dndPanel = [{
+      type: 'start',
+      text: '开始',
+      label: '开始节点',
+      icon: StartSvg
+    },]
 const graphData = ref({
     nodes: [
       {
