@@ -38,7 +38,10 @@ const props = defineProps({
   },
   dndPanel: { // 拖拽面板
     type: Array as PropType<Array<FDPatternItem>>,
-  }
+  },
+  nodeClick: { // 节点点击事件
+    type: Function,
+  },
 })
 LogicFlow.use(Flow, props);
 const emits = defineEmits(['update:value'])

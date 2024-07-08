@@ -3,7 +3,8 @@
   <FlowDesigner 
   v-model:value="graphData" 
   :theme="theme" 
-  :highLight="highLightData" 
+  :highLight="highLightData"
+  :nodeClick="handleNodeClick"
   :dndPanel="dndPanel"/>
 </template>
 <script setup lang="ts">
@@ -13,13 +14,19 @@ import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 const theme = {
   activeColor: 'red'
 }
+const handleNodeClick = (event: any) => {
+  console.log('handleNodeClick', event)
+}
 const highLightData = ref<FDHighLightType>()
 const dndPanel = [{
       type: 'start',
       text: '开始1',
       label: '开始节点1',
       icon: StartSvg,
-      hide: false
+      hide: false,
+      nodeClick(event: any){
+        console.log('start', event)
+      }
     },]
 const graphData = ref({
     nodes: [

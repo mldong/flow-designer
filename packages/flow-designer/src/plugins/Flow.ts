@@ -129,6 +129,21 @@ class Flow {
       };
     }
     lf.graphModel.props = props;
+    // 事件处理优先级：dndPanel.nodeClick>props.nodeClick>defaultNodeClick
+    const { eventCenter } = lf.graphModel;
+    eventCenter.on('node:click', (event: any) => {
+      const shapeList = this.lf.extension.dndPanel.shapeList
+      const index = shapeList.findIndex((item: FDPatternItem)=>item.type === event.data.type)
+      let nodeClick = props.nodeClick
+      if(index>=-1) {
+        nodeClick = shapeList[index].nodeClick || props.nodeClick
+      }
+      if(nodeClick && typeof nodeClick === 'function') {
+        nodeClick(event)
+      } else {
+        console.log('默认node:click', event)
+      }
+    })
   }
   initDndPanel(data: any){
     this.lf.extension.dndPanel.setPatternItems(data)
