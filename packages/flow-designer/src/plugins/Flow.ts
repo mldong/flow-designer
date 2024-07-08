@@ -9,6 +9,7 @@ import DecisionSvg from './../assets/decision.svg'
 import ForkSvg from './../assets/fork.svg'
 import JoinSvg from './../assets/join.svg'
 import SubProcessSvg from './../assets/subProcess.svg'
+import { FDPatternItem } from '../types';
 
 LogicFlow.use(DndPanel)
 const nodes = import.meta.glob('../node/*.ts',{
@@ -20,7 +21,7 @@ const edges = import.meta.glob('../edge/*.ts',{
 class Flow {
   static pluginName = 'flow'
   static defaultEdgeType = 'custom-edge'
-  static defaultDndPanel = [
+  static defaultDndPanel: Array<FDPatternItem>= [
     {
       type: 'start',
       text: '开始',
@@ -86,11 +87,29 @@ class Flow {
     })
     this.lf.setDefaultEdgeType(props.defaultEdgeType || Flow.defaultEdgeType)
     if(props.initDndPanel !== false) {
-      if(props.dndPanel && props.dndPanel.length) {
-        this.initDndPanel(props.dndPanel)
-      } else {
-        this.initDndPanel(Flow.defaultDndPanel)
+      // 如果type相等，则替换属性，否则就追加
+      const newDndPanel: Array<FDPatternItem> = [...Flow.defaultDndPanel]
+      if(props.dndPanel && props.dndPanel.length > 0) {
+        props.dndPanel.forEach((item: FDPatternItem) => {
+          const index = newDndPanel.findIndex((i) => i.type === item.type)
+          if(index > -1) {
+            if(item.hide === true) {
+              // 隐藏，则删除
+              newDndPanel.splice(index, 1)
+            } else {
+              // 覆盖属性
+              newDndPanel[index] = {
+                ...newDndPanel[index],
+                ...item,
+              }
+            }
+
+          } else {
+            newDndPanel.push(item)
+          }
+        })
       }
+      this.initDndPanel(newDndPanel)
     }
     const lf = this.lf;
     lf.adapterIn = (userData: any) =>{

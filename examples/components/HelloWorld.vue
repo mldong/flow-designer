@@ -16,9 +16,10 @@ const theme = {
 const highLightData = ref<FDHighLightType>()
 const dndPanel = [{
       type: 'start',
-      text: '开始',
-      label: '开始节点',
-      icon: StartSvg
+      text: '开始1',
+      label: '开始节点1',
+      icon: StartSvg,
+      hide: false
     },]
 const graphData = ref({
     nodes: [
