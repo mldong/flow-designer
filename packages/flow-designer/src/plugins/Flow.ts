@@ -109,6 +109,10 @@ class Flow {
           }
         })
       }
+      // 对newDndPanel进行排序，以sort属性正序排序
+      newDndPanel.sort((a:FDPatternItem, b: FDPatternItem) => {
+        return (a.sort === undefined ? 99: a.sort) - (b.sort === undefined ? 99: b.sort)
+      })
       this.initDndPanel(newDndPanel)
     }
     const lf = this.lf;

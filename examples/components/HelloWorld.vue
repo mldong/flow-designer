@@ -26,6 +26,7 @@ const handleEdgeClick = (event: any) => {
 }
 const highLightData = ref<FDHighLightType>()
 const dndPanel = [{
+      sort: 1,
       type: 'custom-html-test',
       text: '测试',
       label: '测试',
@@ -34,7 +35,10 @@ const dndPanel = [{
       nodeClick(event: any){
         console.log('start', event)
       }
-    },]
+    },{
+      type: 'subProcess',
+      sort: 100
+    }]
 const graphData = ref({
     nodes: [
       {
