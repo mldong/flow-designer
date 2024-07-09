@@ -42,6 +42,9 @@ const props = defineProps({
   nodeClick: { // 节点点击事件
     type: Function,
   },
+  edgeClick: { // 边点击事件
+    type: Function,
+  },
 })
 LogicFlow.use(Flow, props);
 const emits = defineEmits(['update:value'])

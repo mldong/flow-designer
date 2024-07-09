@@ -7,6 +7,8 @@ class StartModel extends CircleNodeModel {
     if((this.text && this.text.value == "") || !this.text) {
       this.text.value = "开始";
     }
+    this.text.draggable = false;
+    this.text.editable = false;
   }
   getConnectedTargetRules(): ConnectRule[] {
     const rules = super.getConnectedTargetRules();

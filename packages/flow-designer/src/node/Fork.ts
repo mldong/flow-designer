@@ -9,6 +9,8 @@ class ForkModel extends DiamondNodeModel {
     this.text.value = "";
     this.rx = 28;
     this.ry = 28;
+    this.text.draggable = false;
+    this.text.editable = false;
   }
   getNodeStyle() {
     const theme = this.graphModel.props.theme;

@@ -131,6 +131,7 @@ class Flow {
     lf.graphModel.props = props;
     // 事件处理优先级：dndPanel.nodeClick>props.nodeClick>defaultNodeClick
     const { eventCenter } = lf.graphModel;
+    // 节点事件
     eventCenter.on('node:click', (event: any) => {
       const shapeList = this.lf.extension.dndPanel.shapeList
       const index = shapeList.findIndex((item: FDPatternItem)=>item.type === event.data.type)
@@ -142,6 +143,15 @@ class Flow {
         nodeClick(event)
       } else {
         console.log('默认node:click', event)
+      }
+    })
+    // 边事件
+    eventCenter.on('edge:click', (event: any) => {
+      let edgeClick = props.edgeClick
+      if(edgeClick && typeof edgeClick === 'function') {
+        edgeClick(event)
+      } else {
+        console.log('默认edge:click', event)
       }
     })
   }

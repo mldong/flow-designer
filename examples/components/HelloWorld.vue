@@ -5,6 +5,7 @@
   :theme="theme" 
   :highLight="highLightData"
   :nodeClick="handleNodeClick"
+  :edgeClick="handleEdgeClick"
   :dndPanel="dndPanel"/>
 </template>
 <script setup lang="ts">
@@ -16,6 +17,9 @@ const theme = {
 }
 const handleNodeClick = (event: any) => {
   console.log('handleNodeClick', event)
+}
+const handleEdgeClick = (event: any) => {
+  console.log('handleEdgeClick', event)
 }
 const highLightData = ref<FDHighLightType>()
 const dndPanel = [{

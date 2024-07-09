@@ -14,6 +14,8 @@ class EndModel extends CircleNodeModel {
       this.text.x = this.x
       this.text.y = this.y + this.height / 2 + 12
     }
+    this.text.draggable = false;
+    this.text.editable = false;
   }
   getConnectedSourceRules(): ConnectRule[] {
     const rules = super.getConnectedSourceRules();
