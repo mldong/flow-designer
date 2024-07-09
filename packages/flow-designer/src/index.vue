@@ -47,7 +47,7 @@ const props = defineProps({
   },
 })
 LogicFlow.use(Flow, props);
-const emits = defineEmits(['update:value'])
+const emits = defineEmits(['update:value', 'on-init', 'on-render'])
 const lfInstance = ref();
 /**
  * 设置高亮数据
@@ -94,6 +94,8 @@ const myRender = (data: any) =>{
   lf.render(data);
   // 设置亮亮数据
   setHighLight(props.highLight)
+  // emits render事件
+  emits('on-render', lf)
 }
 onMounted(()=>{
   if(!container.value) return;
@@ -102,6 +104,8 @@ onMounted(()=>{
     grid: true,
   });
   const lf = lfInstance.value;
+  // emits初始化事件
+  emits('on-init', lf)
   const { eventCenter } = lf.graphModel;
   eventCenter.on('history:change', ()=>{
     emits('update:value', lf.getGraphData())

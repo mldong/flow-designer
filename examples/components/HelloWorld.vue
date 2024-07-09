@@ -6,12 +6,15 @@
   :highLight="highLightData"
   :nodeClick="handleNodeClick"
   :edgeClick="handleEdgeClick"
-  :dndPanel="dndPanel"/>
+  :dndPanel="dndPanel"
+  @on-init="handleInit"
+  />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
 import { FDHighLightType } from '../../packages/flow-designer/src/types';
 import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
+import CustomHtml from './CustomHtml';
 const theme = {
   activeColor: 'red'
 }
@@ -23,9 +26,9 @@ const handleEdgeClick = (event: any) => {
 }
 const highLightData = ref<FDHighLightType>()
 const dndPanel = [{
-      type: 'start',
-      text: '开始1',
-      label: '开始节点1',
+      type: 'custom-html-test',
+      text: '测试',
+      label: '测试',
       icon: StartSvg,
       hide: false,
       nodeClick(event: any){
@@ -90,6 +93,9 @@ const graphData = ref({
       historyEdgeNames: ['1-2'],
       activeNodeNames: ['2']
     }
+  }
+  const handleInit = (lf: any) => {
+    lf.register(CustomHtml);
   }
 </script>
 <style scoped>
