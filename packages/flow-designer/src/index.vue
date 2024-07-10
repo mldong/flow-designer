@@ -1,5 +1,5 @@
 <template>
-  <Button :uiLibrary="uiLibrary" type="primary">我是按钮</Button>
+  <Button type="primary">我是按钮</Button>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -46,11 +46,7 @@ const props = defineProps({
   },
   edgeClick: { // 边点击事件
     type: Function,
-  },
-  uiLibrary: {
-    type: String,
-    default: 'antd',
-  },
+  }
 })
 LogicFlow.use(Flow, props);
 const emits = defineEmits(['update:value', 'on-init', 'on-render'])

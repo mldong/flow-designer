@@ -5,13 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
-const props = defineProps({
-  uiLibrary: {
-    type: String,
-    default: 'antd',
-  },
-});
+import { defineAsyncComponent, getCurrentInstance } from 'vue';
+const instance = getCurrentInstance()
+const uiLibrary = instance?.appContext.config.globalProperties.$uiLibrary || 'antd';
 const createButton = (uiLibrary: string) => {
   if (uiLibrary === 'ant-design-vue' || uiLibrary === 'antd') {
     return defineAsyncComponent(() => import('ant-design-vue/es/button').then(mod => mod.default));
@@ -21,5 +17,5 @@ const createButton = (uiLibrary: string) => {
   throw new Error('Unsupported UI library');
 };
 
-const MButton = createButton(props.uiLibrary);
+const MButton = createButton(uiLibrary);
 </script>
