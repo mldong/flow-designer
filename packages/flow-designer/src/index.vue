@@ -1,4 +1,5 @@
 <template>
+  <Button :uiLibrary="uiLibrary" type="primary">我是按钮</Button>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -12,6 +13,7 @@ import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
 import { FDConfigData, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
+import Button from './ui/button';
 LogicFlow.use(Control);
 const props = defineProps({
   value: {
@@ -44,6 +46,10 @@ const props = defineProps({
   },
   edgeClick: { // 边点击事件
     type: Function,
+  },
+  uiLibrary: {
+    type: String,
+    default: 'antd',
   },
 })
 LogicFlow.use(Flow, props);

@@ -8,6 +8,7 @@
   :edgeClick="handleEdgeClick"
   :dndPanel="dndPanel"
   @on-init="handleInit"
+  :uiLibrary="'element-plus'"
   />
 </template>
 <script setup lang="ts">
