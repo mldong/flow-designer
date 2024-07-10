@@ -12,6 +12,8 @@
   "dependencies": {
     "@logicflow/core": "^1.2.27",
     "@logicflow/extension": "^1.2.27",
+    "ant-design-vue": "4.x",
+    "element-plus": "^2.7.6",
     "vue": "^3.4.30"
   },
   "devDependencies": {
