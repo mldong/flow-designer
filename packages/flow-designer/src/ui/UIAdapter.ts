@@ -1,9 +1,10 @@
 import { defineAsyncComponent } from 'vue';
-
+import { getCurrentInstance } from 'vue';
 class UIAdapter {
   uiLibrary: string;
-  constructor(uiLibrary: string) {
-    this.uiLibrary = uiLibrary;
+  constructor() {
+    const instance = getCurrentInstance()
+    this.uiLibrary = instance?.appContext.config.globalProperties.$uiLibrary || 'antd';
   }
   /**
    * 创建按钮

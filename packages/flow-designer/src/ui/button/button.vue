@@ -5,9 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance } from 'vue';
-const instance = getCurrentInstance()
-const uiAdapter = instance?.appContext.config.globalProperties.$uiAdapter;
+import UIAdapter from '../UIAdapter';
+const uiAdapter = new UIAdapter();
 
 const MButton = uiAdapter.createButton();
 </script>

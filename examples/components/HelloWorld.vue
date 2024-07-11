@@ -12,6 +12,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
+import FlowDesigner from '../../packages/index'
 import { FDHighLightType } from '../../packages/flow-designer/src/types';
 import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 import CustomHtml from './CustomHtml';
