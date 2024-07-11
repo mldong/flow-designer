@@ -18,5 +18,8 @@ class UIAdapter {
     }
     throw new Error('Unsupported UI library');
   };
+  public isAntd = () => {
+    return this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd';
+  };
 }
 export default UIAdapter;

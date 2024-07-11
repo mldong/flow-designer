@@ -1,5 +1,5 @@
 <template>
-  <Button type="primary">我是按钮</Button>
+  <Button type="primary" size="middle">我是按钮</Button>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
