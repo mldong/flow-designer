@@ -28,21 +28,17 @@ defineExpose({
   show(e: any){
     if(e.data.type == 'process') {
       mTitle.value = '设置流程属性'
-    } else if(e.data.type == 'subProcess') {
-      mTitle.value = '设置子流程属性'
-    } else if(e.data.type == 'decision') {
-      mTitle.value = '设置决策节点属性'
-    } else if(e.data.type == 'fork') {
-      mTitle.value = '设置分支节点属性'
-    } else if(e.data.type == 'join') {
-      mTitle.value = '设置合并节点属性'
     } else if(e.data.type == 'transition') {
       mTitle.value = '设置边属性'
     } else {
-      if(e.data.text?.value) {
-        mTitle.value = `设置【${e.data.text.value}】属性`
+      if(e.patternItem?.drawerTitle) {
+        mTitle.value = e.patternItem?.drawerTitle
       } else {
-        mTitle.value = '设置属性'
+        if(e.patternItem?.text) {
+          mTitle.value = `设置【${e.patternItem?.text.replace('节点','')}】节点属性`
+        } else {
+          mTitle.value = '设置属性'
+        }
       }
     }
     console.log(e)

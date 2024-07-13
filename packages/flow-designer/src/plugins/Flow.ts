@@ -146,7 +146,10 @@ class Flow {
       if(nodeClick && typeof nodeClick === 'function') {
         nodeClick(event)
       } else {
-        props.drawerRef.value?.show(event)
+        props.drawerRef.value?.show({
+          ...event,
+          patternItem: shapeList[index]
+        })
       }
     })
     // 边事件

@@ -41,4 +41,5 @@ export declare type FDPatternItem = {
   callback?: () => void;
   hide?: boolean; // 是否隐藏
   sort?: number; // 排序字段
+  drawerTitle?: string;// 抽屉标题
 };
