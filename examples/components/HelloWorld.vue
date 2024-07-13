@@ -69,7 +69,7 @@ const graphData = ref({
         id: "1-2",
         sourceNodeId: "1",
         targetNodeId: "2",
-        type: "custom-edge",
+        type: "transition",
         text: "连线",
         properties: {
           // state: 'history'
@@ -79,7 +79,7 @@ const graphData = ref({
         id: "2-3",
         sourceNodeId: "2",
         targetNodeId: "3",
-        type: "custom-edge",
+        type: "transition",
         text: "连线2",
       },
     ],

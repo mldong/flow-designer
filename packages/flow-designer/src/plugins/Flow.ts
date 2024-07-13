@@ -146,7 +146,6 @@ class Flow {
       if(nodeClick && typeof nodeClick === 'function') {
         nodeClick(event)
       } else {
-        console.log('默认node:click', event)
         props.drawerRef.value?.show(event)
       }
     })
@@ -156,9 +155,17 @@ class Flow {
       if(edgeClick && typeof edgeClick === 'function') {
         edgeClick(event)
       } else {
-        console.log('默认edge:click', event)
         props.drawerRef.value?.show(event)
       }
+    })
+    // 画布事件
+    eventCenter.on('blank:contextmenu', (event: any) =>{
+      props.drawerRef.value?.show({
+        ...event,
+        data: {
+          type: 'process'
+        }
+      })
     })
   }
   initDndPanel(data: any){

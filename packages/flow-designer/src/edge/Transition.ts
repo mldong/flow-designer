@@ -1,7 +1,7 @@
 import { PolylineEdge, PolylineEdgeModel } from "@logicflow/core";
 import { ColorEnum, NodeStateEnum } from "../types/enums";
 
-class CustomEdgeModel extends PolylineEdgeModel {
+class TransitionModel extends PolylineEdgeModel {
 
   getEdgeStyle() {
     const theme = this.graphModel.props.theme;
@@ -16,11 +16,11 @@ class CustomEdgeModel extends PolylineEdgeModel {
     return style;
   }
 }
-class CustomEdge extends PolylineEdge {
+class TransitionEdge extends PolylineEdge {
 
 }
 export default {
-  type: "custom-edge",
-  view: CustomEdge,
-  model: CustomEdgeModel
+  type: "transition",
+  view: TransitionEdge,
+  model: TransitionModel
 }
