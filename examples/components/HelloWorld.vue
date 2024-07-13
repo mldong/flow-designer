@@ -4,8 +4,6 @@
   v-model:value="graphData" 
   :theme="theme" 
   :highLight="highLightData"
-  :nodeClick="handleNodeClick"
-  :edgeClick="handleEdgeClick"
   :dndPanel="dndPanel"
   @on-init="handleInit"
   />
@@ -18,12 +16,6 @@ import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 import CustomHtml from './CustomHtml';
 const theme = {
   activeColor: 'red'
-}
-const handleNodeClick = (event: any) => {
-  console.log('handleNodeClick', event)
-}
-const handleEdgeClick = (event: any) => {
-  console.log('handleEdgeClick', event)
 }
 const highLightData = ref<FDHighLightType>()
 const dndPanel = [{

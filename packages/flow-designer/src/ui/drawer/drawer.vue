@@ -1,6 +1,6 @@
 <template>
-  <MDrawer v-if="isAntd">
-    antdesign
+  <MDrawer v-if="isAntd" :open="visible" :title="title" @close="visible=false">
+    antd
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="title">
     element-plus

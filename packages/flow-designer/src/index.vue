@@ -1,6 +1,5 @@
 <template>
-  <MDrawer ref="mDrawer" title="我是抽屉"></MDrawer>
-  <MButton @click="handleClick">打开抽屉</MButton>
+  <MDrawer ref="drawerRef" title="我是抽屉"></MDrawer>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -15,8 +14,7 @@ import Flow from './plugins/Flow';
 import { FDConfigData, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
-import MButton from './ui/button';
-const mDrawer = ref()
+const drawerRef = ref()
 LogicFlow.use(Control);
 const props = defineProps({
   value: {
@@ -51,7 +49,10 @@ const props = defineProps({
     type: Function,
   }
 })
-LogicFlow.use(Flow, props);
+LogicFlow.use(Flow, {
+  ...props,
+  drawerRef,
+});
 const emits = defineEmits(['update:value', 'on-init', 'on-render'])
 const lfInstance = ref();
 /**
@@ -101,9 +102,6 @@ const myRender = (data: any) =>{
   setHighLight(props.highLight)
   // emits render事件
   emits('on-render', lf)
-}
-const handleClick = () =>{
-  mDrawer.value.show()
 }
 onMounted(()=>{
   if(!container.value) return;

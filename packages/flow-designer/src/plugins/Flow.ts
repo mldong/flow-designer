@@ -147,6 +147,7 @@ class Flow {
         nodeClick(event)
       } else {
         console.log('默认node:click', event)
+        props.drawerRef.value?.show(event)
       }
     })
     // 边事件
@@ -156,6 +157,7 @@ class Flow {
         edgeClick(event)
       } else {
         console.log('默认edge:click', event)
+        props.drawerRef.value?.show(event)
       }
     })
   }
