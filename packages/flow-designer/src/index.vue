@@ -1,5 +1,6 @@
 <template>
-  <Button type="primary" size="middle">我是按钮</Button>
+  <MDrawer ref="mDrawer" title="我是抽屉"></MDrawer>
+  <MButton @click="handleClick">打开抽屉</MButton>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -13,7 +14,9 @@ import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
 import { FDConfigData, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
-import Button from './ui/button';
+import MDrawer from './ui/drawer';
+import MButton from './ui/button';
+const mDrawer = ref()
 LogicFlow.use(Control);
 const props = defineProps({
   value: {
@@ -98,6 +101,9 @@ const myRender = (data: any) =>{
   setHighLight(props.highLight)
   // emits render事件
   emits('on-render', lf)
+}
+const handleClick = () =>{
+  mDrawer.value.show()
 }
 onMounted(()=>{
   if(!container.value) return;

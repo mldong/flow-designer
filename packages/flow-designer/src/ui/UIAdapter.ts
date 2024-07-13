@@ -18,6 +18,18 @@ class UIAdapter {
     }
     throw new Error('Unsupported UI library');
   };
+  /**
+   * 创建抽屉
+   * @returns 
+   */
+  public createDrawer = () => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/drawer').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/drawer/index').then(mod => mod.default));
+    }
+    throw new Error('Unsupported UI library');
+  };
   public isAntd = () => {
     return this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd';
   };
