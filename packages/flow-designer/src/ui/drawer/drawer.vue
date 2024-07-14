@@ -1,8 +1,8 @@
 <template>
-  <MDrawer v-if="isAntd" :open="visible" :title="mTitle" @close="visible=false">
+  <MDrawer v-if="isAntd" :open="visible" :title="mTitle" @close="visible=false" :width="width">
     antd
   </MDrawer>
-  <MDrawer v-else  v-model="visible" :title="title">
+  <MDrawer v-else  v-model="visible" :title="title" :size="width">
     element-plus
   </MDrawer>
 </template>
@@ -14,6 +14,10 @@ const props = defineProps({
   title: { // 标题
     type: String as PropType<string>
   },
+  width: { // 抽屉宽度
+    type: [String,Number] as PropType<string | number>,
+    default: '600px'
+  }
 })
 const mTitle = ref(props.title)
 watch(()=>props.title,()=>{

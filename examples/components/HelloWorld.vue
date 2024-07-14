@@ -5,6 +5,7 @@
   :theme="theme" 
   :highLight="highLightData"
   :dndPanel="dndPanel"
+  drawerWidth="80%"
   @on-init="handleInit"
   />
 </template>

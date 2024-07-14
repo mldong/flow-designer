@@ -1,5 +1,5 @@
 <template>
-  <MDrawer ref="drawerRef" title="我是抽屉"></MDrawer>
+  <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -47,6 +47,10 @@ const props = defineProps({
   },
   edgeClick: { // 边点击事件
     type: Function,
+  },
+  drawerWidth: { // 抽屉宽度
+    type: [String,Number] as PropType<string | number>,
+    default: '600px'
   }
 })
 LogicFlow.use(Flow, {
