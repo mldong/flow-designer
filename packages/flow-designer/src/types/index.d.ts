@@ -1,4 +1,5 @@
 import { GraphConfigData } from "@logicflow/core";
+import { de } from "element-plus/es/locales.mjs";
 /**
  * 流程设计器配置数据
  */
@@ -42,4 +43,22 @@ export declare type FDPatternItem = {
   hide?: boolean; // 是否隐藏
   sort?: number; // 排序字段
   drawerTitle?: string;// 抽屉标题
+  nodeClick?: (e: any) => void;
+  form?: FDFormType; // 表单配置
 };
+/**
+ * 表单数据类型
+ */
+export declare type FDFormType = {
+  labelWidth?: string;
+  formItems: Array<FDFormItemType>;
+} 
+/**
+ * 表单项数据类型
+ */
+export declare type FDFormItemType = {
+  name: string; // 表单项名称
+  label?: string; // 表单项标签
+  component?: 'Input' | 'Select'; // 表单组件
+  componentProps?: object; // 表单组件属性
+} 

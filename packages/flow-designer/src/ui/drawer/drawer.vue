@@ -1,17 +1,17 @@
 <template>
   <MDrawer v-if="isAntd" :open="visible" :title="mTitle" @close="visible=false" :width="width">
     {{ formState }}
-    <MMorm :model="formState">
-      <MFormItem name="title" label="标题">
-        <MInput v-model:value="formState.title" placeholder="请输入标题"></MInput>
+    <MMorm :model="formState" v-if="form.formItems?.length">
+      <MFormItem :name="item.name" :label="item.label" v-for="item in form.formItems">
+        <MInput v-if="item.component == 'Input'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
       </MFormItem>
     </MMorm>
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="title" :size="width">
     {{ formState }}
-    <MMorm :model="formState">
-      <MFormItem prop="title" label="标题">
-        <MInput v-model="formState.title" placeholder="请输入标题"></MInput>
+    <MMorm :model="formState" v-if="form.formItems?.length">
+      <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems">
+        <MInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
       </MFormItem>
     </MMorm>
   </MDrawer>
@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { computed, PropType, reactive, ref, watch } from 'vue';
 import UIAdapter from '../UIAdapter';
+import { FDFormType } from '../../types';
 const visible = ref(false)
 const props = defineProps({
   title: { // 标题
@@ -30,9 +31,7 @@ const props = defineProps({
   }
 })
 const mTitle = ref(props.title)
-const formState = reactive({
-  title: ''
-})
+const formState = reactive<any>({})
 watch(()=>props.title,()=>{
   mTitle.value = props.title
 })
@@ -44,8 +43,10 @@ const MDrawer = uiAdapter.createDrawer();
 const MMorm = uiAdapter.createForm();
 const MFormItem = uiAdapter.createFormItem();
 const MInput = uiAdapter.createInput();
+const form = ref<FDFormType>({} as any)
 defineExpose({
   show(e: any){
+    form.value = e.patternItem?.form || {}
     if(e.data.type == 'process') {
       mTitle.value = '设置流程属性'
     } else if(e.data.type == 'transition') {

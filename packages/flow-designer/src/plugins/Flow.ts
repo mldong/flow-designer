@@ -19,6 +19,7 @@ const edges = import.meta.glob('../edge/*.ts',{
   eager: true
 })
 class Flow {
+  dndPanel:Array<FDPatternItem> = []
   static pluginName = 'flow'
   static defaultEdgeType = 'custom-edge'
   static defaultDndPanel: Array<FDPatternItem>= [
@@ -26,7 +27,25 @@ class Flow {
       type: 'start',
       text: '开始',
       label: '开始节点',
-      icon: StartSvg
+      icon: StartSvg,
+      form: {
+        labelWidth: '200px',
+        formItems: [{
+          name: "name",
+          label: "名称",
+          component: 'Input',
+          componentProps: {
+            placeholder: '请输入名称'
+          }
+        }, {
+          name: "name2",
+          label: "名称2",
+          component: 'Input',
+          componentProps: {
+            placeholder: '请输入名称2'
+          }
+        }]
+      }
     },
     {
       type: 'task',
@@ -137,7 +156,7 @@ class Flow {
     const { eventCenter } = lf.graphModel;
     // 节点事件
     eventCenter.on('node:click', (event: any) => {
-      const shapeList = this.lf.extension.dndPanel.shapeList
+      const shapeList = this.dndPanel
       const index = shapeList.findIndex((item: FDPatternItem)=>item.type === event.data.type)
       let nodeClick = props.nodeClick
       if(index>=-1) {
@@ -173,6 +192,7 @@ class Flow {
   }
   initDndPanel(data: any){
     this.lf.extension.dndPanel.setPatternItems(data)
+    this.dndPanel = data || []
   }
 }
 export default Flow
