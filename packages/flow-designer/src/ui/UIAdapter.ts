@@ -30,6 +30,39 @@ class UIAdapter {
     }
     throw new Error('Unsupported UI library');
   };
+  /**
+   * 创建表单
+   */
+  public createForm = () =>{
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/form').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/form/index').then(mod => mod.default));
+    }
+    throw new Error('Unsupported UI library');
+  }
+  /**
+   * 创建表单
+   */
+  public createFormItem = () =>{
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/form/FormItem').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/form/index').then(mod => mod.default));
+    }
+    throw new Error('Unsupported UI library');
+  }
+/**
+   * 创建表单
+   */
+public createInput = () =>{
+  if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+    return defineAsyncComponent(() => import('ant-design-vue/es/input').then(mod => mod.default));
+  } else if (this.uiLibrary === 'element-plus') {
+    return defineAsyncComponent(() => import('element-plus/es/components/input/index').then(mod => mod.default));
+  }
+  throw new Error('Unsupported UI library');
+}
   public isAntd = () => {
     return this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd';
   };

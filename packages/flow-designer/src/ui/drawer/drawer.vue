@@ -1,13 +1,18 @@
 <template>
   <MDrawer v-if="isAntd" :open="visible" :title="mTitle" @close="visible=false" :width="width">
-    antd
+    {{ formState }}
+    <MMorm :model="formState">
+      <MFormItem name="title" label="标题">
+        <MInput v-model:value="formState.title" placeholder="请输入标题"></MInput>
+      </MFormItem>
+    </MMorm>
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="title" :size="width">
     element-plus
   </MDrawer>
 </template>
 <script setup lang="ts">
-import { computed, PropType, ref, watch } from 'vue';
+import { computed, PropType, reactive, ref, watch } from 'vue';
 import UIAdapter from '../UIAdapter';
 const visible = ref(false)
 const props = defineProps({
@@ -20,6 +25,9 @@ const props = defineProps({
   }
 })
 const mTitle = ref(props.title)
+const formState = reactive({
+  title: ''
+})
 watch(()=>props.title,()=>{
   mTitle.value = props.title
 })
@@ -28,6 +36,9 @@ const isAntd = computed(()=>{
   return uiAdapter.isAntd()
 })
 const MDrawer = uiAdapter.createDrawer();
+const MMorm = uiAdapter.createForm();
+const MFormItem = uiAdapter.createFormItem();
+const MInput = uiAdapter.createInput();
 defineExpose({
   show(e: any){
     if(e.data.type == 'process') {
