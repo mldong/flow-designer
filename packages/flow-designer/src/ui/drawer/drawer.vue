@@ -8,7 +8,12 @@
     </MMorm>
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="title" :size="width">
-    element-plus
+    {{ formState }}
+    <MMorm :model="formState">
+      <MFormItem prop="title" label="标题">
+        <MInput v-model="formState.title" placeholder="请输入标题"></MInput>
+      </MFormItem>
+    </MMorm>
   </MDrawer>
 </template>
 <script setup lang="ts">

@@ -48,7 +48,7 @@ class UIAdapter {
     if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
       return defineAsyncComponent(() => import('ant-design-vue/es/form/FormItem').then(mod => mod.default));
     } else if (this.uiLibrary === 'element-plus') {
-      return defineAsyncComponent(() => import('element-plus/es/components/form/index').then(mod => mod.default));
+      return defineAsyncComponent(() => import('element-plus/es/components/form/index').then(mod => mod.default.FormItem));
     }
     throw new Error('Unsupported UI library');
   }
