@@ -212,3 +212,22 @@ export const task:FDFormType = {
     }
   }]
 }
+
+export const process: FDFormType = {
+  formItems: []
+}
+export const subProcess: FDFormType = {
+  formItems: []
+}
+export const decision: FDFormType = {
+  formItems: []
+}
+export const fork: FDFormType = {
+  formItems: []
+}
+export const join: FDFormType = {
+  formItems: []
+}
+export const custom: FDFormType = {
+  formItems: []
+}

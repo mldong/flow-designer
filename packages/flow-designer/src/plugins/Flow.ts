@@ -11,6 +11,7 @@ import JoinSvg from './../assets/join.svg'
 import SubProcessSvg from './../assets/subProcess.svg'
 import { FDPatternItem } from '../types';
 import * as schema from './schema'
+import { NodeTypeEnum } from '../types/enums';
 LogicFlow.use(DndPanel)
 const nodes = import.meta.glob('../node/*.ts',{
   eager: true
@@ -177,7 +178,7 @@ class Flow {
     this.dndPanel = data || []
     this.dndPanel.forEach(item=>{
       if(item.type) {
-        const type: any = item.type
+        const type: NodeTypeEnum = item.type as NodeTypeEnum
         item.form = schema[type]
       }
     })

@@ -4,6 +4,7 @@
     <MMorm :model="formState" v-if="form.formItems?.length">
       <MFormItem :name="item.name" :label="item.label" v-for="item in form.formItems">
         <MInput v-if="item.component == 'Input'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
+        <MSelect v-else-if="item.component == 'Select'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MSelect>
       </MFormItem>
     </MMorm>
   </MDrawer>
@@ -12,6 +13,9 @@
     <MMorm :model="formState" v-if="form.formItems?.length">
       <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems">
         <MInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
+        <MSelect v-else-if="item.component == 'Select'" v-model="formState[item.name]" v-bind="{...item.componentProps}">
+          <MOption v-for="(itemm,index) in item.componentProps?.options || []" :key="index" :label="itemm.label" :value="itemm.value" />
+        </MSelect>
       </MFormItem>
     </MMorm>
   </MDrawer>
@@ -43,6 +47,8 @@ const MDrawer = uiAdapter.createDrawer();
 const MMorm = uiAdapter.createForm();
 const MFormItem = uiAdapter.createFormItem();
 const MInput = uiAdapter.createInput();
+const MSelect = uiAdapter.createSelect();
+const MOption = uiAdapter.createOption();
 const form = ref<FDFormType>({} as any)
 defineExpose({
   show(e: any){

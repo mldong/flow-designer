@@ -60,5 +60,5 @@ export declare type FDFormItemType = {
   name: string; // 表单项名称
   label?: string; // 表单项标签
   component?: 'Input' | 'Select'; // 表单组件
-  componentProps?: object; // 表单组件属性
+  componentProps?: any; // 表单组件属性
 } 

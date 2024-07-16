@@ -52,17 +52,39 @@ class UIAdapter {
     }
     throw new Error('Unsupported UI library');
   }
-/**
-   * 创建表单
-   */
-public createInput = () =>{
-  if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
-    return defineAsyncComponent(() => import('ant-design-vue/es/input').then(mod => mod.default));
-  } else if (this.uiLibrary === 'element-plus') {
-    return defineAsyncComponent(() => import('element-plus/es/components/input/index').then(mod => mod.default));
+  /**
+     * 创建Input
+     */
+  public createInput = () =>{
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/input').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/input/index').then(mod => mod.default));
+    }
+    throw new Error('Unsupported UI library');
   }
-  throw new Error('Unsupported UI library');
-}
+  /**
+     * 创建Select
+     */
+  public createSelect = (): any => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/select').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/select/index').then(mod => mod.default));
+    }
+    throw new Error('Unsupported UI library');
+  }
+  /**
+     * 创建Select
+     */
+  public createOption = (): any => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/select').then(mod => mod.default.Option));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/select/index').then(mod => mod.default.Option));
+    }
+    throw new Error('Unsupported UI library');
+  }
   public isAntd = () => {
     return this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd';
   };

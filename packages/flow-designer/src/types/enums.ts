@@ -16,3 +16,17 @@ export enum NodeStateEnum {
   active = 'active',
   normal = 'normal'
 }
+/**
+ * 节点类型枚举
+ */
+export enum NodeTypeEnum {
+  start = 'start',
+  end = 'end',
+  task = 'task',
+  process = 'process',
+  subProcess = 'subProcess',
+  decision = 'decision',
+  fork = 'fork',
+  join = 'join',
+  custom = 'custom'
+}
