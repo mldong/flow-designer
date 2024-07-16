@@ -46,6 +46,9 @@ const MInput = uiAdapter.createInput();
 const form = ref<FDFormType>({} as any)
 defineExpose({
   show(e: any){
+    Object.keys(formState).forEach(key=>{
+      formState[key] = undefined
+    })
     form.value = e.patternItem?.form || {}
     if(e.data.type == 'process') {
       mTitle.value = '设置流程属性'
@@ -62,7 +65,6 @@ defineExpose({
         }
       }
     }
-    console.log(e)
     visible.value = true
   }
 })

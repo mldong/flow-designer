@@ -10,7 +10,7 @@ import ForkSvg from './../assets/fork.svg'
 import JoinSvg from './../assets/join.svg'
 import SubProcessSvg from './../assets/subProcess.svg'
 import { FDPatternItem } from '../types';
-
+import * as schema from './schema'
 LogicFlow.use(DndPanel)
 const nodes = import.meta.glob('../node/*.ts',{
   eager: true
@@ -28,24 +28,7 @@ class Flow {
       text: '开始',
       label: '开始节点',
       icon: StartSvg,
-      form: {
-        labelWidth: '200px',
-        formItems: [{
-          name: "name",
-          label: "名称",
-          component: 'Input',
-          componentProps: {
-            placeholder: '请输入名称'
-          }
-        }, {
-          name: "name2",
-          label: "名称2",
-          component: 'Input',
-          componentProps: {
-            placeholder: '请输入名称2'
-          }
-        }]
-      }
+      form: schema.start
     },
     {
       type: 'task',
@@ -87,7 +70,8 @@ class Flow {
       type: 'end',
       text: '结束',
       label: '结束节点',
-      icon: EndSvg
+      icon: EndSvg,
+      form: schema.end
     }
   ]
   lf: any;
