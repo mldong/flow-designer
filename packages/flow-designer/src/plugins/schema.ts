@@ -5,7 +5,7 @@ import { FDFormType } from "../types";
  * 
  */
 export const start:FDFormType = {
-  labelWidth: '200px',
+  labelWidth: '100px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -42,7 +42,7 @@ export const start:FDFormType = {
  * 
  */
 export const end:FDFormType = {
-  labelWidth: '200px',
+  labelWidth: '100px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -80,7 +80,7 @@ export const end:FDFormType = {
  */
 
 export const task:FDFormType = {
-  labelWidth: '200px',
+  labelWidth: '100px',
   formItems: [{
     name: "name",
     label: "唯一编码",

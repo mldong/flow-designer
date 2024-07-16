@@ -1,7 +1,9 @@
 <template>
   <MDrawer v-if="isAntd" :open="visible" :title="mTitle" @close="visible=false" :width="width">
     {{ formState }}
-    <MMorm :model="formState" v-if="form.formItems?.length">
+    <MMorm :model="formState" v-if="form.formItems?.length" :label-col="{
+      flex: form.labelWidth || '100px'
+    }">
       <MFormItem :name="item.name" :label="item.label" v-for="item in form.formItems">
         <MInput v-if="item.component == 'Input'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
         <MSelect v-else-if="item.component == 'Select'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MSelect>
@@ -10,7 +12,7 @@
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="title" :size="width">
     {{ formState }}
-    <MMorm :model="formState" v-if="form.formItems?.length">
+    <MMorm :model="formState" v-if="form.formItems?.length" :label-width="form.labelWidth || '100px'">
       <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems">
         <MInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
         <MSelect v-else-if="item.component == 'Select'" v-model="formState[item.name]" v-bind="{...item.componentProps}">
