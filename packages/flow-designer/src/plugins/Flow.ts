@@ -28,7 +28,6 @@ class Flow {
       text: '开始',
       label: '开始节点',
       icon: StartSvg,
-      form: schema.start
     },
     {
       type: 'task',
@@ -71,7 +70,6 @@ class Flow {
       text: '结束',
       label: '结束节点',
       icon: EndSvg,
-      form: schema.end
     }
   ]
   lf: any;
@@ -177,6 +175,12 @@ class Flow {
   initDndPanel(data: any){
     this.lf.extension.dndPanel.setPatternItems(data)
     this.dndPanel = data || []
+    this.dndPanel.forEach(item=>{
+      if(item.type) {
+        const type: any = item.type
+        item.form = schema[type]
+      }
+    })
   }
 }
 export default Flow
