@@ -11,7 +11,7 @@ import "@logicflow/core/dist/style/index.css";
 import { Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
-import { FDConfigData, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
+import { FDConfigData, FDFormType, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 const drawerRef = ref()
@@ -51,6 +51,9 @@ const props = defineProps({
   drawerWidth: { // 抽屉宽度
     type: [String,Number] as PropType<string | number>,
     default: '600px'
+  },
+  processForm: { // 流程表单配置
+    type: Object as PropType<FDFormType>
   }
 })
 LogicFlow.use(Flow, {

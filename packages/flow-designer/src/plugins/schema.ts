@@ -212,9 +212,71 @@ export const task:FDFormType = {
     }
   }]
 }
-
+/**
+ * 
+"expireTime":
+"1",
+"instanceUrl":
+"leaveForm",
+"instanceNoClass":
+"2",
+"preInterceptors":
+"3",
+"postInterceptors":
+"4",
+ */
 export const process: FDFormType = {
-  formItems: []
+  labelWidth: '130px',
+  formItems: [{
+    name: "name",
+    label: "流程定义唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入流程定义唯一编码'
+    }
+  }, {
+    name: "displayName",
+    label: "流程定义显示名称",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入流程定义显示名称'
+    }
+  },{
+    name: "expireTime",
+    label: "期望完成时间",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入期望完成时间'
+    }
+  },{
+    name: "instanceUrl",
+    label: "实例启动Ur",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入实例启动Ur'
+    }
+  },{
+    name: "instanceNoClass",
+    label: "实例编号生成类",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入实例编号生成类'
+    }
+  },{
+    name: "preInterceptors",
+    label: "前置拦截器",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入前置拦截器'
+    }
+  }, {
+    name: "postInterceptors",
+    label: "后置拦截器",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入后置拦截器'
+    }
+  }]
 }
 export const subProcess: FDFormType = {
   labelWidth: '130px',

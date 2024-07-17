@@ -31,7 +31,7 @@ const dndPanel = [{
     },{
       type: 'subProcess',
       sort: 100,
-      drawerTitle: '自定义子流程节点属性'
+      drawerTitle: '自定义子流程节点属性',
     }]
 const graphData = ref({
     nodes: [

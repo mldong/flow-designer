@@ -169,6 +169,9 @@ class Flow {
         ...event,
         data: {
           type: 'process'
+        },
+        patternItem: {
+          form: props.processForm || schema.process
         }
       })
     })
@@ -177,7 +180,7 @@ class Flow {
     this.lf.extension.dndPanel.setPatternItems(data)
     this.dndPanel = data || []
     this.dndPanel.forEach(item=>{
-      if(item.type) {
+      if(item.type && !item.form) {
         const type: NodeTypeEnum = item.type as NodeTypeEnum
         item.form = schema[type]
       }
