@@ -217,17 +217,169 @@ export const process: FDFormType = {
   formItems: []
 }
 export const subProcess: FDFormType = {
-  formItems: []
+  labelWidth: '130px',
+  formItems: [{
+    name: "name",
+    label: "流程定义唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入流程定义唯一编码'
+    }
+  }, {
+    name: "displayName",
+    label: "流程定义显示名称",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入流程定义显示名称'
+    }
+  },{
+    name: "form",
+    label: "表单",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入表单'
+    }
+  },{
+    name: "version",
+    label: "版本号",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入版本号'
+    }
+  },]
 }
 export const decision: FDFormType = {
-  formItems: []
+  labelWidth: '100px',
+  formItems: [{
+    name: "name",
+    label: "唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入唯一编码'
+    }
+  }, {
+    name: "expr",
+    label: "决策表达式",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入决策表达式'
+    }
+  },{
+    name: "handleClass",
+    label: "处理类",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入处理类'
+    }
+  },  {
+    name: "clazz",
+    label: "类路径",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入类路径'
+    }
+  },{
+    name: "methodName",
+    label: "方法名",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入方法名'
+    }
+  },{
+    name: "args",
+    label: "参数变量",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入参数变量'
+    }
+  },{
+    name: "preInterceptors",
+    label: "前置拦截器",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入前置拦截器'
+    }
+  }, {
+    name: "postInterceptors",
+    label: "后置拦截器",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入后置拦截器'
+    }
+  }]
 }
 export const fork: FDFormType = {
-  formItems: []
+  labelWidth: '100px',
+  formItems: [{
+    name: "name",
+    label: "唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入唯一编码'
+    }
+  }]
 }
 export const join: FDFormType = {
-  formItems: []
+  labelWidth: '100px',
+  formItems: [{
+    name: "name",
+    label: "唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入唯一编码'
+    }
+  }]
 }
 export const custom: FDFormType = {
-  formItems: []
+  labelWidth: '100px',
+  formItems: [{
+    name: "name",
+    label: "唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入唯一编码'
+    }
+  }, {
+    name: "displayName",
+    label: "显示名称",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入显示名称'
+    }
+  }, {
+    name: "clazz",
+    label: "类路径",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入类路径'
+    }
+  },{
+    name: "methodName",
+    label: "方法名",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入方法名'
+    }
+  },{
+    name: "args",
+    label: "参数变量",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入参数变量'
+    }
+  },{
+    name: "preInterceptors",
+    label: "前置拦截器",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入前置拦截器'
+    }
+  }, {
+    name: "postInterceptors",
+    label: "后置拦截器",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入后置拦截器'
+    }
+  }]
 }
