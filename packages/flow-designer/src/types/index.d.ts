@@ -1,5 +1,6 @@
 import { GraphConfigData } from "@logicflow/core";
 import { de } from "element-plus/es/locales.mjs";
+import { VNode } from "vue";
 /**
  * 流程设计器配置数据
  */
@@ -60,5 +61,6 @@ export declare type FDFormItemType = {
   name: string; // 表单项名称
   label?: string; // 表单项标签
   component?: 'Input' | 'Select'; // 表单组件
+  render?: (args: any) => VNode;
   componentProps?: any; // 表单组件属性
 } 
