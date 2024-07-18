@@ -13,14 +13,7 @@ export const start:FDFormType = {
     componentProps: {
       placeholder: '请输入唯一编码'
     }
-  }, {
-    name: "displayName",
-    label: "显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入显示名称'
-    }
-  }, {
+  },{
     name: "preInterceptors",
     label: "前置拦截器",
     component: 'Input',
@@ -49,13 +42,6 @@ export const end:FDFormType = {
     component: 'Input',
     componentProps: {
       placeholder: '请输入唯一编码'
-    }
-  }, {
-    name: "displayName",
-    label: "显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入显示名称'
     }
   }, {
     name: "preInterceptors",

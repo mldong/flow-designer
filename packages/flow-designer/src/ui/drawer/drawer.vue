@@ -1,6 +1,5 @@
 <template>
   <MDrawer v-if="isAntd" :open="visible" :title="mTitle" @close="visible=false" :width="width">
-    {{ formState }}
     <MMorm :model="formState" v-if="form.formItems?.length" :label-col="{
       flex: form.labelWidth || '100px'
     }">
@@ -12,7 +11,6 @@
     </MMorm>
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="title" :size="width">
-    {{ formState }}
     <MMorm :model="formState" v-if="form.formItems?.length" :label-width="form.labelWidth || '100px'">
       <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems">
         <MInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
@@ -66,6 +64,14 @@ defineExpose({
       mTitle.value = '设置流程属性'
     } else if(e.data.type == 'transition') {
       mTitle.value = '设置边属性'
+      // 赋值唯一编码
+      formState.name = e.data.id
+      // 赋值显示名称
+      formState.displayName = e.data.text?.value
+      // 赋值业务属性
+      Object.keys(e.data.properties || {}).forEach(key=>{
+        formState[key] = e.data.properties[key]
+      })
     } else {
       if(e.patternItem?.drawerTitle) {
         mTitle.value = e.patternItem?.drawerTitle
@@ -76,6 +82,14 @@ defineExpose({
           mTitle.value = '设置属性'
         }
       }
+      // 赋值唯一编码
+      formState.name = e.data.id
+      // 赋值显示名称
+      formState.displayName = e.data.text?.value
+      // 赋值业务属性
+      Object.keys(e.data.properties || {}).forEach(key=>{
+        formState[key] = e.data.properties[key]
+      })
     }
     visible.value = true
   }
