@@ -18,14 +18,12 @@ import CustomHtml from './CustomHtml';
 const theme = {
   activeColor: 'red'
 }
-// const edgeForm = ref({
+// const processForm = ref({
 //   labelWidth: '130px',
 //   formItems: [{
 //     name: "name1",
 //     label: "流程定义唯一编码1",
-//     render(){
-//       return h(MyInput,{})
-//     },
+//     component: "Input",
 //     componentProps: {
 //       placeholder: '请输入流程定义唯一编码1'
 //     }
@@ -66,6 +64,9 @@ const dndPanel = [{
       }
     }]
 const graphData = ref({
+    name: 'leave1',
+    displayName: '请假流程',
+    postInterceptors: "leave_postInterceptors",
     nodes: [
       {
         id: "1",

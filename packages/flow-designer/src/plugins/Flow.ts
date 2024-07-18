@@ -9,7 +9,7 @@ import DecisionSvg from './../assets/decision.svg'
 import ForkSvg from './../assets/fork.svg'
 import JoinSvg from './../assets/join.svg'
 import SubProcessSvg from './../assets/subProcess.svg'
-import { FDPatternItem } from '../types';
+import { FDFormItemType, FDPatternItem } from '../types';
 import * as schema from './schema'
 import { NodeTypeEnum } from '../types/enums';
 LogicFlow.use(DndPanel)
@@ -119,19 +119,24 @@ class Flow {
     }
     const lf = this.lf;
     lf.adapterIn = (userData: any) =>{
-      console.log('adapterIn', userData)
       // 绑定name和displayName到graphModel
-      lf.graphModel.name = userData.name
-      lf.graphModel.displayName = userData.displayName
+      // lf.graphModel.name = userData.name
+      // lf.graphModel.displayName = userData.displayName
+      (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
+        lf.graphModel[item.name] = userData[item.name]
+      })
       return userData;
     }
     lf.adapterOut = (userData: any) =>{
       // console.log('adapterOut', userData)
       // 从graphModel取出name和displayName
+      const processData : any= {};
+      (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
+        processData[item.name] = lf.graphModel[item.name]
+      })
       return {
         ...userData,
-        name: lf.graphModel.name,
-        displayName: lf.graphModel.displayName
+        ...processData
       };
     }
     lf.graphModel.props = props;
@@ -170,10 +175,15 @@ class Flow {
     })
     // 画布事件
     eventCenter.on('blank:contextmenu', (event: any) =>{
+      const processData : any= {};
+      (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
+        processData[item.name] = lf.graphModel[item.name]
+      })
       props.drawerRef.value?.show({
         ...event,
         data: {
-          type: 'process'
+          type: 'process',
+          properties: processData
         },
         patternItem: {
           form: props.processForm || schema.process

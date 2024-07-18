@@ -62,6 +62,9 @@ defineExpose({
     form.value = e.patternItem?.form || {}
     if(e.data.type == 'process') {
       mTitle.value = '设置流程属性'
+      Object.keys(e.data.properties || {}).forEach(key=>{
+        formState[key] = e.data.properties[key]
+      })
     } else if(e.data.type == 'transition') {
       mTitle.value = '设置边属性'
       // 赋值唯一编码
