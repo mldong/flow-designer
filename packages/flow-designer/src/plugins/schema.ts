@@ -445,3 +445,31 @@ export const custom: FDFormType = {
     }
   }]
 }
+
+export const edge: FDFormType = {
+  labelWidth: '100px',
+  formItems: [{
+    name: "name",
+    label: "唯一编码",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入唯一编码'
+    }
+  }, {
+    name: "displayName",
+    label: "显示名称",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入显示名称'
+    }
+    },
+    {
+      name: "expr",
+      label: "表达式",
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入表达式'
+      }
+    },
+  ]
+}

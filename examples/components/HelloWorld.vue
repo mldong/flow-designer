@@ -6,7 +6,7 @@
   :highLight="highLightData"
   :dndPanel="dndPanel"
   @on-init="handleInit"
-  :processForm="processForm"
+  :edgeForm="edgeForm"
   />
 </template>
 <script setup lang="ts">
@@ -19,7 +19,7 @@ import MyInput from './MyInput.vue'
 const theme = {
   activeColor: 'red'
 }
-const processForm = ref({
+const edgeForm = ref({
   labelWidth: '130px',
   formItems: [{
     name: "name1",

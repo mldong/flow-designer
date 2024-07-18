@@ -160,7 +160,12 @@ class Flow {
       if(edgeClick && typeof edgeClick === 'function') {
         edgeClick(event)
       } else {
-        props.drawerRef.value?.show(event)
+        props.drawerRef.value?.show({
+          ...event,
+          patternItem: {
+            form: props.edgeForm || schema.edge
+          }
+        })
       }
     })
     // 画布事件

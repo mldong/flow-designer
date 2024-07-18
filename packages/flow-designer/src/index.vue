@@ -54,6 +54,9 @@ const props = defineProps({
   },
   processForm: { // 流程表单配置
     type: Object as PropType<FDFormType>
+  },
+  edgeForm: { // 边表单配置
+    type: Object as PropType<FDFormType>
   }
 })
 LogicFlow.use(Flow, {
