@@ -15,7 +15,7 @@ import FlowDesigner from '../../packages/index'
 import { FDHighLightType } from '../../packages/flow-designer/src/types';
 import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 import CustomHtml from './CustomHtml';
-import { ElInput } from 'element-plus';
+import MyInput from './MyInput.vue'
 const theme = {
   activeColor: 'red'
 }
@@ -25,7 +25,7 @@ const processForm = ref({
     name: "name1",
     label: "流程定义唯一编码1",
     render(){
-      return h(ElInput,{})
+      return h(MyInput,{})
     },
     componentProps: {
       placeholder: '请输入流程定义唯一编码1'
