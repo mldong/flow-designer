@@ -41,6 +41,27 @@ const formState = reactive<any>({})
 watch(()=>props.title,()=>{
   mTitle.value = props.title
 })
+// 监听唯一编码变化=>修改节点id
+watch(()=>formState.name,(n, o)=>{
+  const lf = currentData.value.lf
+  lf.changeNodeId(o, n);
+}, {
+  deep: true
+})
+// 监听显示变化=>修改节点文本值
+watch(()=>formState.displayName,(n)=>{
+  const lf = currentData.value.lf
+  lf.updateText(formState.name, n);
+}, {
+  deep: true
+})
+// 监听业务属性变化=>修改节点属性
+watch(()=>formState.preInterceptors,(n)=>{
+  const lf = currentData.value.lf
+  lf.setProperties(formState.name, {
+    preInterceptors: n,
+  });
+})
 const uiAdapter = new UIAdapter();
 const isAntd = computed(()=>{
   return uiAdapter.isAntd()

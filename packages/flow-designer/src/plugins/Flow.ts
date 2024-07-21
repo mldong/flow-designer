@@ -155,7 +155,8 @@ class Flow {
       } else {
         props.drawerRef.value?.show({
           ...event,
-          patternItem: shapeList[index]
+          patternItem: shapeList[index],
+          lf
         })
       }
     })
@@ -169,7 +170,8 @@ class Flow {
           ...event,
           patternItem: {
             form: props.edgeForm || schema.edge
-          }
+          },
+          lf
         })
       }
     })
@@ -187,7 +189,8 @@ class Flow {
         },
         patternItem: {
           form: props.processForm || schema.process
-        }
+        },
+        lf
       })
     })
   }

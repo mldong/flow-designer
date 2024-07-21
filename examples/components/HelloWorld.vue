@@ -1,5 +1,8 @@
 <template>
   <button @click="handleClick">设置高亮</button>
+  <pre>
+    {{ graphData?.nodes }}
+  </pre>
   <FlowDesigner 
   v-model:value="graphData" 
   :theme="theme" 
