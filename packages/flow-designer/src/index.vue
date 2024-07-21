@@ -123,7 +123,12 @@ onMounted(()=>{
   // emits初始化事件
   emits('on-init', lf)
   const { eventCenter } = lf.graphModel;
+  // 监听画布变化事件
   eventCenter.on('history:change', ()=>{
+    emits('update:value', lf.getGraphData())
+  })
+  // 监听自定义的update:graphModel事件
+  eventCenter.on('update:graphModel',()=>{
     emits('update:value', lf.getGraphData())
   })
   myRender(props.value)

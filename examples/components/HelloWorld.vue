@@ -1,8 +1,8 @@
 <template>
   <button @click="handleClick">设置高亮</button>
-  <pre>
-    {{ graphData?.edges }}
-  </pre>
+  <!-- <pre>
+    {{ graphData }}
+  </pre> -->
   <FlowDesigner 
   v-model:value="graphData" 
   :theme="theme" 

@@ -69,21 +69,22 @@ defineExpose({
       if(stopWatch) {
         stopWatch()
       }
+      const lf = currentData.value.lf
       stopWatch = watch(()=>formState[item.name],(n, o)=>{
         if(e.data.type == 'process') {
-
+          lf.graphModel[item.name] = n
+          const { eventCenter } = lf.graphModel;
+          // 触发自定义的update:graphModel
+          eventCenter.emit("update:graphModel", lf.graphModel);
         } else if(e.data.type == 'transition') {
           if(item.name == 'name') {
           // 如果为唯一编码，则修改节点id
-            const lf = currentData.value.lf
             lf.changeEdgeId(o, n);
           } else if(item.name == 'displayName') {
             // 如果为显示名称，则修改节点显示名称
-            const lf = currentData.value.lf
             lf.updateText(formState.name, n);
           } else {
             // 务属性变化=>修改节点属性
-            const lf = currentData.value.lf
             lf.setProperties(formState.name, {
               preInterceptors: n,
             });
