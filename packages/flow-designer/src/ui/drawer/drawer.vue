@@ -85,8 +85,8 @@ defineExpose({
             lf.updateText(formState.name, n);
           } else {
             // 务属性变化=>修改节点属性
-            lf.setProperties(formState.name, {
-              preInterceptors: n,
+            lf.setProperties(item.name, {
+              [item.name]: n,
             });
           }
         } else {
@@ -101,8 +101,8 @@ defineExpose({
           } else {
             // 务属性变化=>修改节点属性
             const lf = currentData.value.lf
-            lf.setProperties(formState.name, {
-              preInterceptors: n,
+            lf.setProperties(item.name, {
+              [item.name]: n,
             });
           }
         }

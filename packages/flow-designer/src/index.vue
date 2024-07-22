@@ -113,6 +113,7 @@ const myRender = (data: any) =>{
   // emits render事件
   emits('on-render', lf)
 }
+const isHistoryChange = ref(false)
 onMounted(()=>{
   if(!container.value) return;
   lfInstance.value = new LogicFlow({
@@ -125,16 +126,21 @@ onMounted(()=>{
   const { eventCenter } = lf.graphModel;
   // 监听画布变化事件
   eventCenter.on('history:change', ()=>{
+    isHistoryChange.value = true
     emits('update:value', lf.getGraphData())
   })
   // 监听自定义的update:graphModel事件
   eventCenter.on('update:graphModel',()=>{
+    isHistoryChange.value = true
     emits('update:value', lf.getGraphData())
   })
   myRender(props.value)
 })
 watch(()=>props.value, (newVal)=>{
-  myRender(newVal);
+  if(!isHistoryChange.value) {
+    myRender(newVal);
+  }
+  isHistoryChange.value = false
 }, {
   deep: true
 })
