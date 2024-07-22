@@ -72,7 +72,7 @@ const control = [{
   title: '====='
 }, {
       key: 'my-zoom-out',
-      iconClass: 'lf-control-zoomOut',
+      iconClass: 'lf-control-myicon',
       title: 'my-缩小流程图',
       text: 'my-缩小',
       // sort: 45,
@@ -154,7 +154,10 @@ const graphData = ref({
     lf.register(CustomHtml);
   }
 </script>
-<style scoped>
+<style>
 
+.lf-control-myicon {
+  background: url('../../packages/flow-designer/src/assets/start.svg');
+}
 
 </style>

@@ -10,6 +10,7 @@ import LogicFlow from "@logicflow/core";
 import "@logicflow/core/dist/style/index.css";
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
+import './plugins/flow.css'
 import { FDConfigData, FDControlItem, FDFormType, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';

@@ -125,6 +125,16 @@ class Flow {
         this.lf.redo();
       },
     },
+    {
+      key: 'clear',
+      iconClass: 'lf-control-clear',
+      title: '清空画布',
+      sort: 60,
+      text: '清空',
+      onClick: () => {
+        this.lf.clearData();
+      }
+    }
   ];
   lf: any;
   constructor(data: any){
