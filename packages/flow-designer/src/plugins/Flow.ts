@@ -80,6 +80,7 @@ class Flow {
       iconClass: 'lf-control-zoomOut',
       title: '缩小流程图',
       text: '缩小',
+      sort: 10,
       onClick: () => {
         this.lf.zoom(false);
       },
@@ -88,6 +89,7 @@ class Flow {
       key: 'zoom-in',
       iconClass: 'lf-control-zoomIn',
       title: '放大流程图',
+      sort: 20,
       text: '放大',
       onClick: () => {
         this.lf.zoom(true);
@@ -98,6 +100,7 @@ class Flow {
       iconClass: 'lf-control-fit',
       title: '恢复流程原有尺寸',
       text: '适应',
+      sort: 30,
       onClick: () => {
         this.lf.resetZoom();
       },
@@ -107,6 +110,7 @@ class Flow {
       iconClass: 'lf-control-undo',
       title: '回到上一步',
       text: '上一步',
+      sort: 40,
       onClick: () => {
         this.lf.undo();
       },
@@ -115,6 +119,7 @@ class Flow {
       key: 'redo',
       iconClass: 'lf-control-redo',
       title: '移到下一步',
+      sort: 50,
       text: '下一步',
       onClick: () => {
         this.lf.redo();
@@ -166,7 +171,33 @@ class Flow {
       this.initDndPanel(newDndPanel)
     }
     if(props.initControl !== false) {
-      this.lf.extension.control.controlItems = props.control || this.defaultControl
+      // 如果key相等，则替换属性，否则就追加
+      const newControl: Array<FDControlItem> = [...this.defaultControl]
+      if(props.control && props.control.length > 0) {
+        props.control.forEach((item: FDControlItem) => {
+          const index = newControl.findIndex((i) => i.key === item.key)
+          if(index > -1) {
+            if(item.hide === true) {
+              // 隐藏，则删除
+              newControl.splice(index, 1)
+            } else {
+              // 覆盖属性
+              newControl[index] = {
+                ...newControl[index],
+                ...item,
+              }
+            }
+
+          } else {
+            newControl.push(item)
+          }
+        })
+      }
+      // 对newDndPanel进行排序，以sort属性正序排序
+      newControl.sort((a:FDControlItem, b: FDControlItem) => {
+        return (a.sort === undefined ? 99: a.sort) - (b.sort === undefined ? 99: b.sort)
+      })
+      this.initControl(newControl)
     } else {
       this.lf.extension.control.controlItems = []
     }
@@ -256,6 +287,9 @@ class Flow {
         item.form = schema[type]
       }
     })
+  }
+  initControl(data: any){
+    this.lf.extension.control.controlItems = data || []
   }
 }
 export default Flow

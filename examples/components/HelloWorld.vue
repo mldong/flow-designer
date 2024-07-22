@@ -9,6 +9,7 @@
   :highLight="highLightData"
   :dndPanel="dndPanel"
   @on-init="handleInit"
+  :control="control"
   />
 </template>
 <script setup lang="ts">
@@ -66,6 +67,19 @@ const dndPanel = [{
         }, ]
       }
     }]
+const control = [{
+  key: 'zoom-out',
+  title: '====='
+}, {
+      key: 'my-zoom-out',
+      iconClass: 'lf-control-zoomOut',
+      title: 'my-缩小流程图',
+      text: 'my-缩小',
+      // sort: 45,
+      onClick: () => {
+        console.log('my-缩小流程图')
+      },
+    },]
 const graphData = ref({
     name: 'leave1',
     displayName: '请假流程',

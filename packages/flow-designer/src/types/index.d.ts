@@ -73,4 +73,6 @@ export declare type FDControlItem = {
   title?: string; // 标题
   text?: string; // 文本
   onClick?: Function // 事件函数
+  hide?: boolean; // 是否隐藏
+  sort?: number; // 排序字段
 }
