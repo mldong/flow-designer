@@ -8,14 +8,12 @@ import { PropType, onMounted, ref, watch } from 'vue';
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
 import "@logicflow/core/dist/style/index.css";
-import { Control } from '@logicflow/extension';
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
-import { FDConfigData, FDFormType, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
+import { FDConfigData, FDControlItem, FDFormType, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 const drawerRef = ref()
-LogicFlow.use(Control);
 const props = defineProps({
   value: {
     type: Object as PropType<FDConfigData>,
@@ -39,8 +37,19 @@ const props = defineProps({
       }
     }
   },
+  initDndPanel: { // 是否初始化拖拽面板
+    type: Boolean,
+    default: true
+  },
   dndPanel: { // 拖拽面板
     type: Array as PropType<Array<FDPatternItem>>,
+  },
+  initControl: { // 是否初始化控制面板
+    type: Boolean,
+    default: true
+  },
+  control: { // 控制面板
+    type: Array as PropType<Array<FDControlItem>>,
   },
   nodeClick: { // 节点点击事件
     type: Function,

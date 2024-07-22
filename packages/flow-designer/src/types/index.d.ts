@@ -64,3 +64,13 @@ export declare type FDFormItemType = {
   render?: (args: any) => VNode;
   componentProps?: any; // 表单组件属性
 } 
+/**
+ * 控制面板数据类型
+ */
+export declare type FDControlItem = {
+  key?: string; // 唯一编码
+  iconClass?: string; // 图标类
+  title?: string; // 标题
+  text?: string; // 文本
+  onClick?: Function // 事件函数
+}

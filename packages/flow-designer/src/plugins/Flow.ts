@@ -1,6 +1,6 @@
 
 import LogicFlow from '@logicflow/core';
-import { DndPanel } from '@logicflow/extension';
+import { DndPanel, Control } from '@logicflow/extension';
 import StartSvg from './../assets/start.svg'
 import UserTaskSvg from './../assets/user-task.svg'
 import CustomSvg from './../assets/custom.svg'
@@ -9,10 +9,11 @@ import DecisionSvg from './../assets/decision.svg'
 import ForkSvg from './../assets/fork.svg'
 import JoinSvg from './../assets/join.svg'
 import SubProcessSvg from './../assets/subProcess.svg'
-import { FDFormItemType, FDPatternItem } from '../types';
+import { FDControlItem, FDFormItemType, FDPatternItem } from '../types';
 import * as schema from './schema'
 import { NodeTypeEnum } from '../types/enums';
 LogicFlow.use(DndPanel)
+LogicFlow.use(Control)
 const nodes = import.meta.glob('../node/*.ts',{
   eager: true
 })
@@ -73,6 +74,53 @@ class Flow {
       icon: EndSvg,
     }
   ]
+  defaultControl: Array<FDControlItem> = [
+    {
+      key: 'zoom-out',
+      iconClass: 'lf-control-zoomOut',
+      title: '缩小流程图',
+      text: '缩小',
+      onClick: () => {
+        this.lf.zoom(false);
+      },
+    },
+    {
+      key: 'zoom-in',
+      iconClass: 'lf-control-zoomIn',
+      title: '放大流程图',
+      text: '放大',
+      onClick: () => {
+        this.lf.zoom(true);
+      },
+    },
+    {
+      key: 'reset',
+      iconClass: 'lf-control-fit',
+      title: '恢复流程原有尺寸',
+      text: '适应',
+      onClick: () => {
+        this.lf.resetZoom();
+      },
+    },
+    {
+      key: 'undo',
+      iconClass: 'lf-control-undo',
+      title: '回到上一步',
+      text: '上一步',
+      onClick: () => {
+        this.lf.undo();
+      },
+    },
+    {
+      key: 'redo',
+      iconClass: 'lf-control-redo',
+      title: '移到下一步',
+      text: '下一步',
+      onClick: () => {
+        this.lf.redo();
+      },
+    },
+  ];
   lf: any;
   constructor(data: any){
     this.lf = data.lf;
@@ -116,6 +164,11 @@ class Flow {
         return (a.sort === undefined ? 99: a.sort) - (b.sort === undefined ? 99: b.sort)
       })
       this.initDndPanel(newDndPanel)
+    }
+    if(props.initControl !== false) {
+      this.lf.extension.control.controlItems = props.control || this.defaultControl
+    } else {
+      this.lf.extension.control.controlItems = []
     }
     const lf = this.lf;
     lf.adapterIn = (userData: any) =>{
