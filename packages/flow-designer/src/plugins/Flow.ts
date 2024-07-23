@@ -144,7 +144,9 @@ class Flow {
       text: '查看',
       onClick: () => {
         // 弹窗
-        this.props.modalRef.value?.show()
+        this.props.modalRef.value?.show({
+          graphModel: this.lf.getGraphData()
+        })
       }
     }
   ];

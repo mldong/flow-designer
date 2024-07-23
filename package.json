@@ -14,7 +14,8 @@
     "@logicflow/extension": "^1.2.27",
     "ant-design-vue": "4.x",
     "element-plus": "^2.7.6",
-    "vue": "^3.4.30"
+    "vue": "^3.4.30",
+    "vue-json-pretty": "^2.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

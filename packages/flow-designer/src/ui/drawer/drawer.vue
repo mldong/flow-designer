@@ -85,7 +85,7 @@ defineExpose({
             lf.updateText(formState.name, n);
           } else {
             // 务属性变化=>修改节点属性
-            lf.setProperties(item.name, {
+            lf.setProperties(formState.name, {
               [item.name]: n,
             });
           }
@@ -101,7 +101,7 @@ defineExpose({
           } else {
             // 务属性变化=>修改节点属性
             const lf = currentData.value.lf
-            lf.setProperties(item.name, {
+            lf.setProperties(formState.name, {
               [item.name]: n,
             });
           }
