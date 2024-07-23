@@ -68,7 +68,7 @@ const props = defineProps({
   },
   modalWidth: { // 弹窗宽度
     type: [String,Number] as PropType<string | number>,
-    default: '600px'
+    default: '60%'
   },
   processForm: { // 流程表单配置
     type: Object as PropType<FDFormType>

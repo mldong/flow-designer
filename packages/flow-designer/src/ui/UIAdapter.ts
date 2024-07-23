@@ -98,5 +98,15 @@ class UIAdapter {
       return defineAsyncComponent(() => import('element-plus/es/components/dialog/index').then(mod=> mod.default));
     }
   }
+  /**
+   * 创建消息对象
+   */
+  public createMessage = () => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return import('ant-design-vue/es/message');
+    } else if (this.uiLibrary === 'element-plus') {
+      return import('element-plus/es/components/message/index');
+    }
+  }
 }
 export default UIAdapter;
