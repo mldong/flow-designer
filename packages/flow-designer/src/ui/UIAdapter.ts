@@ -88,5 +88,15 @@ class UIAdapter {
   public isAntd = () => {
     return this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd';
   };
+  /**
+   * 创建Modal
+   */
+  public createModal = () => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/modal').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/dialog/index').then(mod=> mod.default));
+    }
+  }
 }
 export default UIAdapter;

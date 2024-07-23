@@ -1,5 +1,6 @@
 <template>
   <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
+  <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
@@ -14,7 +15,10 @@ import './plugins/flow.css'
 import { FDConfigData, FDControlItem, FDFormType, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
+import MModal from './ui/modal';
+
 const drawerRef = ref()
+const modalRef = ref()
 const props = defineProps({
   value: {
     type: Object as PropType<FDConfigData>,
@@ -62,6 +66,10 @@ const props = defineProps({
     type: [String,Number] as PropType<string | number>,
     default: '600px'
   },
+  modalWidth: { // 弹窗宽度
+    type: [String,Number] as PropType<string | number>,
+    default: '600px'
+  },
   processForm: { // 流程表单配置
     type: Object as PropType<FDFormType>
   },
@@ -72,6 +80,7 @@ const props = defineProps({
 LogicFlow.use(Flow, {
   ...props,
   drawerRef,
+  modalRef,
 });
 const emits = defineEmits(['update:value', 'on-init', 'on-render'])
 const lfInstance = ref();

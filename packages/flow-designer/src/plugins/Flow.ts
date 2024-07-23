@@ -74,6 +74,7 @@ class Flow {
       icon: EndSvg,
     }
   ]
+  props: any;
   defaultControl: Array<FDControlItem> = [
     {
       key: 'zoom-out',
@@ -134,12 +135,24 @@ class Flow {
       onClick: () => {
         this.lf.clearData();
       }
+    },
+    {
+      key: 'see',
+      iconClass: 'lf-control-see',
+      title: '查看元数据',
+      sort: 70,
+      text: '查看',
+      onClick: () => {
+        // 弹窗
+        this.props.modalRef.value?.show()
+      }
     }
   ];
   lf: any;
   constructor(data: any){
     this.lf = data.lf;
     const props = data.props
+    this.props = props
     // 注册../node/*.ts下的所有节点
     Object.keys(nodes).forEach((key) => {
       const node = (nodes[key] as any).default
