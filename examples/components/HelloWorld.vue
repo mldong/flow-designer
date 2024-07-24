@@ -9,6 +9,7 @@
   :highLight="highLightData"
   :dndPanel="dndPanel"
   @on-init="handleInit"
+  @on-save="handleSave"
   :control="control"
   />
 </template>
@@ -68,16 +69,17 @@ const dndPanel = [{
       }
     }]
 const control = [{
-  key: 'zoom-out',
-  title: '====='
+  key: 'save',
+  // hide: true
 }, {
       key: 'my-zoom-out',
-      iconClass: 'lf-control-myicon',
-      title: 'my-缩小流程图',
-      text: 'my-缩小',
+      iconClass: 'lf-control-save',
+      title: '自定义保存',
+      text: '自定义保存',
       // sort: 45,
-      onClick: () => {
-        console.log('my-缩小流程图')
+      onClick: (lf: any) => {
+        
+        console.log(lf.getGraphData())
       },
     },]
 const graphData = ref({
@@ -153,6 +155,9 @@ const graphData = ref({
   const handleInit = (lf: any) => {
     lf.register(CustomHtml);
   }
+  const handleSave = (data: any) => {
+    console.log('save', data)
+  } 
 </script>
 <style>
 

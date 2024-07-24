@@ -178,6 +178,17 @@ class Flow {
           lf: this.lf
         })
       }
+    },
+    {
+      key: 'save',
+      iconClass: 'lf-control-save',
+      title: '保存流程数据',
+      sort: 90,
+      text: '保存',
+      onClick: () => {
+        const { eventCenter } = this.lf.graphModel;
+        eventCenter.emit("custom:save", this.lf.getGraphData());
+      }
     }
   ];
   lf: any;

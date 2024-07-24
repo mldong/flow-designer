@@ -82,7 +82,7 @@ LogicFlow.use(Flow, {
   drawerRef,
   modalRef,
 });
-const emits = defineEmits(['update:value', 'on-init', 'on-render'])
+const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save'])
 const lfInstance = ref();
 /**
  * 设置高亮数据
@@ -161,6 +161,10 @@ onMounted(()=>{
   // 监听自定义的update:highlight事件
   eventCenter.on('update:highlight',(data: any) =>{
     setHighLight(data)
+  })
+  // 监听自定义的save事件
+  eventCenter.on('custom:save', (data: any) =>{
+    emits('on-save', data)
   })
   myRender(props.value)
 })
