@@ -153,6 +153,11 @@ onMounted(()=>{
     isHistoryChange.value = true
     emits('update:value', lf.getGraphData())
   })
+  // 监听自定义的update:graphData事件
+  eventCenter.on('update:graphData',(data: any) =>{
+    // emits('update:value', data)
+    myRender(data)
+  })
   myRender(props.value)
 })
 watch(()=>props.value, (newVal)=>{

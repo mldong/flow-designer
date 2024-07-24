@@ -159,7 +159,8 @@ class Flow {
       onClick: () => {
         // 弹窗
         this.props.modalRef.value?.show({
-          type: 'import'
+          type: 'import',
+          lf: this.lf
         })
       }
     }

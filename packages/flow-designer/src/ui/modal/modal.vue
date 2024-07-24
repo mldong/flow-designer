@@ -33,9 +33,10 @@ const props = defineProps({
     type: String as PropType<string>
   }
 })
-const graphData = ref({})
+const graphData = ref()
 const mTitle = ref(props.title)
 const type = ref('see')
+const lf = ref()
 watch(()=>props.title,()=>{
   mTitle.value = props.title
 })
@@ -59,10 +60,16 @@ const handleCopy = () =>{
 }
 const handleSumit = () =>{
   // 处理导入
+  const jsonObj = JSON.parse(graphData.value || '{}')
+  const { eventCenter } = lf.value.graphModel;
+  // 触发自定义的update:graphData
+  eventCenter.emit("update:graphData", jsonObj);
+  visible.value = false
 }
 defineExpose({
   show(e: any) {
     type.value = e.type
+    lf.value = e.lf
     if(e.type == 'import') {
       mTitle.value = "导入流程数据"
     } else {
