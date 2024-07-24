@@ -139,13 +139,27 @@ class Flow {
     {
       key: 'see',
       iconClass: 'lf-control-see',
-      title: '查看元数据',
+      title: '查看流程数据',
       sort: 70,
       text: '查看',
       onClick: () => {
         // 弹窗
         this.props.modalRef.value?.show({
-          graphModel: this.lf.getGraphData()
+          type: 'see',
+          graphData: this.lf.getGraphData()
+        })
+      }
+    },
+    {
+      key: 'import',
+      iconClass: 'lf-control-import',
+      title: '导入流程数据',
+      sort: 80,
+      text: '导入',
+      onClick: () => {
+        // 弹窗
+        this.props.modalRef.value?.show({
+          type: 'import'
         })
       }
     }

@@ -75,6 +75,17 @@ class UIAdapter {
     throw new Error('Unsupported UI library');
   }
   /**
+   * 创建Textarea
+   * @returns 
+   */
+  public createTextarea = () => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/input').then(mod => mod.default.TextArea));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/input/index').then(mod => mod.default.Textarea));
+    }
+  }
+  /**
      * 创建Select
      */
   public createOption = (): any => {

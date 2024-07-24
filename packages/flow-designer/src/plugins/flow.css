@@ -1,6 +1,9 @@
 .lf-control-clear {
-  background-image: url("../assets//lf-control-clear.svg");
+  background-image: url("../assets/lf-control-clear.svg");
 }
 .lf-control-see {
-  background-image: url("../assets//lf-control-see.svg");
+  background-image: url("../assets/lf-control-see.svg");
+}
+.lf-control-import {
+  background-image: url("../assets/lf-control-import.svg");
 }
