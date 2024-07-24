@@ -146,7 +146,8 @@ class Flow {
         // 弹窗
         this.props.modalRef.value?.show({
           type: 'see',
-          graphData: this.lf.getGraphData()
+          graphData: this.lf.getGraphData(),
+          lf: this.lf
         })
       }
     },
@@ -160,6 +161,20 @@ class Flow {
         // 弹窗
         this.props.modalRef.value?.show({
           type: 'import',
+          lf: this.lf
+        })
+      }
+    },
+    {
+      key: 'highlight',
+      iconClass: 'lf-control-highlight',
+      title: '设置高亮数据',
+      sort: 80,
+      text: '设置高亮',
+      onClick: () => {
+        // 弹窗
+        this.props.modalRef.value?.show({
+          type: 'highlight',
           lf: this.lf
         })
       }

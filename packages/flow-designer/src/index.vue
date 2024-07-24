@@ -158,6 +158,10 @@ onMounted(()=>{
     // emits('update:value', data)
     myRender(data)
   })
+  // 监听自定义的update:highlight事件
+  eventCenter.on('update:highlight',(data: any) =>{
+    setHighLight(data)
+  })
   myRender(props.value)
 })
 watch(()=>props.value, (newVal)=>{

@@ -145,9 +145,9 @@ const graphData = ref({
   });
   const handleClick = () =>{
     highLightData.value = {
-      historyNodeNames: ['1'],
-      historyEdgeNames: ['1-2'],
-      activeNodeNames: ['2']
+      "historyNodeNames": ["1"],
+      "historyEdgeNames": ["1-2"],
+      "activeNodeNames": ["2"]
     }
   }
   const handleInit = (lf: any) => {

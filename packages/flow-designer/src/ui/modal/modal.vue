@@ -1,11 +1,11 @@
 <template>
   <MModal v-if="isAntd" v-model:open="visible" :title="mTitle">
     <div style="height:600px;overflow-y: scroll;">
-      <MTextarea style="height:100%;" v-model:value="graphData" v-if="type == 'import'"></MTextarea>
+      <MTextarea style="height:100%;" v-model:value="graphData" v-if="['import', 'highlight'].includes(type)"></MTextarea>
       <vue-json-pretty v-else :showLineNumber="true" :data="graphData" />
     </div>
     <template #footer>
-      <div v-if="type == 'import'">
+      <div v-if="['import', 'highlight'].includes(type)">
         <MButton  @click="visible=false">取消</MButton>
         <MButton type="primary" @click="handleSumit">确定</MButton>
       </div>
@@ -14,10 +14,15 @@
   </MModal>
   <MModal v-else v-model="visible" :title="mTitle">
     <div style="height:600px;overflow-y: scroll;">
-      <vue-json-pretty :showLineNumber="true" :data="graphData" />
+      <MTextarea style="height:100%;" v-model:value="graphData" v-if="['import', 'highlight'].includes(type)"></MTextarea>
+      <vue-json-pretty v-else :showLineNumber="true" :data="graphData" />
     </div>
     <template #footer>
-      <MButton type="primary" @click="handleCopy">复制</MButton>
+      <div v-if="['import', 'highlight'].includes(type)">
+        <MButton  @click="visible=false">取消</MButton>
+        <MButton type="primary" @click="handleSumit">确定</MButton>
+      </div>
+      <MButton v-else type="primary" @click="handleCopy">复制</MButton>
     </template>
   </MModal>
 </template>
@@ -63,7 +68,11 @@ const handleSumit = () =>{
   const jsonObj = JSON.parse(graphData.value || '{}')
   const { eventCenter } = lf.value.graphModel;
   // 触发自定义的update:graphData
-  eventCenter.emit("update:graphData", jsonObj);
+  if(type.value == 'import') {
+    eventCenter.emit("update:graphData", jsonObj);
+  } else if(type.value == 'highlight') {
+    eventCenter.emit("update:highlight", jsonObj);
+  }
   visible.value = false
 }
 defineExpose({
@@ -72,6 +81,8 @@ defineExpose({
     lf.value = e.lf
     if(e.type == 'import') {
       mTitle.value = "导入流程数据"
+    } else if (e.type == 'highlight') {
+      mTitle.value = "设置高亮数据"
     } else {
       mTitle.value = "查看流程数据"
     }
