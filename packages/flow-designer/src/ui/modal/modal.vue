@@ -14,7 +14,7 @@
   </MModal>
   <MModal v-else v-model="visible" :title="mTitle">
     <div style="height:600px;overflow-y: scroll;">
-      <MTextarea style="height:100%;" v-model:value="graphData" v-if="['import', 'highlight'].includes(type)"></MTextarea>
+      <MTextarea input-style="height:600px;" type="textarea" v-model="graphData" v-if="['import', 'highlight'].includes(type)"></MTextarea>
       <vue-json-pretty v-else :showLineNumber="true" :data="graphData" />
     </div>
     <template #footer>
@@ -65,15 +65,23 @@ const handleCopy = () =>{
 }
 const handleSumit = () =>{
   // 处理导入
-  const jsonObj = JSON.parse(graphData.value || '{}')
-  const { eventCenter } = lf.value.graphModel;
-  // 触发自定义的update:graphData
-  if(type.value == 'import') {
-    eventCenter.emit("update:graphData", jsonObj);
-  } else if(type.value == 'highlight') {
-    eventCenter.emit("update:highlight", jsonObj);
+  try {
+    const jsonObj = JSON.parse(graphData.value || '{}')
+    const { eventCenter } = lf.value.graphModel;
+    // 触发自定义的update:graphData
+    if(type.value == 'import') {
+      eventCenter.emit("update:graphData", jsonObj);
+      MMessage.success('导入成功')
+    } else if(type.value == 'highlight') {
+      eventCenter.emit("update:highlight", jsonObj);
+      MMessage.success('设置高亮成功')
+    }
+    visible.value = false
+  } catch(err) {
+    MMessage.error('数据格式错误')
+    return
   }
-  visible.value = false
+  
 }
 defineExpose({
   show(e: any) {
