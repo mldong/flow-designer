@@ -1,5 +1,5 @@
 {
-  "name": "flow-designer",
+  "name": "@mldong/flow-designer",
   "private": false,
   "version": "1.0.0",
   "type": "module",
@@ -9,6 +9,26 @@
     "build:lib": "vue-tsc -b && vite build --config vite.config.lib.ts",
     "preview": "vite preview"
   },
+  "keywords": [
+    "工作流",
+    "流程设计器",
+    "Web流程设计器",
+    "Vue3",
+    "LogicFlow",
+    "ElementPlus",
+    "Ant Design of Vue3"
+  ],
+  "main": "lib/flow-designer.umd.cjs",
+  "author": "mldong",
+  "license": "Apache License 2.0",
+  "homepage": "https://gitee.com/mldong666/flow-designer",
+  "bugs": {
+    "url": "https://gitee.com/mldong666/flow-designer/issues"
+  },
+  "files": [
+    "lib",
+    "packages"
+  ],
   "dependencies": {
     "@logicflow/core": "^1.2.27",
     "@logicflow/extension": "^1.2.27",
