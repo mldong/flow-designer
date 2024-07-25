@@ -1,5 +1,5 @@
 {
-  "name": "@mldong/flow-designer",
+  "name": "mldong-flow-designer-plus",
   "private": false,
   "version": "1.0.0",
   "type": "module",
@@ -15,10 +15,10 @@
     "Web流程设计器",
     "Vue3",
     "LogicFlow",
-    "ElementPlus",
+    "Element Plus",
     "Ant Design of Vue3"
   ],
-  "main": "lib/flow-designer.umd.cjs",
+  "main": "lib/mldong-flow-designer-plus.umd.cjs",
   "author": "mldong",
   "license": "Apache License 2.0",
   "homepage": "https://gitee.com/mldong666/flow-designer",
