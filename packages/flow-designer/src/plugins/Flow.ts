@@ -134,6 +134,9 @@ class Flow {
       text: '清空',
       onClick: () => {
         this.lf.clearData();
+        (this.props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
+          delete this.lf.graphModel[item.name]
+        })
       }
     },
     {

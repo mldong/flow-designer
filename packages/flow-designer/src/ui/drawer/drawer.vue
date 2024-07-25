@@ -10,7 +10,7 @@
       </MFormItem>
     </MMorm>
   </MDrawer>
-  <MDrawer v-else  v-model="visible" :title="title" :size="width">
+  <MDrawer v-else  v-model="visible" :title="mTitle" :size="width">
     <MMorm :model="formState" v-if="form.formItems?.length" :label-width="form.labelWidth || '100px'">
       <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems">
         <MInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
