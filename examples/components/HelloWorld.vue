@@ -3,9 +3,10 @@
   <!-- <pre>
     {{ graphData }}
   </pre> -->
-  <FlowDesigner 
+  <FlowDesigner
+  
   v-model:value="graphData" 
-  :theme="theme" 
+  :theme="theme"
   :highLight="highLightData"
   :dndPanel="dndPanel"
   @on-init="handleInit"
@@ -44,7 +45,7 @@ const theme = {
 //   },]
 // })
 const highLightData = ref<FDHighLightType>()
-const dndPanel = [{
+const dndPanel :any= [{
       sort: 1,
       type: 'custom-html-test',
       text: '测试',
