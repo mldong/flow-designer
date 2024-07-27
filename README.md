@@ -129,7 +129,7 @@ export declare type FDHighLightType = {
   activeNodeNames?: Array<string>; // 活跃节点名称
 }
 ```
-### FDPatternItem
+#### FDPatternItem
 ```typescript
 export declare type FDPatternItem = {
   type?: string;
@@ -146,7 +146,7 @@ export declare type FDPatternItem = {
   form?: FDFormType; // 表单配置
 };
 ```
-### FDControlItem
+#### FDControlItem
 ```typescript
 export declare type FDControlItem = {
   key?: string; // 唯一编码
@@ -158,7 +158,7 @@ export declare type FDControlItem = {
   sort?: number; // 排序字段
 }
 ```
-### FDFormType和FDFormItemType
+#### FDFormType和FDFormItemType
 ```typescript
 /**
  * 表单数据类型
@@ -284,3 +284,7 @@ export declare type FDFormItemType = {
    - 打包发布篇·svg转base64处理
    - 打包发布篇·本地包调试
    - 打包发布篇·本地包调试错误修复
+   - 打包发布篇·组件类型推导配置
+   - 打包发布篇·组件类型推导之代码提示
+   - 打包发布篇·组件定义类型导出
+   - 打包发布篇·修复1.0.4版编译失败bug
