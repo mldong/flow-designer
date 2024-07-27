@@ -3,9 +3,10 @@
   <!-- <pre>
     {{ graphData }}
   </pre> -->
-  <FlowDesigner 
+  <FlowDesigner
+  
   v-model:value="graphData" 
-  :theme="theme" 
+  :theme="theme"
   :highLight="highLightData"
   :dndPanel="dndPanel"
   @on-init="handleInit"
@@ -18,7 +19,7 @@ import { ref } from 'vue';
 //import FlowDesigner from '../../packages/index'
 import FlowDesigner from 'mldong-flow-designer-plus'
 import 'mldong-flow-designer-plus/lib/style.css'
-import { FDHighLightType } from '../../packages/flow-designer/src/types';
+import type { FDHighLightType,FDPatternItem } from 'mldong-flow-designer-plus';
 import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 import CustomHtml from './CustomHtml';
 // import MyInput from './MyInput.vue'
@@ -44,7 +45,7 @@ const theme = {
 //   },]
 // })
 const highLightData = ref<FDHighLightType>()
-const dndPanel = [{
+const dndPanel :Array<FDPatternItem>= [{
       sort: 1,
       type: 'custom-html-test',
       text: '测试',

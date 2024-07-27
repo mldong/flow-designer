@@ -4,7 +4,7 @@
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
-import { PropType, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
@@ -12,71 +12,14 @@ import "@logicflow/core/dist/style/index.css";
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
 import './plugins/flow.css'
-import { FDConfigData, FDControlItem, FDFormType, FDHighLightType, FDPatternItem, FDThemeConfig } from './types';
+import type {  FDHighLightType } from './types';
+import { MldongFlowDesignerProps } from './types/props'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
-
 const drawerRef = ref()
 const modalRef = ref()
-const props = defineProps({
-  value: {
-    type: Object as PropType<FDConfigData>,
-    default() {
-      return {}
-    }
-  },
-  theme: { // 高亮主题配置
-    type: Object as PropType<FDThemeConfig>,
-    default() {
-      return {
-        
-      }
-    }
-  },
-  highLight: { // 高亮数据
-    type: Object as PropType<FDHighLightType>,
-      default() {
-      return {
-        
-      }
-    }
-  },
-  initDndPanel: { // 是否初始化拖拽面板
-    type: Boolean,
-    default: true
-  },
-  dndPanel: { // 拖拽面板
-    type: Array as PropType<Array<FDPatternItem>>,
-  },
-  initControl: { // 是否初始化控制面板
-    type: Boolean,
-    default: true
-  },
-  control: { // 控制面板
-    type: Array as PropType<Array<FDControlItem>>,
-  },
-  nodeClick: { // 节点点击事件
-    type: Function,
-  },
-  edgeClick: { // 边点击事件
-    type: Function,
-  },
-  drawerWidth: { // 抽屉宽度
-    type: [String,Number] as PropType<string | number>,
-    default: '600px'
-  },
-  modalWidth: { // 弹窗宽度
-    type: [String,Number] as PropType<string | number>,
-    default: '60%'
-  },
-  processForm: { // 流程表单配置
-    type: Object as PropType<FDFormType>
-  },
-  edgeForm: { // 边表单配置
-    type: Object as PropType<FDFormType>
-  }
-})
+const props = defineProps(MldongFlowDesignerProps)
 LogicFlow.use(Flow, {
   ...props,
   drawerRef,
