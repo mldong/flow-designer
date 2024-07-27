@@ -3,6 +3,6 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
-declare module 'mldong-flow-designer-plus' {
+// declare module 'mldong-flow-designer-plus' {
 
-}
+// }
