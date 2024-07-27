@@ -2577,6 +2577,18 @@ minimatch@^9.0.3:
   dependencies:
     brace-expansion "^2.0.1"
 
+mldong-flow-designer-plus@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/mldong-flow-designer-plus/-/mldong-flow-designer-plus-1.0.1.tgz#72af7d971ac2d8b8a98409b70e2e01c8ab923ac1"
+  integrity sha512-EuztfYq/c8+Qdc/Oo+g8OQLzMWZYdC2NtIXBBXFXk+747viyROOIskHKZ6+HN0Ms2Vh1a3rszx1T0xlHNzwN/w==
+  dependencies:
+    "@logicflow/core" "^1.2.27"
+    "@logicflow/extension" "^1.2.27"
+    ant-design-vue "4.x"
+    element-plus "^2.7.6"
+    vue "^3.4.30"
+    vue-json-pretty "^2.4.0"
+
 mousetrap@^1.6.5:
   version "1.6.5"
   resolved "https://registry.npmjs.org/mousetrap/-/mousetrap-1.6.5.tgz#8a766d8c272b08393d5f56074e0b5ec183485bf9"

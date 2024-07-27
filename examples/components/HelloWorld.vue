@@ -16,6 +16,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import FlowDesigner from '../../packages/index'
+// import FlowDesigner from 'mldong-flow-designer-plus'
+// import 'mldong-flow-designer-plus/lib/style.css'
 import { FDHighLightType } from '../../packages/flow-designer/src/types';
 import StartSvg from '../../packages/flow-designer/src/assets/start.svg';
 import CustomHtml from './CustomHtml';

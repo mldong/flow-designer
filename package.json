@@ -34,6 +34,7 @@
     "@logicflow/extension": "^1.2.27",
     "ant-design-vue": "4.x",
     "element-plus": "^2.7.6",
+    "mldong-flow-designer-plus": "^1.0.1",
     "vue": "^3.4.30",
     "vue-json-pretty": "^2.4.0"
   },
