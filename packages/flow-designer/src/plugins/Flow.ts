@@ -1,7 +1,7 @@
 
 import LogicFlow from '@logicflow/core';
 import { DndPanel, Control } from '@logicflow/extension';
-// import StartSvg from './../assets/start.svg'
+import StartSvg from './../assets/start.svg'
 import UserTaskSvg from './../assets/user-task.svg'
 import CustomSvg from './../assets/custom.svg'
 import EndSvg from './../assets/end.svg'
@@ -20,7 +20,6 @@ const nodes = import.meta.glob('../node/*.ts',{
 const edges = import.meta.glob('../edge/*.ts',{
   eager: true
 })
-const StartSvg = "data:image/svg+xml;base64,PHN2ZyB0PSIxNzE5NjU1MDA4MTY2IiBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjMyNzciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+PHBhdGggZD0iTTUxMiA2NGMyNDcuNDI0IDAgNDQ4IDIwMC41NzYgNDQ4IDQ0OFM3NTkuNDI0IDk2MCA1MTIgOTYwIDY0IDc1OS40MjQgNjQgNTEyIDI2NC41NzYgNjQgNTEyIDY0eiBtMCA2OGMtMjA5Ljg2OCAwLTM4MCAxNzAuMTMyLTM4MCAzODBzMTcwLjEzMiAzODAgMzgwIDM4MCAzODAtMTcwLjEzMiAzODAtMzgwLTE3MC4xMzItMzgwLTM4MC0zODB6IiBmaWxsPSIjMzA2OEVDIiBwLWlkPSIzMjc4Ij48L3BhdGg+PC9zdmc+";
 class Flow {
   dndPanel:Array<FDPatternItem> = []
   static pluginName = 'flow'
