@@ -2610,6 +2610,19 @@ mldong-flow-designer-plus@^1.0.1:
     vue "^3.4.30"
     vue-json-pretty "^2.4.0"
 
+mldong-flow-designer-plus@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmmirror.com/mldong-flow-designer-plus/-/mldong-flow-designer-plus-1.0.2.tgz#56b6403bc35abaa32fe838e7778e3771ebb98be4"
+  integrity sha512-XtuTLrjCUXoX87H3CZLM4PAb7q/DR+imMPsOZB4oPAwIV9kU60f1ZIKd1beRSou2x7dXd+LTBq/szKVMgt2Uag==
+  dependencies:
+    "@logicflow/core" "^1.2.27"
+    "@logicflow/extension" "^1.2.27"
+    ant-design-vue "4.x"
+    element-plus "^2.7.8"
+    mldong-flow-designer-plus "^1.0.1"
+    vue "^3.4.30"
+    vue-json-pretty "^2.4.0"
+
 mousetrap@^1.6.5:
   version "1.6.5"
   resolved "https://registry.npmjs.org/mousetrap/-/mousetrap-1.6.5.tgz#8a766d8c272b08393d5f56074e0b5ec183485bf9"

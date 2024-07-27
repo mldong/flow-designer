@@ -1,7 +1,7 @@
 {
   "name": "mldong-flow-designer-plus",
   "private": false,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,6 +19,7 @@
     "Ant Design of Vue3"
   ],
   "main": "lib/mldong-flow-designer-plus.umd.cjs",
+  "types": "packages/types/index.d.ts",
   "author": "mldong",
   "license": "Apache License 2.0",
   "homepage": "https://gitee.com/mldong666/flow-designer",
@@ -34,7 +35,7 @@
     "@logicflow/extension": "^1.2.27",
     "ant-design-vue": "4.x",
     "element-plus": "^2.7.8",
-    "mldong-flow-designer-plus": "^1.0.1",
+    "mldong-flow-designer-plus": "^1.0.2",
     "vue": "^3.4.30",
     "vue-json-pretty": "^2.4.0"
   },
