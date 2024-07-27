@@ -17,6 +17,10 @@ export default defineConfig({
       }],
     build: {
         outDir: './lib',
+        // 不压缩
+        minify: false,
+        // 启用sourcemap
+        sourcemap: true,
         lib: {
             entry: './packages/index.ts', // 根据实际情况调整入口文件
             name: 'FlowDesigner',
