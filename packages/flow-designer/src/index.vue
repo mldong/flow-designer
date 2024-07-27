@@ -4,7 +4,7 @@
   <div ref="container" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
-import { PropType, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
@@ -12,7 +12,8 @@ import "@logicflow/core/dist/style/index.css";
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
 import './plugins/flow.css'
-import { MldongFlowDesignerProps, FDHighLightType } from './types';
+import type {  FDHighLightType } from './types';
+import { MldongFlowDesignerProps } from './types/props'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
