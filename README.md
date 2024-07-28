@@ -1,6 +1,9 @@
 # mldong-flow-designer-plus
-本项目包含了作者为B站课堂视频[《工作流设计器开发最佳实践》](https://www.bilibili.com/cheese/play/ss24484)的过程源码。教程中开发的组件也可用于实际生产环境中。以下是和组件使用说明和课程章节。
-## 组件使用说明
+本项目包含了作者为B站课堂视频[《工作流设计器开发最佳实践》](https://www.bilibili.com/cheese/play/ss24484)的过程源码。教程中开发的组件也可用于实际生产环境中。以下是和使用文档和课程章节说明。
+## 使用文档
+### 兼容性注意
+* 因Vite 需要 Node.js 版本 18+ 或 20+。当你的包管理器发出警告时，请注意升级你的 Node 版本。
+* 本项目是在 Node.js 版本 16+的环境下测试通过。
 ### 安装
 ```shell
 yarn add mldong-flow-designer-plus --registry=https://registry.npmmirror.com
@@ -25,7 +28,7 @@ app.use(FlowDesigner,{
 ### 使用样例
 ```html
 <template>
-  <FlowDesigner v-model:value="graphData" />
+  <MldongFlowDesignerPlus v-model:value="graphData" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
