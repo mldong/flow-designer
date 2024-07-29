@@ -4,6 +4,10 @@
 ### 兼容性注意
 * 因Vite 需要 Node.js 版本 18+ 或 20+。当你的包管理器发出警告时，请注意升级你的 Node 版本。
 * 本项目是在 Node.js 版本 16+的环境下测试通过。
+### 下载
+```shell
+git clone https://gitee.com/mldong/flow-designer.git
+```
 ### 安装
 ```shell
 yarn add mldong-flow-designer-plus --registry=https://registry.npmmirror.com
@@ -39,7 +43,7 @@ const graphData = ref({
     nodes: [
       {
         id: "1",
-        type: "start",
+        type: "snaker:start",
         x: 100,
         y: 100,
         properties: {
@@ -49,7 +53,7 @@ const graphData = ref({
       },
       {
         id: "2",
-        type: "task",
+        type: "snaker:task",
         x: 300,
         y: 200,
         text: "节点2",
@@ -61,7 +65,7 @@ const graphData = ref({
       },
       {
         id: "3",
-        type: "end",
+        type: "snaker:end",
         x: 500,
         y: 600,
         text: "结束",
@@ -75,7 +79,7 @@ const graphData = ref({
         id: "1-2",
         sourceNodeId: "1",
         targetNodeId: "2",
-        type: "transition",
+        type: "snaker:transition",
         text: "连线",
         properties: {
           // state: 'history'
@@ -86,7 +90,7 @@ const graphData = ref({
         id: "2-3",
         sourceNodeId: "2",
         targetNodeId: "3",
-        type: "transition",
+        type: "snaker:transition",
         text: "连线2",
         properties: {
           // state: 'history'
@@ -113,6 +117,7 @@ const graphData = ref({
 | modalWidth | String | Number | 60% | 弹窗宽度 |
 | processForm | FDFormType | - | 流程表单配置 |
 | edgeForm | FDFormType | - | 边表单配置 |
+| typePrefix | string | snaker: | 自定义节点/边类型前缀 |
 
 #### FDThemeConfig
 ```typescript

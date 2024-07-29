@@ -202,14 +202,24 @@ class Flow {
     // 注册../node/*.ts下的所有节点
     Object.keys(nodes).forEach((key) => {
       const node = (nodes[key] as any).default
+      if(props.typePrefix) {
+        node.type = `${props.typePrefix}${node.type}`
+      }
       this.lf.register(node)
     })
     // 注册../edge/*.ts下的所有边
     Object.keys(edges).forEach((key) => {
       const edge = (edges[key] as any).default
+      if(props.typePrefix) {
+        edge.type = `${props.typePrefix}${edge.type}`
+      }
       this.lf.register(edge)
     })
-    this.lf.setDefaultEdgeType(props.defaultEdgeType || Flow.defaultEdgeType)
+    let defaultEdgieType = props.defaultEdgeType || Flow.defaultEdgeType
+    if(props.typePrefix){
+      defaultEdgieType = `${props.typePrefix}${defaultEdgieType}`
+    }
+    this.lf.setDefaultEdgeType(defaultEdgieType)
     if(props.initDndPanel !== false) {
       // 如果type相等，则替换属性，否则就追加
       const newDndPanel: Array<FDPatternItem> = [...Flow.defaultDndPanel]
