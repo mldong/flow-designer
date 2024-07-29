@@ -1,7 +1,7 @@
 {
   "name": "mldong-flow-designer-plus",
   "private": false,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,9 +22,9 @@
   "types": "packages/types/index.d.ts",
   "author": "mldong",
   "license": "Apache License 2.0",
-  "homepage": "https://gitee.com/mldong666/flow-designer",
+  "homepage": "https://gitee.com/mldong/flow-designer",
   "bugs": {
-    "url": "https://gitee.com/mldong666/flow-designer/issues"
+    "url": "https://gitee.com/mldong/flow-designer/issues"
   },
   "files": [
     "lib",
