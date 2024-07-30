@@ -30,9 +30,82 @@ app.use(FlowDesigner,{
 })
 ```
 ### 使用样例
+#### 编辑模式
 ```html
 <template>
   <MldongFlowDesignerPlus v-model:value="graphData" />
+</template>
+<script setup lang="ts">
+import { ref } from 'vue';
+const graphData = ref({
+    name: 'leave1',
+    displayName: '请假流程',
+    postInterceptors: "leave_postInterceptors",
+    nodes: [
+      {
+        id: "1",
+        type: "snaker:start",
+        x: 100,
+        y: 100,
+        properties: {
+          // state: 'history'
+          postInterceptors: "start_postInterceptors"
+        }
+      },
+      {
+        id: "2",
+        type: "snaker:task",
+        x: 300,
+        y: 200,
+        text: "节点2",
+        properties: {
+          // state: 'active'
+          form: 'leaveForm',
+          postInterceptors: "task_postInterceptors"
+        }
+      },
+      {
+        id: "3",
+        type: "snaker:end",
+        x: 500,
+        y: 600,
+        text: "结束",
+        properties: {
+          postInterceptors: "end_postInterceptors"
+        }
+      },
+    ],
+    edges: [
+      {
+        id: "1-2",
+        sourceNodeId: "1",
+        targetNodeId: "2",
+        type: "snaker:transition",
+        text: "连线",
+        properties: {
+          // state: 'history'
+          expr: "${a} == 1"
+        }
+      },
+      {
+        id: "2-3",
+        sourceNodeId: "2",
+        targetNodeId: "3",
+        type: "snaker:transition",
+        text: "连线2",
+        properties: {
+          // state: 'history'
+          expr: "${a} == 2"
+        }
+      },
+    ],
+  })
+</script>
+```
+#### 只读模式
+```html
+<template>
+  <MldongFlowDesignerPlus :viewer="true" v-model:value="graphData" />
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
@@ -118,7 +191,7 @@ const graphData = ref({
 | processForm | FDFormType | - | 流程表单配置 |
 | edgeForm | FDFormType | - | 边表单配置 |
 | typePrefix | string | snaker: | 自定义节点/边类型前缀 |
-
+| viewer | boolean | false | 是否查看模式 |
 #### FDThemeConfig
 ```typescript
 export declare type FDThemeConfig = {

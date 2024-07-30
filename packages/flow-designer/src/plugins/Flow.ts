@@ -227,7 +227,7 @@ class Flow {
       defaultEdgieType = `${props.typePrefix}${defaultEdgieType}`
     }
     this.lf.setDefaultEdgeType(defaultEdgieType)
-    if(props.initDndPanel !== false) {
+    if(props.initDndPanel !== false && props.viewer !==true) {
       // 如果type相等，则替换属性，否则就追加
       const newDndPanel: Array<FDPatternItem> = [...this.defaultDndPanel]
       if(props.dndPanel && props.dndPanel.length > 0) {
@@ -283,7 +283,13 @@ class Flow {
       newControl.sort((a:FDControlItem, b: FDControlItem) => {
         return (a.sort === undefined ? 99: a.sort) - (b.sort === undefined ? 99: b.sort)
       })
-      this.initControl(newControl)
+      this.initControl(newControl.filter(item=>{
+        if(props.viewer === true) {
+          // 只读模式，隐藏部分操作
+          return !['undo','redo','clear','see','import','highlight','save'].includes(item.key as any)
+        }
+        return true
+      }))
     } else {
       this.lf.extension.control.controlItems = []
     }
@@ -314,11 +320,14 @@ class Flow {
     const { eventCenter } = lf.graphModel;
     // 节点事件
     eventCenter.on('node:click', (event: any) => {
+      if(props.viewer === true) {
+        return
+      }
       const shapeList = this.dndPanel
       const index = shapeList.findIndex((item: FDPatternItem)=>item.type === event.data.type)
       let nodeClick = props.nodeClick
       if(index>=-1) {
-        nodeClick = shapeList[index].nodeClick || props.nodeClick
+        nodeClick = shapeList[index]?.nodeClick || props.nodeClick
       }
       if(nodeClick && typeof nodeClick === 'function') {
         nodeClick(event)
@@ -332,6 +341,9 @@ class Flow {
     })
     // 边事件
     eventCenter.on('edge:click', (event: any) => {
+      if(props.viewer === true) {
+        return
+      }
       let edgeClick = props.edgeClick
       if(edgeClick && typeof edgeClick === 'function') {
         edgeClick(event)
@@ -347,6 +359,9 @@ class Flow {
     })
     // 画布事件
     eventCenter.on('blank:contextmenu', (event: any) =>{
+      if(props.viewer === true) {
+        return
+      }
       const processData : any= {};
       (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
         processData[item.name] = lf.graphModel[item.name]

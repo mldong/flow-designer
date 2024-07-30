@@ -64,5 +64,9 @@ export const  MldongFlowDesignerProps = {
   typePrefix: { // 自定义节点/边类型前缀,如snaker:task,snaker:transition，只是snaker:则为前辍
     type: String,
     default: 'snaker:'
+  },
+  viewer: { // 是否查看模式
+    type: Boolean,
+    default: false
   }
 }
