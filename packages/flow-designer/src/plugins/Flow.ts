@@ -24,7 +24,7 @@ class Flow {
   dndPanel:Array<FDPatternItem> = []
   static pluginName = 'flow'
   static defaultEdgeType = 'custom-edge'
-  static defaultDndPanel: Array<FDPatternItem>= [
+  defaultDndPanel: Array<FDPatternItem>= [
     {
       type: 'start',
       text: '开始',
@@ -215,6 +215,13 @@ class Flow {
       }
       this.lf.register(edge)
     })
+    // 拖拽面板追加类型前辍
+    this.defaultDndPanel = this.defaultDndPanel.map((item: FDPatternItem) => {
+      if(props.typePrefix) {
+        item.type = `${props.typePrefix}${item.type}`
+      }
+      return item
+    })
     let defaultEdgieType = props.defaultEdgeType || Flow.defaultEdgeType
     if(props.typePrefix){
       defaultEdgieType = `${props.typePrefix}${defaultEdgieType}`
@@ -222,7 +229,7 @@ class Flow {
     this.lf.setDefaultEdgeType(defaultEdgieType)
     if(props.initDndPanel !== false) {
       // 如果type相等，则替换属性，否则就追加
-      const newDndPanel: Array<FDPatternItem> = [...Flow.defaultDndPanel]
+      const newDndPanel: Array<FDPatternItem> = [...this.defaultDndPanel]
       if(props.dndPanel && props.dndPanel.length > 0) {
         props.dndPanel.forEach((item: FDPatternItem) => {
           const index = newDndPanel.findIndex((i) => i.type === item.type)
@@ -362,7 +369,10 @@ class Flow {
     this.dndPanel = data || []
     this.dndPanel.forEach(item=>{
       if(item.type && !item.form) {
-        const type: NodeTypeEnum = item.type as NodeTypeEnum
+        let type: NodeTypeEnum = item.type as NodeTypeEnum
+        if(this.props.typePrefix) {
+          type = type.replace(this.props.typePrefix, '') as NodeTypeEnum
+        }
         item.form = schema[type]
       }
     })
