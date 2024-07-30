@@ -62,21 +62,21 @@ defineExpose({
     })
     
     form.value = e.patternItem?.form || {}
+    const lf = currentData.value.lf
+    const typePrefix = lf.graphModel.props.typePrefix || ''
     // 监听唯一编码变化=>修改节点id
-    
     form.value?.formItems?.forEach(item=>{
       let stopWatch = watchMap[item.name]
       if(stopWatch) {
         stopWatch()
       }
-      const lf = currentData.value.lf
       stopWatch = watch(()=>formState[item.name],(n, o)=>{
         if(e.data.type == 'process') {
           lf.graphModel[item.name] = n
           const { eventCenter } = lf.graphModel;
           // 触发自定义的update:graphModel
           eventCenter.emit("update:graphModel", lf.graphModel);
-        } else if(e.data.type == 'transition') {
+        } else if(e.data.type == `${typePrefix}transition`) {
           if(item.name == 'name') {
           // 如果为唯一编码，则修改节点id
             lf.changeEdgeId(o, n);
@@ -116,7 +116,7 @@ defineExpose({
       Object.keys(e.data.properties || {}).forEach(key=>{
         formState[key] = e.data.properties[key]
       })
-    } else if(e.data.type == 'transition') {
+    } else if(e.data.type == `${typePrefix}transition`) {
       mTitle.value = '设置边属性'
       // 赋值唯一编码
       formState.name = e.data.id
