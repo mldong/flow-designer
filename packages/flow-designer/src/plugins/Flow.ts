@@ -23,7 +23,7 @@ const edges = import.meta.glob('../edge/*.ts',{
 class Flow {
   dndPanel:Array<FDPatternItem> = []
   static pluginName = 'flow'
-  static defaultEdgeType = 'custom-edge'
+  static defaultEdgeType = 'snaker:transition'
   defaultDndPanel: Array<FDPatternItem>= [
     {
       type: 'start',
