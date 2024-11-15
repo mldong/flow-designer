@@ -1,6 +1,6 @@
 
 import LogicFlow from '@logicflow/core';
-import { DndPanel, Control } from '@logicflow/extension';
+import { DndPanel, Control, Menu } from '@logicflow/extension';
 import StartSvg from './../assets/start.svg'
 import UserTaskSvg from './../assets/user-task.svg'
 import CustomSvg from './../assets/custom.svg'
@@ -14,6 +14,7 @@ import * as schema from './schema'
 import { NodeTypeEnum } from '../types/enums';
 LogicFlow.use(DndPanel)
 LogicFlow.use(Control)
+LogicFlow.use(Menu)
 const nodes = import.meta.glob('../node/*.ts',{
   eager: true
 })
@@ -215,6 +216,27 @@ class Flow {
       }
       this.lf.register(edge)
     })
+    // 预览模式时
+    if(props.viewer){
+      this.lf.extension.menu.setMenuConfig({
+        nodeMenu: [],
+        edgeMenu: []
+      })
+    } else {
+      // 设置右键菜单
+      this.lf.extension.menu.setMenuConfig({
+        nodeMenu: [
+          {
+            text: '删除',
+            callback: (node: any) => {
+              // node为该节点数据
+              this.lf.deleteNode(node.id)
+            }
+          }
+        ]
+      })
+    }
+    
     // 拖拽面板追加类型前辍
     this.defaultDndPanel = this.defaultDndPanel.map((item: FDPatternItem) => {
       if(props.typePrefix) {
