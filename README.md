@@ -190,6 +190,7 @@ const graphData = ref({
 | modalWidth | String | Number | 60% | 弹窗宽度 |
 | processForm | FDFormType | - | 流程表单配置 |
 | edgeForm | FDFormType | - | 边表单配置 |
+| defaultEdgeType | string | snaker:transition | 默认边 |
 | typePrefix | string | snaker: | 自定义节点/边类型前缀 |
 | viewer | boolean | false | 是否查看模式 |
 #### FDThemeConfig

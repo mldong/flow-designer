@@ -61,6 +61,10 @@ export const  MldongFlowDesignerProps = {
   edgeForm: { // 边表单配置
     type: Object as PropType<FDFormType>
   },
+  defaultEdgeType: { // 默认边
+    type: String,
+    default: 'snaker:transition'
+  },
   typePrefix: { // 自定义节点/边类型前缀,如snaker:task,snaker:transition，只是snaker:则为前辍
     type: String,
     default: 'snaker:'
