@@ -203,7 +203,7 @@ class Flow {
     // 注册../node/*.ts下的所有节点
     Object.keys(nodes).forEach((key) => {
       const node = (nodes[key] as any).default
-      if(props.typePrefix) {
+      if(props.typePrefix && !node.type.startsWith(props.typePrefix)) {
         node.type = `${props.typePrefix}${node.type}`
       }
       this.lf.register(node)
@@ -211,7 +211,7 @@ class Flow {
     // 注册../edge/*.ts下的所有边
     Object.keys(edges).forEach((key) => {
       const edge = (edges[key] as any).default
-      if(props.typePrefix) {
+      if(props.typePrefix && !edge.type.startsWith(props.typePrefix)) {
         edge.type = `${props.typePrefix}${edge.type}`
       }
       this.lf.register(edge)
