@@ -219,8 +219,8 @@ class Flow {
     // 预览模式时
     if(props.viewer){
       this.lf.extension.menu.setMenuConfig({
-        nodeMenu: [],
-        edgeMenu: []
+        // nodeMenu: [],
+        // edgeMenu: []
       })
     } else {
       // 设置右键菜单
