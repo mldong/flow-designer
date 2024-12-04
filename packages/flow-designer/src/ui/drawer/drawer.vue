@@ -3,20 +3,54 @@
     <MMorm :model="formState" v-if="form.formItems?.length" :label-col="{
       flex: form.labelWidth || '100px'
     }">
-      <MFormItem :name="item.name" :label="item.label" v-for="item in form.formItems">
+      <MFormItem :name="item.name" :label="item.helpMessage&&item.helpMessage.length?undefined:item.label" v-for="item in form.formItems" v-bind="item.formItemProps">
+        <template v-if="item.helpMessage&&item.helpMessage.length" #label>
+          {{ item.label }}
+          <MTooltip>
+            <template #title>
+              <template v-if="Array.isArray(item.helpMessage)">
+                <div v-for="msg in item.helpMessage" >{{ msg }}</div>
+              </template>
+              <template v-else>
+                {{ item.helpMessage }}
+              </template>
+            </template>
+            <img :src="QuestionSvg" />
+          </MTooltip>
+        </template>
         <MInput v-if="item.component == 'Input'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
         <MSelect v-else-if="item.component == 'Select'" v-model:value="formState[item.name]" v-bind="{...item.componentProps}"></MSelect>
+        <template v-else-if="item.slot">
+          <slot :name="item.slot" v-bind="currentData"></slot>
+        </template>
         <component v-else :is="item.render?item.render(currentData): undefined" v-model:value="formState[item.name]" v-model="formState[item.name]" v-model:checked="formState[item.name]"  />
       </MFormItem>
     </MMorm>
   </MDrawer>
   <MDrawer v-else  v-model="visible" :title="mTitle" :size="width">
     <MMorm :model="formState" v-if="form.formItems?.length" :label-width="form.labelWidth || '100px'">
-      <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems">
+      <MFormItem :prop="item.name" :label="item.label" v-for="item in form.formItems" v-bind="item.formItemProps">
+        <template v-if="item.helpMessage&&item.helpMessage.length" #label>
+          {{ item.label }}
+          <MTooltip placement="top">
+            <template #content>
+              <template v-if="Array.isArray(item.helpMessage)">
+                <div v-for="msg in item.helpMessage" >{{ msg }}</div>
+              </template>
+              <template v-else>
+                {{ item.helpMessage }}
+              </template>
+            </template>
+            <div style="justify-content: center;align-items: center;display: flex;height:32px;"><img :src="QuestionSvg" /></div>
+          </MTooltip>
+        </template>
         <MInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></MInput>
         <MSelect v-else-if="item.component == 'Select'" v-model="formState[item.name]" v-bind="{...item.componentProps}">
           <MOption v-for="(itemm,index) in item.componentProps?.options || []" :key="index" :label="itemm.label" :value="itemm.value" />
         </MSelect>
+        <template v-else-if="item.slot">
+          <slot :name="item.slot" v-bind="currentData"></slot>
+        </template>
         <component v-else :is="item.render?item.render(currentData): undefined" v-model:value="formState[item.name]" v-model="formState[item.name]" v-model:checked="formState[item.name]"/>
       </MFormItem>
     </MMorm>
@@ -26,6 +60,8 @@
 import { computed, PropType, reactive, ref, watch } from 'vue';
 import UIAdapter from '../UIAdapter';
 import { FDFormType } from '../../types';
+import QuestionSvg from '../../assets/question.svg'
+
 const visible = ref(false)
 const props = defineProps({
   title: { // 标题
@@ -51,6 +87,7 @@ const MFormItem = uiAdapter.createFormItem();
 const MInput = uiAdapter.createInput();
 const MSelect = uiAdapter.createSelect();
 const MOption = uiAdapter.createOption();
+const MTooltip = uiAdapter.createTooltip();
 const form = ref<FDFormType>({} as any)
 const currentData = ref()
 let watchMap: any = {}
