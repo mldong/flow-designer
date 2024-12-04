@@ -119,5 +119,15 @@ class UIAdapter {
       return import('element-plus/es/components/message/index');
     }
   }
+  /**
+   * 创建文字提示对象
+   */
+  public createTooltip = () => {
+    if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
+      return defineAsyncComponent(() => import('ant-design-vue/es/tooltip').then(mod => mod.default));
+    } else if (this.uiLibrary === 'element-plus') {
+      return defineAsyncComponent(() => import('element-plus/es/components/tooltip/index').then(mod=> mod.default));
+    }
+  }
 }
 export default UIAdapter;

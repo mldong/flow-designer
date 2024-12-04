@@ -63,6 +63,9 @@ export declare type FDFormItemType = {
   component?: 'Input' | 'Select'; // 表单组件
   render?: (args: any) => VNode;
   componentProps?: any; // 表单组件属性
+  slot?: string;
+  helpMessage?: string | Array<string>;
+  formItemProps?: any;
 } 
 /**
  * 控制面板数据类型
