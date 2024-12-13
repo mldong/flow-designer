@@ -239,16 +239,16 @@ class Flow {
     
     // 拖拽面板追加类型前辍
     this.defaultDndPanel = this.defaultDndPanel.map((item: FDPatternItem) => {
-      if(props.typePrefix) {
+      if(props.typePrefix && item.type && !item.type.startsWith(props.typePrefix)) {
         item.type = `${props.typePrefix}${item.type}`
       }
       return item
     })
-    let defaultEdgieType = props.defaultEdgeType || Flow.defaultEdgeType
-    if(props.typePrefix){
-      defaultEdgieType = `${props.typePrefix}${defaultEdgieType}`
+    let defaultEdgeType = props.defaultEdgeType || Flow.defaultEdgeType
+    if(props.typePrefix && !defaultEdgeType.startsWith(props.typePrefix)){
+      defaultEdgeType = `${props.typePrefix}${defaultEdgeType}`
     }
-    this.lf.setDefaultEdgeType(defaultEdgieType)
+    this.lf.setDefaultEdgeType(defaultEdgeType)
     if(props.initDndPanel !== false && props.viewer !==true) {
       // 如果type相等，则替换属性，否则就追加
       const newDndPanel: Array<FDPatternItem> = [...this.defaultDndPanel]
