@@ -1,5 +1,11 @@
 # mldong-flow-designer-plus
 本项目包含了作者为B站课堂视频[《工作流设计器开发最佳实践》](https://www.bilibili.com/cheese/play/ss24484)的过程源码。教程中开发的组件也可用于实际生产环境中。以下是和使用文档和课程章节说明。
+## 实战项目
+[演示地址](https://flow-pro.mldong.com/)
+
+账号/密码：admin/123456
+
+注：实战项目不开源
 ## 使用文档
 ### 兼容性注意
 * 因Vite 需要 Node.js 版本 18+ 或 20+。当你的包管理器发出警告时，请注意升级你的 Node 版本。
