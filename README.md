@@ -6,6 +6,12 @@
 账号/密码：admin/123456
 
 注：实战项目不开源
+## 使用教程
+[Vben5快速入门·AntdDesign版](https://www.bilibili.com/cheese/play/ep1382075)
+
+[源码地址](https://gitee.com/course666/vue-vben-admin-v2/tree/v5/)
+
+![流程设计器课程目录](assets/README/image.png)
 ## 使用文档
 ### 兼容性注意
 * 因Vite 需要 Node.js 版本 18+ 或 20+。当你的包管理器发出警告时，请注意升级你的 Node 版本。
