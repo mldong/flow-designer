@@ -47,6 +47,9 @@ export const  MldongFlowDesignerProps = {
   edgeClick: { // 边点击事件
     type: Function,
   },
+  blankContextmenu: { // 画布右键菜单
+    type: Function,
+  },
   drawerWidth: { // 抽屉宽度
     type: [String,Number] as PropType<string | number>,
     default: '600px'

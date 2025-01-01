@@ -190,6 +190,7 @@ const graphData = ref({
 | dndPanel | FDPatternItem | - | 拖拽面板配置 |
 | initControl | boolean | true | 是否初始化控制面板 | 
 | control | FDControlItem | - | 控制面板配置 |
+| blankContextmenu | Function | - | 画布右键事件 |
 | nodeClick | Function | - | 节点点击事件 |
 | edgeClick | Function | - | 边点击事件 |
 | drawerWidth | String | Number | 600px | 抽屉宽度 |

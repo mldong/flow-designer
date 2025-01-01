@@ -351,14 +351,15 @@ class Flow {
       if(index>=-1) {
         nodeClick = shapeList[index]?.nodeClick || props.nodeClick
       }
+      const nodeEventParams = {
+        ...event,
+        patternItem: shapeList[index],
+        lf
+      }
       if(nodeClick && typeof nodeClick === 'function') {
-        nodeClick(event)
+        nodeClick(nodeEventParams)
       } else {
-        props.drawerRef.value?.show({
-          ...event,
-          patternItem: shapeList[index],
-          lf
-        })
+        props.drawerRef.value?.show(nodeEventParams)
       }
     })
     // 边事件
@@ -367,16 +368,17 @@ class Flow {
         return
       }
       let edgeClick = props.edgeClick
+      const edgeEventParams = {
+        ...event,
+        patternItem: {
+          form: props.edgeForm || schema.edge
+        },
+        lf
+      }
       if(edgeClick && typeof edgeClick === 'function') {
-        edgeClick(event)
+        edgeClick(edgeEventParams)
       } else {
-        props.drawerRef.value?.show({
-          ...event,
-          patternItem: {
-            form: props.edgeForm || schema.edge
-          },
-          lf
-        })
+        props.drawerRef.value?.show(edgeEventParams)
       }
     })
     // 画布事件
@@ -388,7 +390,7 @@ class Flow {
       (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
         processData[item.name] = lf.graphModel[item.name]
       })
-      props.drawerRef.value?.show({
+      const eventParams = {
         ...event,
         data: {
           type: 'process',
@@ -398,7 +400,11 @@ class Flow {
           form: props.processForm || schema.process
         },
         lf
-      })
+      }
+      if(props.blankContextmenu && typeof props.blankContextmenu === 'function') {
+        props.blankContextmenu(eventParams)
+      }
+      props.drawerRef.value?.show(eventParams)
     })
   }
   initDndPanel(data: any){
