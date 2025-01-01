@@ -181,25 +181,25 @@ const graphData = ref({
 </script>
 ```
 ### 属性说明
-| 属性名 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| v-model:value | object | - | 流程图数据 |
-| theme | FDThemeConfig | - | 主题配置 | 
-| highLight | FDHighLightType | 高亮配置 |
-| initDndPanel | boolean | true | 是否初始化拖拽面板 | 
-| dndPanel | FDPatternItem | - | 拖拽面板配置 |
-| initControl | boolean | true | 是否初始化控制面板 | 
-| control | FDControlItem | - | 控制面板配置 |
-| blankContextmenu | Function | - | 画布右键事件 |
-| nodeClick | Function | - | 节点点击事件 |
-| edgeClick | Function | - | 边点击事件 |
-| drawerWidth | String | Number | 600px | 抽屉宽度 |
-| modalWidth | String | Number | 60% | 弹窗宽度 |
-| processForm | FDFormType | - | 流程表单配置 |
-| edgeForm | FDFormType | - | 边表单配置 |
-| defaultEdgeType | string | snaker:transition | 默认边 |
-| typePrefix | string | snaker: | 自定义节点/边类型前缀 |
-| viewer | boolean | false | 是否查看模式 |
+| 属性名 | 类型 | 默认值 | 说明 | 版本 |
+| --- | --- | --- | --- | --- |
+| v-model:value | object | - | 流程图数据 | - |
+| theme | FDThemeConfig | - | 主题配置 |  - |
+| highLight | FDHighLightType | 高亮配置 | - |
+| initDndPanel | boolean | true | 是否初始化拖拽面板 |  - |
+| dndPanel | FDPatternItem | - | 拖拽面板配置 | - |
+| initControl | boolean | true | 是否初始化控制面板 |  - |
+| control | FDControlItem | - | 控制面板配置 | - |
+| blankContextmenu | Function | - | 画布右键事件 | 1.0.16+ |
+| nodeClick | Function | - | 节点点击事件 | - |
+| edgeClick | Function | - | 边点击事件 | - |
+| drawerWidth | String | Number | 600px | 抽屉宽度 | - |
+| modalWidth | String | Number | 60% | 弹窗宽度 | - |
+| processForm | FDFormType | - | 流程表单配置 | - |
+| edgeForm | FDFormType | - | 边表单配置 | - |
+| defaultEdgeType | string | snaker:transition | 默认边 | - |
+| typePrefix | string | snaker: | 自定义节点/边类型前缀 | - |
+| viewer | boolean | false | 是否查看模式 | - |
 #### FDThemeConfig
 ```typescript
 export declare type FDThemeConfig = {

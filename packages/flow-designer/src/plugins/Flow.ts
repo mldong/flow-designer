@@ -403,8 +403,9 @@ class Flow {
       }
       if(props.blankContextmenu && typeof props.blankContextmenu === 'function') {
         props.blankContextmenu(eventParams)
+      } else {
+        props.drawerRef.value?.show(eventParams)
       }
-      props.drawerRef.value?.show(eventParams)
     })
   }
   initDndPanel(data: any){
