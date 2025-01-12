@@ -8,7 +8,7 @@ import { onMounted, ref, watch } from 'vue';
 
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
-import "@logicflow/core/dist/style/index.css";
+import "@logicflow/core/lib/style/index.css";
 import '@logicflow/extension/lib/style/index.css'
 import Flow from './plugins/Flow';
 import './plugins/flow.css'
