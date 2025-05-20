@@ -330,7 +330,9 @@ class Flow {
       // 从graphModel取出name和displayName
       const processData : any= {};
       (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
-        processData[item.name] = lf.graphModel[item.name]
+        if(Object.keys(lf.graphModel).includes(item.name)){
+          processData[item.name] = lf.graphModel[item.name]
+        }
       })
       return {
         ...userData,
@@ -388,7 +390,9 @@ class Flow {
       }
       const processData : any= {};
       (props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
-        processData[item.name] = lf.graphModel[item.name]
+        if(Object.keys(lf.graphModel).includes(item.name)){
+          processData[item.name] = lf.graphModel[item.name]
+        }
       })
       const eventParams = {
         ...event,

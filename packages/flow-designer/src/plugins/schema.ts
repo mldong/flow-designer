@@ -16,6 +16,7 @@ export const start:FDFormType = {
   },{
     name: "preInterceptors",
     label: "前置拦截器",
+    defaultValue: '333',
     component: 'Input',
     componentProps: {
       placeholder: '请输入前置拦截器'
@@ -244,6 +245,7 @@ export const process: FDFormType = {
   },{
     name: "instanceNoClass",
     label: "实例编号生成类",
+    defaultValue: '33366',
     component: 'Input',
     componentProps: {
       placeholder: '请输入实例编号生成类'

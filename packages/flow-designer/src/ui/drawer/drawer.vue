@@ -147,7 +147,12 @@ defineExpose({
         deep: true
       })
       watchMap[item.name] = stopWatch
+      // 先根据默认值赋值
+      if(item.defaultValue!==undefined) {
+        formState[item.name] = item.defaultValue
+      }
     })
+    
     if(e.data.type == 'process') {
       mTitle.value = '设置流程属性'
       Object.keys(e.data.properties || {}).forEach(key=>{

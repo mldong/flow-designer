@@ -66,6 +66,8 @@ export declare type FDFormItemType = {
   slot?: string;
   helpMessage?: string | Array<string>;
   formItemProps?: any;
+  // 默认值
+  defaultValue?: any;
 } 
 /**
  * 控制面板数据类型
