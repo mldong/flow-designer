@@ -55,13 +55,24 @@ uiAdapter.createMessage()?.then((res)=>{
 })
 const MModal = uiAdapter.createModal();
 const MTextarea = uiAdapter.createTextarea();
-const handleCopy = () =>{
-  // 处理复制
-  navigator.clipboard.writeText(JSON.stringify(graphData.value, null, 2)).then(()=>{
+const handleCopy = async () => {
+  try {
+    const text = JSON.stringify(graphData.value, null, 2)
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      // 使用兼容方案
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
     MMessage.success('复制成功')
-  }).catch((err)=>{
-    MMessage.error('复制失败', err);
-  })
+  } catch (err) {
+    MMessage.error(`复制失败: ${err instanceof Error ? err.message : String(err)}`)
+  }
 }
 const handleSumit = () =>{
   // 处理导入
