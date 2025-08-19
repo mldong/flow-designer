@@ -13,3 +13,9 @@
 .lf-control-save {
   background-image: url("../assets/lf-control-save.svg");
 }
+.lf-control-fullscreen.enter {
+  background-image: url("../assets/lf-control-fullscreen-enter.svg");
+}
+.lf-control-fullscreen.exit {
+  background-image: url("../assets/lf-control-fullscreen-exit.svg");
+}
