@@ -25,22 +25,22 @@ const props = defineProps(MldongFlowDesignerProps)
 /**
  * 更新全屏控制按钮的文本和图标
  */
- const updateFullscreenControl = () => {
-  const controlItems = document.querySelectorAll('.lf-control-item');
-  controlItems.forEach(item => {
-    if (item.querySelector('.lf-control-text')) {
-      const textElement = item.querySelector('.lf-control-text');
+const updateFullscreenControl = () => {
+  // 通过更具体的选择器定位全屏按钮
+  const fullscreenControlItem = document.querySelector('.lf-control-item .lf-control-fullscreen');
+  if (fullscreenControlItem) {
+    const parentItem = fullscreenControlItem.closest('.lf-control-item');
+    if (parentItem) {
+      // 只修改全屏按钮的文本
+      const textElement = parentItem.querySelector('.lf-control-text');
       if (textElement) {
         textElement.textContent = isFullscreen.value ? '退出全屏' : '全屏';
       }
       
       // 更新图标类名
-      const iconElement = item.querySelector('.lf-control-fullscreen');
-      if (iconElement) {
-        iconElement.className = `lf-control-fullscreen ${isFullscreen.value ? 'exit' : 'enter'}`;
-      }
+      fullscreenControlItem.className = `lf-control-fullscreen ${isFullscreen.value ? 'exit' : 'enter'}`;
     }
-  });
+  }
 };
 /**
  * 切换全屏状态
