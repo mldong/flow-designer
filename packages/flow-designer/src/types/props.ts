@@ -75,5 +75,17 @@ export const  MldongFlowDesignerProps = {
   viewer: { // 是否查看模式
     type: Boolean,
     default: false
-  }
+  },
+  dagreOptions: { // dagre配置
+    type: Object,
+    default: () => ({
+      rankdir: 'TB',
+      align: 'UL',
+      nodesep: 100,
+      ranksep: 80,
+      ranker: 'network-simplex',  // 更智能的排名算法
+      isDefaultAnchor: true,      // 自动优化连线路径
+      edgesep: 15,
+    })
+  },
 }

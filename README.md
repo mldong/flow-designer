@@ -206,6 +206,7 @@ const graphData = ref({
 | defaultEdgeType | string | snaker:transition | 默认边 | - |
 | typePrefix | string | snaker: | 自定义节点/边类型前缀 | - |
 | viewer | boolean | false | 是否查看模式 | - |
+| dagreOptions | Object | - | [自动布局配置](https://site.logic-flow.cn/tutorial/extension/layout#%E5%B8%83%E5%B1%80%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9) | 2.0.8+ |
 #### FDThemeConfig
 ```typescript
 export declare type FDThemeConfig = {
