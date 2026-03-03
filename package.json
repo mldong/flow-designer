@@ -1,7 +1,7 @@
 {
   "name": "mldong-flow-designer-plus",
   "private": false,
-  "version": "2.0.7",
+  "version": "2.0.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -33,6 +33,7 @@
   "dependencies": {
     "@logicflow/core": "^2.0.10",
     "@logicflow/extension": "^2.0.14",
+    "@logicflow/layout": "^2.0.11",
     "ant-design-vue": "4.x",
     "element-plus": "^2.7.8",
     "mldong-flow-designer-plus": "^1.0.2",

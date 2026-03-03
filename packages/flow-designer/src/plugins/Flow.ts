@@ -1,6 +1,7 @@
 
 import LogicFlow from '@logicflow/core';
 import { DndPanel, Control, Menu } from '@logicflow/extension';
+import { Dagre } from "@logicflow/layout";
 import StartSvg from './../assets/start.svg'
 import UserTaskSvg from './../assets/user-task.svg'
 import CustomSvg from './../assets/custom.svg'
@@ -15,6 +16,7 @@ import { NodeTypeEnum } from '../types/enums';
 LogicFlow.use(DndPanel)
 LogicFlow.use(Control)
 LogicFlow.use(Menu)
+LogicFlow.use(Dagre)
 const nodes = import.meta.glob('../node/*.ts',{
   eager: true
 })
@@ -106,6 +108,17 @@ class Flow {
       onClick: () => {
         this.lf.resetZoom();
       },
+    },
+    {
+      key: 'auto-layout',
+      iconClass: 'lf-control-auto-layout', // 需要添加对应的CSS类
+      title: '自动布局',
+      text: '自动布局',
+      sort: 35, // 放在适应(30)之后，上一步(40)之前
+      onClick: () => {
+        // 先应用布局
+        this.lf.extension.dagre.layout(this.props.dagreOptions || {});
+      }
     },
     {
       key: 'undo',

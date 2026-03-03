@@ -19,3 +19,6 @@
 .lf-control-fullscreen.exit {
   background-image: url("../assets/lf-control-fullscreen-exit.svg");
 }
+.lf-control-auto-layout{
+  background-image: url("../assets/lf-control-auto-layout.svg");
+}
