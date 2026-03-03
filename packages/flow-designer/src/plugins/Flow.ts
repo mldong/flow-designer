@@ -192,6 +192,19 @@ class Flow {
       onClick: () => {
         const { eventCenter } = this.lf.graphModel;
         eventCenter.emit("custom:save", this.lf.getGraphData());
+      },
+    },
+    {
+      key: 'fullscreen',
+      iconClass: 'lf-control-fullscreen',
+      text: '全屏',
+      title: '全屏/退出全屏',
+      sort: 100,
+      onClick: () => {
+        // 调用父组件的 toggleFullscreen 方法
+        if (this.props.toggleFullscreen && typeof this.props.toggleFullscreen === 'function') {
+          this.props.toggleFullscreen();
+        }
       }
     }
   ];

@@ -1,7 +1,7 @@
 <template>
   <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
   <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
-  <div ref="container" style="width: 100%;height:100%"></div>
+  <div ref="container" :class="{ fullscreen: isFullscreen }" style="width: 100%;height:100%"></div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue';
@@ -17,16 +17,75 @@ import { MldongFlowDesignerProps } from './types/props'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
+// 添加全屏状态
+const isFullscreen = ref(false);
 const drawerRef = ref()
 const modalRef = ref()
 const props = defineProps(MldongFlowDesignerProps)
+/**
+ * 更新全屏控制按钮的文本和图标
+ */
+const updateFullscreenControl = () => {
+  // 通过更具体的选择器定位全屏按钮
+  const fullscreenControlItem = document.querySelector('.lf-control-item .lf-control-fullscreen');
+  if (fullscreenControlItem) {
+    const parentItem = fullscreenControlItem.closest('.lf-control-item');
+    if (parentItem) {
+      // 只修改全屏按钮的文本
+      const textElement = parentItem.querySelector('.lf-control-text');
+      if (textElement) {
+        textElement.textContent = isFullscreen.value ? '退出全屏' : '全屏';
+      }
+      
+      // 更新图标类名
+      fullscreenControlItem.className = `lf-control-fullscreen ${isFullscreen.value ? 'exit' : 'enter'}`;
+    }
+  }
+};
+/**
+ * 切换全屏状态
+ */
+ const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
+  if (isFullscreen.value) {
+    enterFullscreen();
+  } else {
+    exitFullscreen();
+  }
+  updateFullscreenControl();
+};
 LogicFlow.use(Flow, {
   ...props,
   drawerRef,
   modalRef,
+  toggleFullscreen,
 });
 const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save'])
 const lfInstance = ref();
+
+
+/**
+ * 进入全屏
+ */
+const enterFullscreen = () => {
+  if (container.value) {
+    container.value.requestFullscreen?.().catch(err => {
+      console.warn('无法进入全屏模式:', err);
+    });
+  }
+};
+
+/**
+ * 退出全屏
+ */
+const exitFullscreen = () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.().catch(err => {
+      console.warn('无法退出全屏模式:', err);
+    });
+  }
+};
+
 /**
  * 设置高亮数据
  * @param data 
@@ -111,6 +170,20 @@ onMounted(()=>{
     emits('on-save', data)
   })
   myRender(props.value)
+  // 监听键盘ESC事件退出全屏
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isFullscreen.value) {
+      isFullscreen.value = false;
+    }
+  });
+  
+  // 监听全屏变化事件
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+      isFullscreen.value = false;
+    }
+  });
+  updateFullscreenControl()
 })
 watch(()=>props.value, (newVal)=>{
   if(!isHistoryChange.value) {
@@ -126,3 +199,39 @@ watch(()=>props.highLight, (newVal)=>{
   deep: true
 })
 </script>
+<style scoped>
+.flow-container {
+  width: 100%;
+  height: 100%;
+}
+
+.flow-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+}
+
+.fullscreen-control {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.fullscreen-btn {
+  padding: 8px 16px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.fullscreen-btn:hover {
+  background-color: #40a9ff;
+}
+</style>
