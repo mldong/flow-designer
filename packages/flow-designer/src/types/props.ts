@@ -79,8 +79,8 @@ export const  MldongFlowDesignerProps = {
   dagreOptions: { // dagre配置
     type: Object,
     default: () => ({
-      rankdir: 'TB',
-      align: 'UL',
+      rankdir: 'LR',
+      align: 'UR',
       nodesep: 100,
       ranksep: 80,
       ranker: 'network-simplex',  // 更智能的排名算法
