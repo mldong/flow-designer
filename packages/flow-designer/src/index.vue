@@ -140,7 +140,8 @@ onMounted(()=>{
   lfInstance.value = new LogicFlow({
     container: container.value,
     grid: true,
-    isSilentMode: props.viewer
+    isSilentMode: props.viewer,
+    allowResize: true
   });
   const lf = lfInstance.value;
   // emits初始化事件

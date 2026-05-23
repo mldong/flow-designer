@@ -11,6 +11,8 @@ class JoinModel extends DiamondNodeModel {
     this.ry = 28;
     this.text.draggable = false;
     this.text.editable = false;
+    // 禁止节点拖拽调整大小
+    this.resizable = false;
   }
   getNodeStyle() {
     const theme = this.graphModel.props.theme;
@@ -54,7 +56,8 @@ class JoinView extends DiamondNode {
  /**
    * 完全自定义节点外观方法
    */
- getShape() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getShape(): any {
   const outCircle = super.getShape();
   return h("g", {}, [
     outCircle,
