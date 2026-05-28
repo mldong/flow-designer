@@ -1,7 +1,7 @@
 {
   "name": "mldong-flow-designer-plus",
   "private": false,
-  "version": "2.0.11",
+  "version": "2.0.12",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -18,25 +18,34 @@
     "Element Plus",
     "Ant Design of Vue3"
   ],
-  "main": "lib/mldong-flow-designer-plus.umd.cjs",
-  "types": "packages/types/index.d.ts",
+  "main": "./lib/mldong-flow-designer-plus.umd.cjs",
+  "module": "./lib/mldong-flow-designer-plus.js",
+  "types": "./packages/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./packages/types/index.d.ts",
+      "import": "./lib/mldong-flow-designer-plus.js",
+      "require": "./lib/mldong-flow-designer-plus.umd.cjs"
+    },
+    "./lib/style.css": "./lib/style.css",
+    "./lib/*": "./lib/*"
+  },
+  "files": [
+    "lib",
+    "packages"
+  ],
   "author": "mldong",
   "license": "Apache License 2.0",
   "homepage": "https://gitee.com/mldong/flow-designer",
   "bugs": {
     "url": "https://gitee.com/mldong/flow-designer/issues"
   },
-  "files": [
-    "lib",
-    "packages"
-  ],
   "dependencies": {
     "@logicflow/core": "^2.2.1",
     "@logicflow/extension": "^2.2.1",
     "@logicflow/layout": "^2.1.1",
     "ant-design-vue": "4.x",
     "element-plus": "^2.7.8",
-    "mldong-flow-designer-plus": "^1.0.2",
     "vue": "^3.4.30",
     "vue-json-pretty": "^2.4.0"
   },
