@@ -144,8 +144,9 @@ const graphData = ref(caseMap[initialCaseParam] || LeaveJson);
 }
 .case-selector {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   background: #fff;
   border: 1px solid #d9d9d9;
