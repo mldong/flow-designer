@@ -185,12 +185,15 @@ onMounted(()=>{
     }
   });
   updateFullscreenControl()
-})
-// 暴露 lf 实例给 Playwright/测试用：
-//   浏览器 console: __vue_app__.config.globalProperties 或组件 ref.__vueParentComponent.exposed.lf
-//   Playwright evaluate: const el = document.querySelector('...'); el.__vueParentComponent.exposed.lf
-defineExpose({
-  lf: lfInstance,
+  // 暴露 lf 实例给 Playwright/测试/调试用
+  //   浏览器 console: window.__lf
+  //   Playwright evaluate: () => window.__lf
+  // 命名用 __ 前缀避免与用户业务变量冲突
+  // 注意：vue 3 prod build 不挂 __vueParentComponent，window 是唯一稳的拿法
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).__lf = lf
+  }
 })
 watch(()=>props.value, (newVal)=>{
   if(!isHistoryChange.value) {
