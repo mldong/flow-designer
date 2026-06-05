@@ -25,5 +25,5 @@ dist-ssr
 lib
 .hermes/
 
-# pnpm 11 自动生成（ignored builds 状态记录）
-pnpm-workspace.yaml
+# pnpm 11 自动生成（ignored builds 状态记录）已移出 ignore
+# pnpm-workspace.yaml 现在显式进 git（保证 clone 即用，不依赖手动维护）
