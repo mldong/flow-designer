@@ -18,7 +18,25 @@ import FlowDesigner from '../../packages/index'
 // import 'mldong-flow-designer-plus/lib/style.css'
 import type { FDHighLightType } from '../../packages/flow-designer/src/types';
 import CustomHtml from './CustomHtml';
-import LeaveJson from '../assets/leave.json'
+// import LeaveJson from '../assets/leave.json'  // 旧默认示例
+// 5 个真业务 case（从 mldong-doc/docs/mldong/wf/ 后端文档反推）
+import LeaveJson from '../assets/wf-leave.json'         // 6 节点决策请假
+import ExpenseJson from '../assets/wf-expense.json'    // 7 节点决策报销
+import CountersignJson from '../assets/wf-countersign.json' // 5 节点会签
+import ForkJoinJson from '../assets/wf-fork-join.json' // 7 节点分支合并
+import CustomNodeJson from '../assets/wf-custom-node.json' // 4 节点自定义
+
+// 通过 ?case=leave|expense|countersign|fork|custom|empty 切换演示流程
+const caseParam = (typeof location !== 'undefined' ? new URLSearchParams(location.search).get('case') : '') || 'leave'
+const caseMap: Record<string, any> = {
+  leave: LeaveJson,
+  expense: ExpenseJson,
+  countersign: CountersignJson,
+  fork: ForkJoinJson,
+  custom: CustomNodeJson,
+  empty: { nodes: [], edges: [] },
+}
+const initialGraphData = caseMap[caseParam] || LeaveJson
 // import MyInput from './MyInput.vue'
 const theme = {
   activeColor: 'red'
@@ -82,7 +100,7 @@ const highLightData = ref<FDHighLightType>()
 //         console.log(lf.getGraphData())
 //       },
 //     },]
-const graphData = ref(LeaveJson);
+const graphData = ref(initialGraphData);
   // const handleClick = () =>{
   //   highLightData.value = {
   //     "historyNodeNames": ["1"],
