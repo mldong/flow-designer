@@ -36,7 +36,11 @@
   ],
   "author": "mldong",
   "license": "Apache License 2.0",
-  "homepage": "https://gitee.com/mldong/flow-designer",
+  "homepage": "https://www.npmjs.com/package/mldong-flow-designer-plus",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/mldong/flow-designer.git"
+  },
   "bugs": {
     "url": "https://gitee.com/mldong/flow-designer/issues"
   },

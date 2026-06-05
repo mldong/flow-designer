@@ -1,11 +1,24 @@
 # mldong-flow-designer-plus
 本项目包含了作者为B站课堂视频[《工作流设计器开发最佳实践》](https://www.bilibili.com/cheese/play/ss24484)的过程源码。教程中开发的组件也可用于实际生产环境中。以下是和使用文档和课程章节说明。
-## 实战项目
-[演示地址](https://flow-pro.mldong.com/)
+## 演示地址
+本工程提供两个演示站，分别覆盖库本身和真实业务集成两种形态：
 
-账号/密码：admin/123456
+### 流程设计器演示站
+[flow-designer.mldong.com](https://flow-designer.mldong.com/)
 
-注：实战项目不开源
+库本身的演示，包含请假 / 报销 / 会签 / 分支合并 / 自定义节点 5 个真业务场景（`?case=leave|expense|countersign|fork|custom|empty`）
+
+### 业务系统集成演示
+[flow-pro.mldong.com](https://flow-pro.mldong.com/)
+
+把本流程设计器集成进真实业务系统后的形态，账号/密码：admin/123456
+
+注：业务后端不开源
+## npm 包
+[mldong-flow-designer-plus](https://www.npmjs.com/package/mldong-flow-designer-plus)
+
+国内用户可走 [淘宝镜像](https://registry.npmmirror.com/mldong-flow-designer-plus) 加速安装。
+
 ## 使用教程
 [Vben5快速入门·AntdDesign版](https://www.bilibili.com/cheese/play/ep1382075)
 
