@@ -186,6 +186,12 @@ onMounted(()=>{
   });
   updateFullscreenControl()
 })
+// 暴露 lf 实例给 Playwright/测试用：
+//   浏览器 console: __vue_app__.config.globalProperties 或组件 ref.__vueParentComponent.exposed.lf
+//   Playwright evaluate: const el = document.querySelector('...'); el.__vueParentComponent.exposed.lf
+defineExpose({
+  lf: lfInstance,
+})
 watch(()=>props.value, (newVal)=>{
   if(!isHistoryChange.value) {
     myRender(newVal);
