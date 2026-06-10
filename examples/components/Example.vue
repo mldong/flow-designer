@@ -3,9 +3,14 @@
   <!-- <pre>
     {{ graphData }}
   </pre> -->
+  <div class="mode-switcher">
+    <button :class="{ active: designerMode === 'canvas' }" @click="designerMode = 'canvas'">画布模式</button>
+    <button :class="{ active: designerMode === 'dingtalk' }" @click="designerMode = 'dingtalk'">钉钉模式</button>
+  </div>
   <FlowDesigner
   
   v-model:value="graphData" 
+  :mode="designerMode"
   :theme="theme"
   :highLight="highLightData"
   @on-init="handleInit"
@@ -14,12 +19,13 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
+const designerMode = ref<'canvas' | 'dingtalk'>('canvas')
 //import FlowDesigner from '../../packages/index'
 import FlowDesigner from 'mldong-flow-designer-plus'
 import 'mldong-flow-designer-plus/lib/style.css'
 import type { FDHighLightType } from '../../packages/flow-designer/src/types';
 import CustomHtml from './CustomHtml';
-import LeaveJson from '../assets/leave.json'
+import LeaveJson from '../assets/wf-leave.json'
 // import MyInput from './MyInput.vue'
 const theme = {
   activeColor: 'red'
@@ -99,6 +105,39 @@ const graphData = ref(LeaveJson);
   } 
 </script>
 <style>
+.mode-switcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+.mode-switcher button {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  color: #606266;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.mode-switcher button.active {
+  background: #3068EC;
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(48, 104, 236, 0.3);
+}
+.mode-switcher button:hover:not(.active) {
+  background: rgba(48, 104, 236, 0.08);
+  color: #3068EC;
+}
 
 .lf-control-myicon {
   background: url('../../packages/flow-designer/src/assets/start.svg');

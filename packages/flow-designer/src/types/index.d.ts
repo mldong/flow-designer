@@ -11,6 +11,7 @@ export declare type FDConfigData = {
   instanceUrl?: string; // 启动实例要填写的表单key
   expireTime?: string; // 期待完成时间变量key
   instanceNoClass?: string; // xx.DefaultNoGenerator	实例编号生成器实现类
+  mode?: 'canvas' | 'dingtalk'; // 渲染模式
 } & GraphConfigData
 /**
  * 主题颜色配置

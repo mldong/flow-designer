@@ -1,0 +1,705 @@
+// 钉钉风格流程设计器样式
+// CSS 变量用于主题定制
+
+:root {
+  --ding-primary-color: #1890ff;
+  --ding-active-color: #ff8c00;
+  --ding-history-color: #52c41a;
+  --ding-bg-color: #f0f2f5;
+  --ding-card-bg: #ffffff;
+  --ding-border-color: #e8e8e8;
+  --ding-text-color: #333333;
+  --ding-text-secondary: #999999;
+  --ding-line-color: #cacaca;
+  --ding-start-color: #67c23a;
+  --ding-end-color: #909399;
+  --ding-delete-color: #f56c6c;
+  --ding-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --ding-card-width: 220px;
+  --ding-card-radius: 8px;
+  --ding-pill-radius: 20px;
+}
+
+// 主容器
+.ding-designer {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: var(--ding-bg-color);
+  position: relative;
+
+  &__canvas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    min-height: 100%;
+    min-width: fit-content;
+  }
+}
+
+// 节点链容器
+.ding-node-chain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// 垂直连线
+.ding-line-vertical {
+  width: 2px;
+  height: 30px;
+  background-color: var(--ding-line-color);
+}
+
+// 节点卡片通用
+.ding-node-card {
+  position: relative;
+  width: var(--ding-card-width);
+  border-radius: var(--ding-card-radius);
+  box-shadow: var(--ding-shadow);
+  background: var(--ding-card-bg);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  // 左侧彩色条
+  &__bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: var(--ding-card-radius) 0 0 var(--ding-card-radius);
+    background-color: var(--ding-primary-color);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 6px 16px;
+    font-size: 12px;
+    color: var(--ding-text-secondary);
+  }
+
+  &__title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    .ding-node-card:hover & {
+      opacity: 1;
+    }
+  }
+
+  &__action-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--ding-text-secondary);
+    border: none;
+    background: transparent;
+    padding: 0;
+
+    &:hover {
+      background: #f0f0f0;
+      color: var(--ding-text-color);
+    }
+
+    &--delete:hover {
+      color: var(--ding-delete-color);
+    }
+  }
+
+  &__body {
+    padding: 4px 12px 12px 16px;
+    font-size: 14px;
+    color: var(--ding-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // 高亮状态
+  &--active {
+    .ding-node-card__bar {
+      background-color: var(--ding-active-color);
+    }
+    box-shadow: 0 0 0 2px var(--ding-active-color), var(--ding-shadow);
+  }
+
+  &--history {
+    .ding-node-card__bar {
+      background-color: var(--ding-history-color);
+    }
+    box-shadow: 0 0 0 2px var(--ding-history-color), var(--ding-shadow);
+  }
+}
+
+// 开始/结束 胶囊节点
+.ding-node-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 36px;
+  border-radius: var(--ding-pill-radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  cursor: default;
+  user-select: none;
+
+  &--start {
+    background-color: var(--ding-start-color);
+  }
+
+  &--end {
+    background-color: var(--ding-end-color);
+  }
+
+  &--active {
+    box-shadow: 0 0 0 2px var(--ding-active-color);
+  }
+
+  &--history {
+    box-shadow: 0 0 0 2px var(--ding-history-color);
+  }
+}
+
+// 添加按钮
+.ding-add-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--ding-primary-color);
+    color: #fff;
+    font-size: 18px;
+    line-height: 28px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background-color 0.2s;
+    z-index: 2;
+
+    &:hover {
+      transform: scale(1.15);
+      background-color: #40a9ff;
+    }
+  }
+}
+
+// 条件分支组
+.ding-condition-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  &__title {
+    font-size: 12px;
+    color: var(--ding-text-secondary);
+    background: var(--ding-bg-color);
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--ding-border-color);
+  }
+
+  &__add-branch {
+    font-size: 12px;
+    color: var(--ding-primary-color);
+    cursor: pointer;
+    background: var(--ding-bg-color);
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--ding-primary-color);
+    white-space: nowrap;
+
+    &:hover {
+      background: var(--ding-primary-color);
+      color: #fff;
+    }
+  }
+
+  &__branches {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  // 横向连线（顶部从分支入口分叉到各列）
+  &__top-line {
+    position: absolute;
+    top: 0;
+    height: 2px;
+    background-color: var(--ding-line-color);
+  }
+
+  &__bottom-line {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background-color: var(--ding-line-color);
+  }
+}
+
+// 分支列
+.ding-branch-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 0 30px;
+  min-width: calc(var(--ding-card-width) + 60px);
+
+  &__head {
+    font-size: 12px;
+    color: var(--ding-text-secondary);
+    padding: 4px 12px;
+    background: var(--ding-card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--ding-border-color);
+    margin-bottom: 0;
+    max-width: var(--ding-card-width);
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s, border-color 0.2s;
+
+    &:hover {
+      background: #e6f7ff;
+      border-color: var(--ding-primary-color);
+    }
+
+    &-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &-edit {
+      font-size: 11px;
+      color: var(--ding-text-secondary);
+      opacity: 0;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    &:hover &-edit {
+      opacity: 1;
+    }
+  }
+
+  // 分支顶部竖线
+  &__line-top {
+    width: 2px;
+    height: 20px;
+    background-color: var(--ding-line-color);
+  }
+
+  // 分支底部竖线
+  &__line-bottom {
+    width: 2px;
+    height: 20px;
+    background-color: var(--ding-line-color);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+// 节点选择器
+.ding-node-selector {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  margin-top: 4px;
+
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+  }
+
+  &__panel {
+    background: var(--ding-card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 8px;
+    min-width: 160px;
+    position: relative;
+    z-index: 100;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ding-text-color);
+    transition: background 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &__icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #fff;
+      flex-shrink: 0;
+
+      &--task {
+        background: var(--ding-primary-color);
+      }
+
+      &--condition {
+        background: #faad14;
+      }
+
+      &--parallel {
+        background: #722ed1;
+      }
+
+      &--custom {
+        background: #13c2c2;
+      }
+
+      &--subprocess {
+        background: #eb2f96;
+      }
+    }
+  }
+}
+
+// 编辑面板
+.ding-edit-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 360px;
+  height: 100%;
+  background: var(--ding-card-bg);
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ding-text-color);
+    border-bottom: 1px solid var(--ding-border-color);
+    flex-shrink: 0;
+  }
+
+  &__close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    color: var(--ding-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+
+    &:hover {
+      background: #f0f0f0;
+      color: var(--ding-text-color);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  &__footer {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--ding-border-color);
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+
+  &__btn {
+    padding: 6px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--ding-border-color);
+    background: var(--ding-card-bg);
+    color: var(--ding-text-color);
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: var(--ding-primary-color);
+      color: var(--ding-primary-color);
+    }
+
+    &--primary {
+      background: var(--ding-primary-color);
+      border-color: var(--ding-primary-color);
+      color: #fff;
+
+      &:hover {
+        background: #40a9ff;
+        border-color: #40a9ff;
+        color: #fff;
+      }
+    }
+  }
+}
+
+// 表单项
+.ding-form-item {
+  margin-bottom: 16px;
+
+  &__label {
+    display: block;
+    font-size: 13px;
+    color: var(--ding-text-color);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--ding-border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--ding-text-color);
+    background: var(--ding-card-bg);
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: var(--ding-primary-color);
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--ding-text-secondary);
+    }
+  }
+
+  &__select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--ding-border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--ding-text-color);
+    background: var(--ding-card-bg);
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &:focus {
+      border-color: var(--ding-primary-color);
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+    }
+  }
+}
+
+// 控制面板
+.ding-control-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 150;
+  display: flex;
+  gap: 4px;
+  background: var(--ding-card-bg);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+
+  &__item {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+  }
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+// 控制面板图标
+.ding-icon-save {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z'/%3E%3Cpolyline points='17 21 17 13 7 13 7 21'/%3E%3Cpolyline points='7 3 7 8 15 8'/%3E%3C/svg%3E");
+}
+
+.ding-icon-clear {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2'/%3E%3C/svg%3E");
+}
+
+.ding-icon-see {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3Cline x1='16' y1='13' x2='8' y2='13'/%3E%3Cline x1='16' y1='17' x2='8' y2='17'/%3E%3C/svg%3E");
+}
+
+.ding-icon-import {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/%3E%3Cpolyline points='7 10 12 15 17 10'/%3E%3Cline x1='12' y1='15' x2='12' y2='3'/%3E%3C/svg%3E");
+}
+
+.ding-icon-fullscreen {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cpolyline points='9 21 3 21 3 15'/%3E%3Cline x1='21' y1='3' x2='14' y2='10'/%3E%3Cline x1='3' y1='21' x2='10' y2='14'/%3E%3C/svg%3E");
+}
+
+// 弹窗遮罩层
+.ding-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ding-modal {
+  background: var(--ding-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 560px;
+  max-width: 90%;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ding-text-color);
+    border-bottom: 1px solid var(--ding-border-color);
+    flex-shrink: 0;
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: 300px;
+    padding: 12px;
+    border: 1px solid var(--ding-border-color);
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+    color: var(--ding-text-color);
+    background: #fafafa;
+    outline: none;
+    resize: vertical;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: var(--ding-primary-color);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--ding-border-color);
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+}
+

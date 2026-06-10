@@ -1,10 +1,33 @@
 <template>
-  <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
-  <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
-  <div ref="container" :class="{ fullscreen: isFullscreen }" style="width: 100%;height:100%"></div>
+  <template v-if="currentMode === 'canvas'">
+    <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
+    <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
+    <div ref="container" :class="{ fullscreen: isFullscreen }" style="width: 100%;height:100%"></div>
+  </template>
+  <DingTalkDesigner
+    v-else
+    :value="value"
+    :theme="theme"
+    :high-light="highLight"
+    :viewer="viewer"
+    :dnd-panel="dndPanel"
+    :process-form="processForm"
+    :edge-form="edgeForm"
+    :node-click="nodeClick"
+    :edge-click="edgeClick"
+    :blank-contextmenu="blankContextmenu"
+    :control="control"
+    :init-control="initControl"
+    :drawer-width="drawerWidth"
+    :modal-width="modalWidth"
+    :type-prefix="typePrefix"
+    :default-edge-type="defaultEdgeType"
+    @update:value="(data) => emits('update:value', data)"
+    @save="(data) => emits('on-save', data)"
+  />
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
@@ -17,11 +40,22 @@ import { MldongFlowDesignerProps } from './types/props'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
+import DingTalkDesigner from './dingtalk/components/DingTalkDesigner.vue';
 // 添加全屏状态
 const isFullscreen = ref(false);
 const drawerRef = ref()
 const modalRef = ref()
 const props = defineProps(MldongFlowDesignerProps)
+
+// 计算当前渲染模式
+const currentMode = computed(() => {
+  // prop 优先
+  if (props.mode) return props.mode
+  // 其次读数据中的 mode
+  if (props.value?.mode) return props.value.mode
+  // 默认 canvas
+  return 'canvas'
+})
 /**
  * 更新全屏控制按钮的文本和图标
  */
@@ -136,6 +170,8 @@ const myRender = (data: any) =>{
 }
 const isHistoryChange = ref(false)
 onMounted(()=>{
+  // 钉钉模式下不初始化 LogicFlow
+  if (currentMode.value !== 'canvas') return;
   if(!container.value) return;
   lfInstance.value = new LogicFlow({
     container: container.value,
