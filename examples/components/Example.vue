@@ -20,9 +20,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 const designerMode = ref<'canvas' | 'dingtalk'>('canvas')
-//import FlowDesigner from '../../packages/index'
-import FlowDesigner from 'mldong-flow-designer-plus'
-import 'mldong-flow-designer-plus/lib/style.css'
+//import FlowDesigner from 'mldong-flow-designer-plus'
+//import 'mldong-flow-designer-plus/lib/style.css'
+import FlowDesigner from '../../packages/index'
+import '../../lib/style.css'
 import type { FDHighLightType } from '../../packages/flow-designer/src/types';
 import CustomHtml from './CustomHtml';
 import LeaveJson from '../assets/wf-leave.json'
