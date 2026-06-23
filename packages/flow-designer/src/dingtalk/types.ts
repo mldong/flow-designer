@@ -11,12 +11,11 @@ export interface DingNode {
   children?: DingNode        // 下一个节点（单链表形式）
 }
 
-/** 条件/并发分支容器（DingNode 的特殊形态） */
+/** 条件分支容器（decision 节点）— 单条 children 汇聚 */
 export interface DingConditionNode extends Omit<DingNode, 'type'> {
-  type: 'condition' | 'parallel'  // condition 对应 decision，parallel 对应 fork/join
+  type: 'condition'          // 对应 decision 节点
   branches: DingBranch[]
-  children?: DingNode        // 所有分支汇聚后的下一个节点（对于 parallel，即 join 节点的后续）
-  joinId?: string            // 并行分支的汇聚点节点 ID（仅 parallel 类型有）
+  children?: DingNode        // 所有分支汇聚后的下一个节点
 }
 
 /** 分支 */
@@ -27,12 +26,37 @@ export interface DingBranch {
   children?: DingNode        // 分支内的节点链
 }
 
-/** 联合类型（便于转换函数内部使用） */
-export type DingTreeNode = DingNode | DingConditionNode
+/**
+ * 并行分支 fork 容器（fork 节点）
+ *
+ * 与 DingConditionNode 共享 DingBranch 分支结构（统一处理 add/remove）：
+ * - branches 每项是 DingBranch（id/name 来自 edge，children 是 DingNode 链）
+ * - joinId 关联的 join 节点是独立的 DingNode（不在此容器内），通过 joinId 关联
+ * - 视觉上：fork 节点 → 多个独立 task 节点链 → join 节点 → joinChildren
+ */
+export interface DingForkNode extends Omit<DingNode, 'type' | 'children'> {
+  type: 'fork'               // 对应 fork 节点
+  branches: DingBranch[]     // 多条分支，每条是 DingBranch（children 是独立 DingNode 链）
+  joinId?: string            // 汇聚点 join 节点 ID（独立 DingNode）
+  joinChildren?: DingNode    // join 节点之后的下一个节点
+}
 
-/** 类型守卫：判断节点是否为条件/并发容器 */
+/** 联合类型（便于转换函数内部使用） */
+export type DingTreeNode = DingNode | DingConditionNode | DingForkNode
+
+/** 类型守卫：判断节点是否为条件容器（decision） */
 export function isConditionNode(node: DingNode): node is DingConditionNode {
-  return node.type === 'condition' || node.type === 'parallel'
+  return node.type === 'condition'
+}
+
+/** 类型守卫：判断节点是否为 fork 容器（并行分支） */
+export function isForkNode(node: DingNode): node is DingForkNode {
+  return node.type === 'fork'
+}
+
+/** 类型守卫：判断节点是否为 join 节点 */
+export function isJoinNode(node: DingNode, typePrefix: string = 'snaker:'): boolean {
+  return node.type === `${typePrefix}join` || node.type === 'join'
 }
 
 /** 图节点（对应 LogicFlow 的节点数据） */

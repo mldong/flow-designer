@@ -176,6 +176,11 @@
     background-color: var(--ding-end-color);
   }
 
+  &--join {
+    background-color: #f59e0b;
+    width: 120px;
+  }
+
   &--active {
     box-shadow: 0 0 0 2px var(--ding-active-color);
   }
@@ -258,9 +263,31 @@
     }
   }
 
+  &__delete {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid var(--ding-delete-color);
+    background: var(--ding-bg-color);
+    color: var(--ding-delete-color);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--ding-delete-color);
+      color: #fff;
+    }
+  }
+
   &__branches {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     position: relative;
   }
 
@@ -337,10 +364,11 @@
     background-color: var(--ding-line-color);
   }
 
-  // 分支底部竖线
+  // 分支底部竖线（用 flex:1 自适应到容器底部，使短分支也能接到汇合线）
   &__line-bottom {
     width: 2px;
-    height: 20px;
+    flex: 1;
+    min-height: 20px;
     background-color: var(--ding-line-color);
   }
 
@@ -348,6 +376,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  // 空分支占位（虚线 + 提示文字）
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: calc(var(--ding-card-width) - 40px);
+    min-height: 96px;
+    padding: 16px 12px;
+    margin: 4px 0;
+    border: 1.5px dashed var(--ding-border-color);
+    border-radius: 8px;
+    background: #fafbfc;
+    transition: border-color 0.2s, background 0.2s;
+
+    &:hover {
+      border-color: var(--ding-primary-color);
+      background: #e6f7ff;
+    }
+
+    &-hint {
+      font-size: 12px;
+      color: var(--ding-text-secondary);
+      margin-bottom: 4px;
+      user-select: none;
+    }
   }
 }
 
@@ -703,3 +759,15 @@
   }
 }
 
+
+// 弹窗错误提示
+.ding-modal__error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #fff2f0;
+  border: 1px solid #ffccc7;
+  color: #cf1322;
+  font-size: 13px;
+  line-height: 1.5;
+}

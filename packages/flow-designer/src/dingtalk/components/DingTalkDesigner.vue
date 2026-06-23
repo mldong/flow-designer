@@ -86,6 +86,7 @@
         </div>
         <div class="ding-modal__body">
           <textarea class="ding-modal__textarea" v-model="importDataJson" placeholder="请粘贴 JSON 数据"></textarea>
+          <div v-if="importError" class="ding-modal__error">{{ importError }}</div>
         </div>
         <div class="ding-modal__footer">
           <button class="ding-edit-panel__btn ding-edit-panel__btn--primary" @click="doImport">导入</button>
@@ -99,8 +100,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, PropType } from 'vue'
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType, FDFormItemType } from '../../types'
-import type { DingNode, DingConditionNode, DingBranch } from '../types'
-import { isConditionNode } from '../types'
+import type { DingNode, DingConditionNode, DingBranch, DingForkNode } from '../types'
+import { isConditionNode, isForkNode } from '../types'
 import { graphToTree, treeToGraph } from '../utils/converter'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
@@ -189,17 +190,28 @@ const computedDndPanel = computed<FDPatternItem[]>(() => {
 // 树形数据
 const treeData = ref<DingNode | undefined>(undefined)
 
-// 编辑分支时记录父节点类型（condition/parallel）
-const editingBranchType = ref<'condition' | 'parallel' | null>(null)
+// 编辑分支时记录父节点类型（condition/fork）
+const editingBranchType = ref<'condition' | 'fork' | null>(null)
 
 // 内部标记，避免 watch 循环
 let isInternalUpdate = false
 
 /** 递归查找分支所属的父节点类型 */
-function findBranchParentType(node: DingNode, branchId: string): 'condition' | 'parallel' | null {
+function findBranchParentType(node: DingNode, branchId: string): 'condition' | 'fork' | null {
   if (isConditionNode(node)) {
     if (node.branches.some(b => b.id === branchId)) {
-      return node.type
+      return 'condition'
+    }
+    for (const branch of node.branches) {
+      if (branch.children) {
+        const found = findBranchParentType(branch.children, branchId)
+        if (found) return found
+      }
+    }
+  }
+  if (isForkNode(node)) {
+    if (node.branches.some(b => b.id === branchId)) {
+      return 'fork'
     }
     for (const branch of node.branches) {
       if (branch.children) {
@@ -228,6 +240,7 @@ function syncToGraph() {
     ...props.value,
     nodes: graphData.nodes,
     edges: graphData.edges,
+    mode: 'dingtalk',
   }
   isInternalUpdate = true
   emit('update:value', newValue)
@@ -268,6 +281,10 @@ const containerStyle = computed(() => {
 let idCounter = 0
 
 function generateId(): string {
+  // 优先用 crypto.randomUUID 避免快速点击/嵌套条件下 ID 重复
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `ding_${crypto.randomUUID()}`
+  }
   return `ding_${Date.now()}_${++idCounter}`
 }
 
@@ -286,9 +303,14 @@ function ensureTypePrefix(type: string): string {
 function handleAddNode(nodeType: string, afterNode: DingNode | null) {
   if (!treeData.value) return
 
-  // 特殊类型：条件分支
-  if (nodeType === '__condition__' || nodeType === '__parallel__') {
-    insertConditionNode(afterNode, nodeType === '__parallel__' ? 'parallel' : 'condition')
+  // 特殊类型：条件分支 / 并行分支
+  if (nodeType === '__condition__') {
+    insertConditionNode(afterNode, 'condition')
+    syncToGraph()
+    return
+  }
+  if (nodeType === '__parallel__') {
+    insertForkJoinPair(afterNode)
     syncToGraph()
     return
   }
@@ -314,12 +336,21 @@ function handleAddNode(nodeType: string, afterNode: DingNode | null) {
 
 /**
  * 删除节点（start/end 不允许删除）
+ * - 普通节点：调用 removeNode 把 children 接到父节点
+ * - 条件容器：调用 removeConditionContainerById 把容器的 children 接续到所在位置
+ * - 并行容器：调用 removeForkContainerById 把 joinChildren 接续到所在位置
  */
 function handleDeleteNode(node: DingNode) {
   if (!treeData.value) return
   const baseType = node.type.replace(props.typePrefix, '')
   if (baseType === 'start' || baseType === 'end') return
-  removeNode(treeData.value, node.id)
+  if (isConditionNode(node)) {
+    removeConditionContainerById(treeData.value, node.id)
+  } else if (isForkNode(node)) {
+    removeForkContainerById(treeData.value, node.id)
+  } else {
+    removeNode(treeData.value, node.id)
+  }
   syncToGraph()
 }
 
@@ -411,18 +442,32 @@ function handleEditBranch(branch: DingBranch) {
 }
 
 /**
- * 添加条件分支
+ * 添加条件/并行分支
+ * - condition：向 DingConditionNode.branches 追加 DingBranch
+ * - fork：向 DingForkNode.branches 追加 DingBranch（children 留空，用户可继续填入任务）
  */
 function handleAddBranch(node: DingNode) {
-  if (!isConditionNode(node)) return
-  const condNode = node as DingConditionNode
-  const newBranch: DingBranch = {
-    id: generateId(),
-    name: `条件${condNode.branches.length + 1}`,
-    properties: {},
+  if (isConditionNode(node)) {
+    const condNode = node as DingConditionNode
+    const newBranch: DingBranch = {
+      id: generateId(),
+      name: `条件${condNode.branches.length + 1}`,
+      properties: {},
+    }
+    condNode.branches.push(newBranch)
+    syncToGraph()
+    return
   }
-  condNode.branches.push(newBranch)
-  syncToGraph()
+  if (isForkNode(node)) {
+    const forkNode = node as DingForkNode
+    const newBranch: DingBranch = {
+      id: generateId(),
+      name: `分支${forkNode.branches.length + 1}`,
+      properties: {},
+    }
+    forkNode.branches.push(newBranch)
+    syncToGraph()
+  }
 }
 
 /**
@@ -432,10 +477,10 @@ function handleAddToBranch(nodeType: string, branch: DingBranch) {
   if (!treeData.value) return
 
   // 特殊类型：条件分支
-  if (nodeType === '__condition__' || nodeType === '__parallel__') {
+  if (nodeType === '__condition__') {
     const condNode: DingConditionNode = {
       id: generateId(),
-      type: nodeType === '__parallel__' ? 'parallel' : 'condition',
+      type: 'condition',
       name: '',
       properties: {},
       branches: [
@@ -481,6 +526,21 @@ function insertAfter(root: DingNode, targetId: string, newNode: DingNode): boole
     }
   }
 
+  // 关键：fork 容器的 joinChildren 链也需要递归（join 节点也在此链中）
+  if (isForkNode(root)) {
+    const forkNode = root as DingForkNode
+    // 1) fork 的每个分支的 children 链
+    for (const branch of forkNode.branches) {
+      if (branch.children && insertAfter(branch.children, targetId, newNode)) {
+        return true
+      }
+    }
+    // 2) fork 后的 joinChildren 链
+    if (forkNode.joinChildren && insertAfter(forkNode.joinChildren, targetId, newNode)) {
+      return true
+    }
+  }
+
   if (root.children) {
     return insertAfter(root.children, targetId, newNode)
   }
@@ -490,18 +550,41 @@ function insertAfter(root: DingNode, targetId: string, newNode: DingNode): boole
 
 /**
  * 从树中移除指定节点（将其 children 接到父节点）
+ * 关键边界：若 target 本身是条件/并行容器（嵌套），不能简单丢弃其 children，
+ * 否则会丢失该容器内部的 branches 信息；改为把容器的 children（汇聚后的下一节点）接续上去。
  */
 function removeNode(root: DingNode, targetId: string): boolean {
-  // 检查 root.children 是否为要删除的
+  // 场景 1：root.children 就是要删除的节点
   if (root.children && root.children.id === targetId) {
     const target = root.children
+    // 条件容器或普通节点统一处理：把它的 children 接续到 root（条件容器时为汇聚后的下一节点）
     root.children = target.children
     return true
   }
 
+  // 场景 2：条件容器的某个分支中
   if (isConditionNode(root)) {
     const condNode = root as DingConditionNode
     for (const branch of condNode.branches) {
+      if (branch.children) {
+        if (branch.children.id === targetId) {
+          const target = branch.children
+          // 嵌套条件容器：把容器的 children（汇聚后的下一节点）接续到分支
+          // 普通节点：原逻辑接续其 children
+          branch.children = target.children
+          return true
+        }
+        if (removeNode(branch.children, targetId)) {
+          return true
+        }
+      }
+    }
+  }
+
+  // 场景 2b：fork 容器的某个分支或 joinChildren 链中
+  if (isForkNode(root)) {
+    const forkNode = root as DingForkNode
+    for (const branch of forkNode.branches) {
       if (branch.children) {
         if (branch.children.id === targetId) {
           branch.children = branch.children.children
@@ -512,12 +595,97 @@ function removeNode(root: DingNode, targetId: string): boolean {
         }
       }
     }
+    if (forkNode.joinChildren) {
+      // join 节点本身（joinChildren 的第一节点）允许被删除：把 join 的 children 接到 fork
+      if (forkNode.joinChildren.id === targetId) {
+        forkNode.joinChildren = forkNode.joinChildren.children || null
+        return true
+      }
+      if (removeNode(forkNode.joinChildren, targetId)) {
+        return true
+      }
+    }
   }
 
+  // 场景 3：继续递归到 root.children
   if (root.children) {
     return removeNode(root.children, targetId)
   }
 
+  return false
+}
+
+/**
+ * 删除整个条件容器：把容器的 children（汇聚后的下一节点）接续到所在位置
+ * 适用于 root.children 是条件容器、或分支的 children 是条件容器的两种位置
+ */
+function removeConditionContainerById(root: DingNode, containerId: string): boolean {
+  // 位置 1：root.children 是要删除的条件容器
+  if (root.children && root.children.id === containerId && isConditionNode(root.children)) {
+    root.children = (root.children as DingConditionNode).children
+    return true
+  }
+  // 位置 2：条件容器的某个分支的 children 是要删除的条件容器
+  if (isConditionNode(root)) {
+    const condNode = root as DingConditionNode
+    for (const branch of condNode.branches) {
+      if (
+        branch.children &&
+        branch.children.id === containerId &&
+        isConditionNode(branch.children)
+      ) {
+        branch.children = (branch.children as DingConditionNode).children
+        return true
+      }
+      if (branch.children && removeConditionContainerById(branch.children, containerId)) {
+        return true
+      }
+    }
+  }
+  // 位置 2b：fork 容器的某个分支或 joinChildren 中
+  if (isForkNode(root)) {
+    const forkNode = root as DingForkNode
+    for (const branch of forkNode.branches) {
+      if (branch.children && removeConditionContainerById(branch.children, containerId)) {
+        return true
+      }
+    }
+    if (forkNode.joinChildren && removeConditionContainerById(forkNode.joinChildren, containerId)) {
+      return true
+    }
+  }
+  // 位置 3：继续递归到 root.children
+  if (root.children) {
+    return removeConditionContainerById(root.children, containerId)
+  }
+  return false
+}
+
+/**
+ * 删除整个 fork 容器：把 joinChildren 接续到所在位置
+ */
+function removeForkContainerById(root: DingNode, containerId: string): boolean {
+  // 位置 1：root.children 是要删除的 fork 容器
+  if (root.children && root.children.id === containerId && isForkNode(root.children)) {
+    root.children = (root.children as DingForkNode).joinChildren
+    return true
+  }
+  // 位置 2：fork 内部递归（分支链 + joinChildren 链）
+  if (isForkNode(root)) {
+    const forkNode = root as DingForkNode
+    for (const branch of forkNode.branches) {
+      if (branch.children && removeForkContainerById(branch.children, containerId)) {
+        return true
+      }
+    }
+    if (forkNode.joinChildren && removeForkContainerById(forkNode.joinChildren, containerId)) {
+      return true
+    }
+  }
+  // 位置 3：继续递归到 root.children
+  if (root.children) {
+    return removeForkContainerById(root.children, containerId)
+  }
   return false
 }
 
@@ -527,19 +695,68 @@ function removeNode(root: DingNode, targetId: string): boolean {
 function insertConditionNode(afterNode: DingNode | null, type: 'condition' | 'parallel') {
   if (!treeData.value || !afterNode) return
 
+  const branchLabel = type === 'parallel' ? '分支' : '条件'
   const condNode: DingConditionNode = {
     id: generateId(),
     type,
     name: '',
     properties: {},
     branches: [
-      { id: generateId(), name: '条件1', properties: {} },
-      { id: generateId(), name: '条件2', properties: {} },
+      { id: generateId(), name: `${branchLabel}1`, properties: {} },
+      { id: generateId(), name: `${branchLabel}2`, properties: {} },
     ],
   }
 
   // 在 afterNode 后插入 condNode
   insertAfter(treeData.value, afterNode.id, condNode as unknown as DingNode)
+}
+
+/**
+ * 在 afterNode 后插入 fork+join 对（含两个空分支 + join 节点 + joinChildren）
+ * 语义：afterNode → fork → [branch1, branch2] → join → joinChildren(原 afterNode.children)
+ *
+ * 注：join 节点作为独立 DingNode 包装在 joinChildren 链中，确保渲染和回写 graph 时 join 节点能正确显示与还原
+ */
+function insertForkJoinPair(afterNode: DingNode | null) {
+  if (!treeData.value || !afterNode) return
+
+  const joinId = generateId()
+  // 创建 join 节点（作为 joinChildren 链的第一节点）
+  const joinNode: DingNode = {
+    id: joinId,
+    type: ensureTypePrefix('join'),
+    name: '合并节点',
+    properties: {},
+    children: afterNode.children, // 接管原 afterNode.children
+  }
+  const taskType = ensureTypePrefix('task')
+  // 默认给每个分支塞一个"审批人"任务节点，确保分支"生而有用"
+  const branch1Task: DingNode = {
+    id: generateId(),
+    type: taskType,
+    name: getDefaultName(taskType),
+    properties: {},
+  }
+  const branch2Task: DingNode = {
+    id: generateId(),
+    type: taskType,
+    name: getDefaultName(taskType),
+    properties: {},
+  }
+  const forkNode: DingForkNode = {
+    id: generateId(),
+    type: 'fork',
+    name: '',
+    properties: {},
+    branches: [
+      { id: generateId(), name: '分支1', properties: {}, children: branch1Task },
+      { id: generateId(), name: '分支2', properties: {}, children: branch2Task },
+    ],
+    joinId,
+    joinChildren: joinNode,
+  }
+  // afterNode 原本的 children 转交给 join 节点
+  afterNode.children = forkNode as unknown as DingNode
 }
 
 /**
@@ -731,6 +948,7 @@ const showDataModal = ref(false)
 const viewDataJson = ref('')
 const showImportModal = ref(false)
 const importDataJson = ref('')
+const importError = ref('')
 
 function handleControlSave() {
   const graphData = treeToGraph(treeData.value, props.typePrefix)
@@ -738,6 +956,7 @@ function handleControlSave() {
     ...props.value,
     nodes: graphData.nodes,
     edges: graphData.edges,
+    mode: 'dingtalk',
   }
   emit('save', saveData)
 }
@@ -766,6 +985,7 @@ function handleControlViewData() {
     ...props.value,
     nodes: graphData.nodes,
     edges: graphData.edges,
+    mode: 'dingtalk',
   }
   viewDataJson.value = JSON.stringify(data, null, 2)
   showDataModal.value = true
@@ -776,20 +996,59 @@ function handleControlImportData() {
   showImportModal.value = true
 }
 
+/**
+ * 导入数据：解析 + 结构校验；失败时不关闭弹窗、不破坏 treeData
+ * 成功时保留外部 mode 字段（缺省时填 'dingtalk'）
+ */
 function doImport() {
+  importError.value = ''
+  const snapshot = JSON.stringify(treeData.value)
   try {
     const data = JSON.parse(importDataJson.value)
-    if (data && (data.nodes || data.edges)) {
-      isInternalUpdate = true
-      emit('update:value', data)
-      // 重新转换树
-      const nodes = data.nodes || []
-      const edges = data.edges || []
-      treeData.value = graphToTree(nodes, edges, props.typePrefix)
+    if (!data || typeof data !== 'object') {
+      importError.value = '导入失败：数据格式不正确'
+      return
     }
+    if (!Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
+      importError.value = '导入失败：缺少 nodes 或 edges 数组'
+      return
+    }
+    for (const n of data.nodes) {
+      if (!n || typeof n.id !== 'string' || typeof n.type !== 'string') {
+        importError.value = '导入失败：节点缺少 id 或 type 字段'
+        return
+      }
+    }
+    for (const e of data.edges) {
+      if (
+        !e ||
+        typeof e.id !== 'string' ||
+        typeof e.sourceNodeId !== 'string' ||
+        typeof e.targetNodeId !== 'string'
+      ) {
+        importError.value = '导入失败：边缺少 id / sourceNodeId / targetNodeId 字段'
+        return
+      }
+    }
+    isInternalUpdate = true
+    // 仅覆盖 nodes/edges/mode，保留 props.value 其他字段（name/displayName 等）
+    const newValue: FDConfigData = {
+      ...props.value,
+      nodes: data.nodes,
+      edges: data.edges,
+      mode: data.mode === 'canvas' ? 'canvas' : 'dingtalk',
+    }
+    emit('update:value', newValue)
+    treeData.value = graphToTree(newValue.nodes, newValue.edges, props.typePrefix)
     showImportModal.value = false
   } catch (err) {
-    alert('导入失败：JSON 格式不正确')
+    importError.value = '导入失败：JSON 格式不正确'
+    // 恢复 treeData 避免脏数据
+    try {
+      treeData.value = JSON.parse(snapshot)
+    } catch {
+      /* snapshot 异常时不做恢复 */
+    }
   }
 }
 

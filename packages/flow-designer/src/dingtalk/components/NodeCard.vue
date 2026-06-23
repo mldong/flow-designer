@@ -19,6 +19,16 @@
     结束
   </div>
 
+  <!-- 合并节点（join） -->
+  <div
+    v-else-if="baseType === 'join'"
+    :class="['ding-node-pill', 'ding-node-pill--join', highlightClass]"
+    @click="$emit('edit', node)"
+    style="cursor: pointer;"
+  >
+    {{ node.name || '合并节点' }}
+  </div>
+
   <!-- 普通任务节点卡片 -->
   <div
     v-else

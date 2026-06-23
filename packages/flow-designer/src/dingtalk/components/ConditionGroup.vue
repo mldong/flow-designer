@@ -2,16 +2,20 @@
   <div class="ding-condition-group">
     <!-- 条件组头部 -->
     <div class="ding-condition-group__header">
-      <span class="ding-condition-group__title">
-        {{ isConditionBranch ? '条件分支' : '并行分支' }}
-      </span>
+      <span class="ding-condition-group__title">条件分支</span>
       <span
         v-if="!viewer"
         class="ding-condition-group__add-branch"
         @click="$emit('add-branch', node)"
       >
-        + {{ branchButtonText }}
+        + 添加条件
       </span>
+      <button
+        v-if="!viewer"
+        class="ding-condition-group__delete"
+        title="删除整个条件分支组"
+        @click="$emit('delete', node)"
+      >&times;</button>
     </div>
     <!-- 分支区域 -->
     <div class="ding-condition-group__branches" ref="branchesRef">
@@ -67,12 +71,6 @@ defineEmits<{
 const branchesRef = ref<HTMLElement>()
 const lineWidth = ref('0px')
 const lineLeft = ref('0px')
-
-// 计算属性：是否为条件分支（而非并行分支）
-const isConditionBranch = computed(() => props.node.type === 'condition')
-
-// 计算属性：分支标题文案
-const branchButtonText = computed(() => isConditionBranch.value ? '添加条件' : '添加分支')
 
 function updateLines() {
   if (!branchesRef.value) return
