@@ -305,7 +305,7 @@ function handleAddNode(nodeType: string, afterNode: DingNode | null) {
 
   // 特殊类型：条件分支 / 并行分支
   if (nodeType === '__condition__') {
-    insertConditionNode(afterNode, 'condition')
+    insertConditionNode(afterNode)
     syncToGraph()
     return
   }
@@ -598,7 +598,7 @@ function removeNode(root: DingNode, targetId: string): boolean {
     if (forkNode.joinChildren) {
       // join 节点本身（joinChildren 的第一节点）允许被删除：把 join 的 children 接到 fork
       if (forkNode.joinChildren.id === targetId) {
-        forkNode.joinChildren = forkNode.joinChildren.children || null
+        forkNode.joinChildren = forkNode.joinChildren.children || undefined
         return true
       }
       if (removeNode(forkNode.joinChildren, targetId)) {
@@ -692,18 +692,17 @@ function removeForkContainerById(root: DingNode, containerId: string): boolean {
 /**
  * 在指定节点位置插入条件/并发分支节点
  */
-function insertConditionNode(afterNode: DingNode | null, type: 'condition' | 'parallel') {
+function insertConditionNode(afterNode: DingNode | null) {
   if (!treeData.value || !afterNode) return
 
-  const branchLabel = type === 'parallel' ? '分支' : '条件'
   const condNode: DingConditionNode = {
     id: generateId(),
-    type,
+    type: 'condition',
     name: '',
     properties: {},
     branches: [
-      { id: generateId(), name: `${branchLabel}1`, properties: {} },
-      { id: generateId(), name: `${branchLabel}2`, properties: {} },
+      { id: generateId(), name: '条件1', properties: {} },
+      { id: generateId(), name: '条件2', properties: {} },
     ],
   }
 
@@ -915,7 +914,7 @@ function saveEdit() {
 
 // ─── 右键菜单事件 ─────────────────────────────────────────────
 
-function handleContextmenu(e: MouseEvent) {
+function handleContextmenu(_e: MouseEvent) {
   if (props.viewer) return
 
   // 获取当前流程属性
