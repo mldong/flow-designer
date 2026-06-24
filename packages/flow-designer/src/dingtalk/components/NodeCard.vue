@@ -37,6 +37,7 @@
   >
     <div class="ding-node-card__bar" :style="barStyle"></div>
     <div class="ding-node-card__header">
+      <span class="ding-node-card__icon">{{ typeIcon }}</span>
       <span class="ding-node-card__title">{{ typeLabel }}</span>
       <span class="ding-node-card__actions" v-if="!viewer">
         <button class="ding-node-card__action-btn" @click.stop="$emit('edit', node)" title="编辑">
@@ -81,6 +82,15 @@ const typeLabel = computed(() => {
     case 'custom': return '自定义节点'
     case 'subProcess': return '子流程'
     default: return '任务'
+  }
+})
+
+const typeIcon = computed(() => {
+  switch (baseType.value) {
+    case 'task': return '✓'
+    case 'custom': return '★'
+    case 'subProcess': return '▣'
+    default: return '●'
   }
 })
 
