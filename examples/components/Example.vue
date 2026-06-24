@@ -23,7 +23,6 @@ const designerMode = ref<'canvas' | 'dingtalk'>('canvas')
 //import FlowDesigner from 'mldong-flow-designer-plus'
 //import 'mldong-flow-designer-plus/lib/style.css'
 import FlowDesigner from '../../packages/index'
-import '../../lib/style.css'
 import type { FDHighLightType } from '../../packages/flow-designer/src/types';
 import CustomHtml from './CustomHtml';
 import LeaveJson from '../assets/wf-leave.json'
