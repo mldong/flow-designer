@@ -11,7 +11,7 @@
         + 添加条件
       </span>
       <button
-        v-if="!viewer"
+        v-if="!viewer && !protectedIdsComputed.has(node.id)"
         class="ding-condition-group__delete"
         title="删除整个条件分支组"
         @click="$emit('delete', node)"
@@ -50,14 +50,21 @@ import type { DingConditionNode, DingNode, DingBranch } from '../types'
 import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import BranchColumn from './BranchColumn.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   node: DingConditionNode
   typePrefix: string
   viewer: boolean
   highLight?: FDHighLightType
   theme?: FDThemeConfig
   dndPanel?: FDPatternItem[]
-}>()
+  /** 受保护节点 ID 集合（来自 DingTalkDesigner，用于隐藏 start/end/firstChild 的删除按钮） */
+  protectedIds?: Set<string>
+}>(), {
+  protectedIds: () => new Set<string>()
+})
+
+// 兜底：props 是只读的，统一通过 protectedIdsComputed 访问，避免 undefined 调用 .has
+const protectedIdsComputed = computed(() => props.protectedIds ?? new Set<string>())
 
 defineEmits<{
   (e: 'edit', node: DingNode): void

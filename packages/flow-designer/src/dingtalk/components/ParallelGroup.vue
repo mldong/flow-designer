@@ -11,7 +11,7 @@
         + 添加分支
       </span>
       <button
-        v-if="!viewer"
+        v-if="!viewer && !protectedIdsComputed.has(node.id)"
         class="ding-condition-group__delete"
         title="删除整个并行分支组"
         @click="$emit('delete', node)"
@@ -95,14 +95,21 @@ import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import NodeChain from './NodeChain.vue'
 import AddButton from './AddButton.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   node: DingForkNode
   typePrefix: string
   viewer: boolean
   highLight?: FDHighLightType
   theme?: FDThemeConfig
   dndPanel?: FDPatternItem[]
-}>()
+  /** 受保护节点 ID 集合（来自 DingTalkDesigner，用于隐藏 start/end/firstChild 的删除按钮） */
+  protectedIds?: Set<string>
+}>(), {
+  protectedIds: () => new Set<string>()
+})
+
+// 兜底：props 是只读的，统一通过 protectedIdsComputed 访问，避免 undefined 调用 .has
+const protectedIdsComputed = computed(() => props.protectedIds ?? new Set<string>())
 
 const emit = defineEmits<{
   (e: 'edit', node: DingNode): void

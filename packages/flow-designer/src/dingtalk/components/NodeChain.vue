@@ -9,6 +9,7 @@
         :high-light="highLight"
         :theme="theme"
         :dnd-panel="dndPanel"
+        :protected-ids="protectedIdsComputed"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
         @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode)"
@@ -25,6 +26,7 @@
         :high-light="highLight"
         :theme="theme"
         :dnd-panel="dndPanel"
+        :protected-ids="protectedIdsComputed"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
         @add="(nodeType, parentNode, branchIndex) => $emit('add', nodeType, parentNode)"
@@ -40,6 +42,7 @@
         :viewer="viewer"
         :high-light="highLight"
         :theme="theme"
+        :can-delete="!protectedIdsComputed.has(node.id)"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
       />
@@ -63,6 +66,7 @@
       :high-light="highLight"
       :theme="theme"
       :dnd-panel="dndPanel"
+      :protected-ids="protectedIdsComputed"
       @edit="(n) => $emit('edit', n)"
       @delete="(n) => $emit('delete', n)"
       @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode)"
@@ -83,14 +87,23 @@ import AddButton from './AddButton.vue'
 import ConditionGroup from './ConditionGroup.vue'
 import ParallelGroup from './ParallelGroup.vue'
 
-const props = defineProps<{
+interface Props {
   node: DingNode
   typePrefix: string
   viewer: boolean
   highLight?: FDHighLightType
   theme?: FDThemeConfig
   dndPanel?: FDPatternItem[]
-}>()
+  /** 受保护节点 ID 集合（来自 DingTalkDesigner，用于隐藏 start/end/firstChild 的删除按钮） */
+  protectedIds?: Set<string>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  protectedIds: () => new Set<string>()
+})
+
+// 兜底：props 是只读的，统一通过 protectedIdsComputed 访问，避免 undefined 调用 .has
+const protectedIdsComputed = computed(() => props.protectedIds ?? new Set<string>())
 
 defineEmits<{
   (e: 'edit', node: DingNode): void

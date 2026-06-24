@@ -20,6 +20,7 @@
         :high-light="highLight"
         :theme="theme"
         :dnd-panel="computedDndPanel"
+        :protected-ids="protectedIds"
         @edit="handleEditNode"
         @delete="handleDeleteNode"
         @add="handleAddNode"
@@ -190,6 +191,58 @@ const computedDndPanel = computed<FDPatternItem[]>(() => {
 // 树形数据
 const treeData = ref<DingNode | undefined>(undefined)
 
+/**
+ * 受保护节点 ID 集合（不允许删除）
+ * - 开始节点（snaker:start）
+ * - 结束节点（snaker:end）—— 渲染在顶层链末端
+ * - 顶层第一个申请节点（start 的直接子节点）—— 钉钉模式默认链路的第一个节点
+ */
+const protectedIds = computed<Set<string>>(() => {
+  const ids = new Set<string>()
+  if (!treeData.value) return ids
+  // 开始节点
+  const baseType = treeData.value.type.replace(props.typePrefix, '')
+  if (baseType === 'start') ids.add(treeData.value.id)
+  // 顶层第一个子节点（第一个审批节点）
+  const firstChild = treeData.value.children
+  if (firstChild) ids.add(firstChild.id)
+  // 找结束节点（递归找 snaker:end）
+  const endId = findEndNodeId(treeData.value)
+  if (endId) ids.add(endId)
+  return ids
+})
+
+/** 在树中查找 snaker:end 节点 id */
+function findEndNodeId(node: DingNode | undefined): string | null {
+  if (!node) return null
+  const baseType = node.type.replace(props.typePrefix, '')
+  if (baseType === 'end') return node.id
+  if (isConditionNode(node)) {
+    for (const branch of node.branches) {
+      if (branch.children) {
+        const id = findEndNodeId(branch.children)
+        if (id) return id
+      }
+    }
+  }
+  if (isForkNode(node)) {
+    for (const branch of node.branches) {
+      if (branch.children) {
+        const id = findEndNodeId(branch.children)
+        if (id) return id
+      }
+    }
+    if (node.joinChildren) {
+      const id = findEndNodeId(node.joinChildren)
+      if (id) return id
+    }
+  }
+  if (node.children) {
+    return findEndNodeId(node.children)
+  }
+  return null
+}
+
 // 编辑分支时记录父节点类型（condition/fork）
 const editingBranchType = ref<'condition' | 'fork' | null>(null)
 
@@ -343,6 +396,12 @@ function handleAddNode(nodeType: string, afterNode: DingNode | null) {
 function handleDeleteNode(node: DingNode) {
   if (!treeData.value) return
   const baseType = node.type.replace(props.typePrefix, '')
+  // 保护节点不允许删除：start / end / 顶层第一个申请节点
+  if (protectedIds.value.has(node.id)) {
+    // eslint-disable-next-line no-console
+    console.warn('[DingTalkDesigner] 受保护节点不允许删除：', node.id)
+    return
+  }
   if (baseType === 'start' || baseType === 'end') return
   if (isConditionNode(node)) {
     removeConditionContainerById(treeData.value, node.id)

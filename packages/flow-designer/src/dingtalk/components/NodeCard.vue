@@ -49,7 +49,12 @@
         <button class="ding-node-card__action-btn" @click.stop="$emit('edit', node)" title="编辑">
           &#x270E;
         </button>
-        <button class="ding-node-card__action-btn ding-node-card__action-btn--delete" @click.stop="$emit('delete', node)" title="删除">
+        <button
+          v-if="canDelete"
+          class="ding-node-card__action-btn ding-node-card__action-btn--delete"
+          @click.stop="$emit('delete', node)"
+          title="删除"
+        >
           &times;
         </button>
       </span>
@@ -65,13 +70,17 @@ import { computed } from 'vue'
 import type { DingNode } from '../types'
 import type { FDHighLightType, FDThemeConfig } from '../../types'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   node: DingNode
   typePrefix: string
   viewer: boolean
   highLight?: FDHighLightType
   theme?: FDThemeConfig
-}>()
+  /** 是否可删除（默认 true：start/end/firstChild 等系统节点传 false） */
+  canDelete?: boolean
+}>(), {
+  canDelete: true
+})
 
 defineEmits<{
   (e: 'edit', node: DingNode): void
