@@ -667,7 +667,7 @@ function removeConditionContainerById(root: DingNode, containerId: string): bool
 function removeForkContainerById(root: DingNode, containerId: string): boolean {
   // 位置 1：root.children 是要删除的 fork 容器
   if (root.children && root.children.id === containerId && isForkNode(root.children)) {
-    root.children = (root.children as DingForkNode).joinChildren
+    root.children = (root.children as DingForkNode).joinChildren?.children
     return true
   }
   // 位置 2：fork 内部递归（分支链 + joinChildren 链）
