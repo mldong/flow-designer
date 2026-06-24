@@ -19,14 +19,20 @@
     结束
   </div>
 
-  <!-- 合并节点（join） -->
+  <!-- 合并节点（join）：与并行分支容器对称的虚线框容器 -->
   <div
     v-else-if="baseType === 'join'"
-    :class="['ding-node-pill', 'ding-node-pill--join', highlightClass]"
+    :class="['ding-condition-group', 'ding-join-marker', highlightClass]"
     @click="$emit('edit', node)"
     style="cursor: pointer;"
   >
-    {{ node.name || '合并节点' }}
+    <div class="ding-condition-group__header">
+      <span class="ding-condition-group__title">合并节点</span>
+    </div>
+    <div class="ding-join-marker__inner">
+      <span class="ding-join-marker__dot"></span>
+      <span class="ding-join-marker__name">{{ node.name || '合并点' }}</span>
+    </div>
   </div>
 
   <!-- 普通任务节点卡片 -->
