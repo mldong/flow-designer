@@ -58,8 +58,8 @@
   // 缩放/平移控件（浮动在画布右下角）
   &__zoom-controls {
     position: absolute;
-    right: 16px;
-    bottom: 16px;
+    left: 16px;
+    top: 16px;
     display: flex;
     align-items: center;
     gap: 4px;
