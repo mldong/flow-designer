@@ -410,6 +410,8 @@ function handleDeleteNode(node: DingNode) {
   } else {
     removeNode(treeData.value, node.id)
   }
+  // 清理空 branch：分支数 > 2 时空 branch 自动删除；= 2 时保留以保护最少 2 条边
+  cleanupEmptyBranches(treeData.value)
   syncToGraph()
 }
 
@@ -503,16 +505,23 @@ function handleEditBranch(branch: DingBranch) {
 
 /**
  * 添加条件/并行分支
- * - condition：向 DingConditionNode.branches 追加 DingBranch
- * - fork：向 DingForkNode.branches 追加 DingBranch（children 留空，用户可继续填入任务）
+ * - condition/fork：向 branches 追加 DingBranch，默认携带一个"审批人"任务节点（边+任务一起添加）
  */
 function handleAddBranch(node: DingNode) {
+  const taskType = ensureTypePrefix('task')
+  const branchTask: DingNode = {
+    id: generateId(),
+    type: taskType,
+    name: getDefaultName(taskType),
+    properties: {},
+  }
   if (isConditionNode(node)) {
     const condNode = node as DingConditionNode
     const newBranch: DingBranch = {
       id: generateId(),
       name: `条件${condNode.branches.length + 1}`,
       properties: {},
+      children: branchTask,
     }
     condNode.branches.push(newBranch)
     syncToGraph()
@@ -524,6 +533,7 @@ function handleAddBranch(node: DingNode) {
       id: generateId(),
       name: `分支${forkNode.branches.length + 1}`,
       properties: {},
+      children: branchTask,
     }
     forkNode.branches.push(newBranch)
     syncToGraph()
@@ -673,6 +683,37 @@ function removeNode(root: DingNode, targetId: string): boolean {
   }
 
   return false
+}
+
+/**
+ * 清理空的 branch（条件/fork 容器的分支）
+ * 规则：分支数 > 2 时空 branch 自动删除；= 2 时保留以保护最少 2 条边约束
+ */
+function cleanupEmptyBranches(root: DingNode | undefined) {
+  if (!root) return
+  function walk(node: DingNode) {
+    if (isConditionNode(node)) {
+      const cond = node as DingConditionNode
+      if (cond.branches.length > 2) {
+        cond.branches = cond.branches.filter(b => b.children !== undefined)
+      }
+      for (const b of cond.branches) {
+        if (b.children) walk(b.children)
+      }
+    } else if (isForkNode(node)) {
+      const fork = node as DingForkNode
+      if (fork.branches.length > 2) {
+        fork.branches = fork.branches.filter(b => b.children !== undefined)
+      }
+      for (const b of fork.branches) {
+        if (b.children) walk(b.children)
+      }
+      if (fork.joinChildren) walk(fork.joinChildren)
+    } else if (node.children) {
+      walk(node.children)
+    }
+  }
+  walk(root)
 }
 
 /**
