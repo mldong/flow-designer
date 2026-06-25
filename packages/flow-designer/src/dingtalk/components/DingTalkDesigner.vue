@@ -1419,7 +1419,7 @@ function handleControlSave() {
 }
 
 function handleControlClear() {
-  // 清空树形数据，只保留 start → end
+  // 清空树形数据，保留默认链路：start → 申请(protected) → end
   const startNode: DingNode = {
     id: generateId(),
     type: `${props.typePrefix}start`,
@@ -1427,9 +1427,15 @@ function handleControlClear() {
     properties: {},
     children: {
       id: generateId(),
-      type: `${props.typePrefix}end`,
-      name: '结束',
+      type: `${props.typePrefix}task`,
+      name: '申请',
       properties: {},
+      children: {
+        id: generateId(),
+        type: `${props.typePrefix}end`,
+        name: '结束',
+        properties: {},
+      }
     }
   }
   treeData.value = startNode

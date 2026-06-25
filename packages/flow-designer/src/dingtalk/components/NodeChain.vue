@@ -51,7 +51,7 @@
     </template>
 
     <!-- 添加按钮（非 end 节点后面才有；fork 容器内自带 joinChildren 渲染，不再此处加按钮）
-         仅 start 节点后不可插入新节点（readonly 模式：仅短连接线，无 + 圆） -->
+         start 节点后不可插入新节点（readonly 模式：仅短连接线，无 + 圆） -->
     <AddButton
       v-if="!isFork && baseType !== 'end'"
       :viewer="viewer"
