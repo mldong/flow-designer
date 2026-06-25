@@ -750,9 +750,24 @@ function removeForkContainerById(root: DingNode, containerId: string): boolean {
 
 /**
  * 在指定节点位置插入条件/并发分支节点
+ * 默认带两个"审批人"任务节点（与合并分支保持一致，"生而有用"）
  */
 function insertConditionNode(afterNode: DingNode | null) {
   if (!treeData.value || !afterNode) return
+
+  const taskType = ensureTypePrefix('task')
+  const branch1Task: DingNode = {
+    id: generateId(),
+    type: taskType,
+    name: getDefaultName(taskType),
+    properties: {},
+  }
+  const branch2Task: DingNode = {
+    id: generateId(),
+    type: taskType,
+    name: getDefaultName(taskType),
+    properties: {},
+  }
 
   const condNode: DingConditionNode = {
     id: generateId(),
@@ -760,8 +775,8 @@ function insertConditionNode(afterNode: DingNode | null) {
     name: '',
     properties: {},
     branches: [
-      { id: generateId(), name: '条件1', properties: {} },
-      { id: generateId(), name: '条件2', properties: {} },
+      { id: generateId(), name: '条件1', properties: {}, children: branch1Task },
+      { id: generateId(), name: '条件2', properties: {}, children: branch2Task },
     ],
   }
 
