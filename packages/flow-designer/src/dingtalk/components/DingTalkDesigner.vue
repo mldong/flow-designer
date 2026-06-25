@@ -392,6 +392,9 @@ function handleAddNode(nodeType: string, afterNode: DingNode | null) {
  * - 普通节点：调用 removeNode 把 children 接到父节点
  * - 条件容器：调用 removeConditionContainerById 把容器的 children 接续到所在位置
  * - 并行容器：调用 removeForkContainerById 把 joinChildren 接续到所在位置
+ *
+ * 额外保护：
+ * - 条件/fork 容器只有 2 条分支时，禁止删除会让分支变空的 task（避免"孤儿边"）
  */
 function handleDeleteNode(node: DingNode) {
   if (!treeData.value) return
@@ -403,6 +406,12 @@ function handleDeleteNode(node: DingNode) {
     return
   }
   if (baseType === 'start' || baseType === 'end') return
+  // 仅 2 条分支时禁止删 task（避免出现孤儿边）
+  if (willEmptyBranch(treeData.value, node.id)) {
+    // eslint-disable-next-line no-console
+    console.warn('[DingTalkDesigner] 分支只有 2 条，不允许删除会让分支变空的任务：', node.id)
+    return
+  }
   if (isConditionNode(node)) {
     removeConditionContainerById(treeData.value, node.id)
   } else if (isForkNode(node)) {
@@ -410,9 +419,56 @@ function handleDeleteNode(node: DingNode) {
   } else {
     removeNode(treeData.value, node.id)
   }
-  // 清理空 branch：分支数 > 2 时空 branch 自动删除；= 2 时保留以保护最少 2 条边
+  // 清理空 branch：仅当 branches > 2 时才删除空 branch
   cleanupEmptyBranches(treeData.value)
   syncToGraph()
+}
+
+/**
+ * 检查删除 target 后是否会让某个 2 条分支的条件/fork 容器出现"孤儿边"
+ * 即 target 是某 branch.children 的首节点且没有 children（删了就变空）
+ */
+function willEmptyBranch(root: DingNode, targetId: string): boolean {
+  function check(node: DingNode): boolean {
+    if (isConditionNode(node)) {
+      const cond = node as DingConditionNode
+      if (cond.branches.length === 2) {
+        for (const branch of cond.branches) {
+          if (
+            branch.children &&
+            branch.children.id === targetId &&
+            !branch.children.children
+          ) {
+            return true
+          }
+        }
+      }
+      for (const b of cond.branches) {
+        if (b.children && check(b.children)) return true
+      }
+    }
+    if (isForkNode(node)) {
+      const fork = node as DingForkNode
+      if (fork.branches.length === 2) {
+        for (const branch of fork.branches) {
+          if (
+            branch.children &&
+            branch.children.id === targetId &&
+            !branch.children.children
+          ) {
+            return true
+          }
+        }
+      }
+      for (const b of fork.branches) {
+        if (b.children && check(b.children)) return true
+      }
+      if (fork.joinChildren && check(fork.joinChildren)) return true
+    }
+    if (node.children) return check(node.children)
+    return false
+  }
+  return check(root)
 }
 
 /**
