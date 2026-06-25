@@ -48,9 +48,10 @@
       />
     </template>
 
-    <!-- 添加按钮（非 end 节点后面才有；fork 容器内自带 joinChildren 渲染，不再此处加按钮） -->
+    <!-- 添加按钮（非 end 节点后面才有；fork 容器内自带 joinChildren 渲染，不再此处加按钮）
+         受保护节点（start/end/第一个申请节点）后也不加按钮——钉钉模式固定范式不允许在这些位置插入新节点 -->
     <AddButton
-      v-if="!isFork && baseType !== 'end'"
+      v-if="!isFork && baseType !== 'end' && !protectedIdsComputed.has(node.id)"
       :viewer="viewer"
       :type-prefix="typePrefix"
       :dnd-panel="dndPanel"

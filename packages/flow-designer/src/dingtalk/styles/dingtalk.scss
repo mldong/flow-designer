@@ -452,6 +452,19 @@
       border-color: var(--ding-primary-color);
     }
 
+    // 并行分支专用：静态编号（无 hover、无 cursor、无 transition）
+    &--static {
+      cursor: default;
+      background: transparent;
+      border-color: transparent;
+      color: var(--ding-text-secondary);
+
+      &:hover {
+        background: transparent;
+        border-color: transparent;
+      }
+    }
+
     &-text {
       flex: 1;
       overflow: hidden;

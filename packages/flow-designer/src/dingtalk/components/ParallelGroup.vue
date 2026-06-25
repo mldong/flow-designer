@@ -21,18 +21,15 @@
     <div class="ding-condition-group__branches" ref="branchesRef">
       <div class="ding-condition-group__top-line" :style="topLineStyle"></div>
       <div
-        v-for="branch in node.branches"
+        v-for="(branch, index) in node.branches"
         :key="branch.id"
         class="ding-branch-col"
       >
         <!-- 分支顶部竖线 -->
         <div class="ding-branch-col__line-top"></div>
-        <!-- 分支名称（与 ConditionGroup 行为一致：可点击编辑分支表达式） -->
-        <div class="ding-branch-col__head" v-if="branch.name || !viewer" @click="handleEditBranch(branch)">
-          <span class="ding-branch-col__head-text">{{ branch.name || '未命名' }}</span>
-          <span class="ding-branch-col__head-edit" v-if="!viewer" title="编辑分支">
-            &#x270E;
-          </span>
+        <!-- 分支编号（并行分支无需命名，仅做位置标识，避免与条件分支的'未命名'混淆） -->
+        <div class="ding-branch-col__head ding-branch-col__head--static" v-if="!viewer">
+          <span class="ding-branch-col__head-text">分支 {{ index + 1 }}</span>
         </div>
         <!-- 分支内容区（节点链 / 空分支占位） -->
         <div class="ding-branch-col__content">
