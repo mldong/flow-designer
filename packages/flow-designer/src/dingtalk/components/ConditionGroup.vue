@@ -36,6 +36,7 @@
         :high-light="highLight"
         :theme="theme"
         :dnd-panel="dndPanel"
+        :can-delete-checker="canDeleteChecker"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
         @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode, index)"
@@ -64,6 +65,8 @@ const props = withDefaults(defineProps<{
   dndPanel?: FDPatternItem[]
   /** 受保护节点 ID 集合（来自 DingTalkDesigner，用于隐藏 start/end/firstChild 的删除按钮） */
   protectedIds?: Set<string>
+  /** 节点是否可删除检查器（false 时隐藏 × 按钮；默认全部可删除） */
+  canDeleteChecker?: (node: DingNode) => boolean
 }>(), {
   protectedIds: () => new Set<string>()
 })

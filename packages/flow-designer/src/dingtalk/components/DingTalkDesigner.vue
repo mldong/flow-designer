@@ -21,6 +21,7 @@
         :theme="theme"
         :dnd-panel="computedDndPanel"
         :protected-ids="protectedIds"
+        :can-delete-checker="canDeleteNode"
         @edit="handleEditNode"
         @delete="handleDeleteNode"
         @add="handleAddNode"
@@ -385,6 +386,18 @@ function handleAddNode(nodeType: string, afterNode: DingNode | null) {
   }
 
   syncToGraph()
+}
+
+/**
+ * 节点是否可删除检查器（用于控制 × 按钮显示）
+ * - protectedIds（受保护节点）→ false
+ * - willEmptyBranch（2 条分支时删 task 让分支变空）→ false
+ */
+function canDeleteNode(node: DingNode): boolean {
+  if (!treeData.value) return true
+  if (protectedIds.value.has(node.id)) return false
+  if (willEmptyBranch(treeData.value, node.id)) return false
+  return true
 }
 
 /**

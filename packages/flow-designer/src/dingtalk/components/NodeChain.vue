@@ -10,6 +10,7 @@
         :theme="theme"
         :dnd-panel="dndPanel"
         :protected-ids="protectedIdsComputed"
+        :can-delete-checker="canDeleteCheckerComputed"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
         @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode)"
@@ -27,6 +28,7 @@
         :theme="theme"
         :dnd-panel="dndPanel"
         :protected-ids="protectedIdsComputed"
+        :can-delete-checker="canDeleteCheckerComputed"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
         @add="(nodeType, parentNode, branchIndex) => $emit('add', nodeType, parentNode)"
@@ -42,7 +44,7 @@
         :viewer="viewer"
         :high-light="highLight"
         :theme="theme"
-        :can-delete="!protectedIdsComputed.has(node.id)"
+        :can-delete="canDelete(node)"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
       />
@@ -69,6 +71,7 @@
       :theme="theme"
       :dnd-panel="dndPanel"
       :protected-ids="protectedIdsComputed"
+      :can-delete-checker="canDeleteCheckerComputed"
       @edit="(n) => $emit('edit', n)"
       @delete="(n) => $emit('delete', n)"
       @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode)"
@@ -98,6 +101,8 @@ interface Props {
   dndPanel?: FDPatternItem[]
   /** 受保护节点 ID 集合（来自 DingTalkDesigner，用于隐藏 start/end/firstChild 的删除按钮） */
   protectedIds?: Set<string>
+  /** 节点是否可删除检查器（false 时隐藏 × 按钮；默认全部可删除） */
+  canDeleteChecker?: (node: DingNode) => boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -106,6 +111,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 // 兜底：props 是只读的，统一通过 protectedIdsComputed 访问，避免 undefined 调用 .has
 const protectedIdsComputed = computed(() => props.protectedIds ?? new Set<string>())
+const canDeleteCheckerComputed = computed(
+  () => props.canDeleteChecker ?? ((_n: DingNode) => true)
+)
+
+function canDelete(node: DingNode): boolean {
+  if (protectedIdsComputed.value.has(node.id)) return false
+  if (!canDeleteCheckerComputed.value(node)) return false
+  return true
+}
 
 defineEmits<{
   (e: 'edit', node: DingNode): void

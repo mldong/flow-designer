@@ -19,6 +19,7 @@
           :high-light="highLight"
           :theme="theme"
           :dnd-panel="dndPanel"
+          :can-delete-checker="canDeleteChecker"
           @edit="(n) => $emit('edit', n)"
           @delete="(n) => $emit('delete', n)"
           @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode)"
@@ -54,6 +55,8 @@ const props = defineProps<{
   highLight?: FDHighLightType
   theme?: FDThemeConfig
   dndPanel?: FDPatternItem[]
+  /** 节点是否可删除检查器（false 时隐藏 × 按钮；默认全部可删除） */
+  canDeleteChecker?: (node: DingNode) => boolean
 }>()
 
 const emit = defineEmits<{
