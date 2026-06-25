@@ -58,10 +58,6 @@
           </template>
         </div>
       </div>
-      <div class="ding-edit-panel__footer">
-        <button class="ding-edit-panel__btn ding-edit-panel__btn--primary" @click="saveEdit">保存</button>
-        <button class="ding-edit-panel__btn" @click="closeEditPanel">取消</button>
-      </div>
     </div>
     <!-- 查看数据弹窗 -->
     <div class="ding-modal-overlay" v-if="showDataModal" @click="showDataModal = false">
@@ -1139,11 +1135,6 @@ watch(
   },
   { deep: true }
 )
-
-// 保留"保存"按钮点击逻辑：仅关闭面板（数据已实时同步）
-function saveEdit() {
-  closeEditPanel()
-}
 
 // ─── 右键菜单事件 ─────────────────────────────────────────────
 
