@@ -208,10 +208,11 @@
   }
 }
 
-// 添加按钮（轻量化：虚线圈 + 轻符号）
+// 添加按钮（轻量化：虚线圈 + 轻符号；上线 + 圆 + 下线 垂直叠放）
 .ding-add-btn {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
