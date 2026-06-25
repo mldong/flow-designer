@@ -3,7 +3,7 @@
   <!-- <pre>
     {{ graphData }}
   </pre> -->
-  <div class="mode-switcher">
+  <div class="mode-switcher" :class="{ 'is-mobile': isMobile }">
     <button :class="{ active: designerMode === 'canvas' }" @click="designerMode = 'canvas'">画布模式</button>
     <button :class="{ active: designerMode === 'dingtalk' }" @click="designerMode = 'dingtalk'">钉钉模式</button>
   </div>
@@ -18,8 +18,24 @@
   />
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 const designerMode = ref<'canvas' | 'dingtalk'>('canvas')
+
+// 响应式状态 - 监听窗口尺寸
+const isMobile = ref(window.innerWidth < 768)
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+  handleResize()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 //import FlowDesigner from 'mldong-flow-designer-plus'
 //import 'mldong-flow-designer-plus/lib/style.css'
 import FlowDesigner from '../../packages/index'
@@ -137,6 +153,20 @@ const graphData = ref(LeaveJson);
 .mode-switcher button:hover:not(.active) {
   background: rgba(48, 104, 236, 0.08);
   color: #3068EC;
+}
+
+/* 移动端响应式适配 (< 768px) */
+@media (max-width: 768px) {
+  .mode-switcher {
+    top: 16px;
+    left: 16px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .mode-switcher button {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
 }
 
 .lf-control-myicon {
