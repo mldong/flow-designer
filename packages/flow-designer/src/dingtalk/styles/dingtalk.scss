@@ -241,6 +241,23 @@
       transform: scale(1.15);
       box-shadow: 0 0 0 4px var(--ding-bg-color), 0 2px 8px rgba(24, 144, 255, 0.3);
     }
+
+    // 禁用态：受保护节点后只显示占位圆，不响应点击
+    &--disabled {
+      cursor: default;
+      color: #bfbfbf;
+      border-color: #d9d9d9;
+      background-color: var(--ding-bg-color);
+      box-shadow: 0 0 0 4px var(--ding-bg-color);
+
+      &:hover {
+        background-color: var(--ding-bg-color);
+        color: #bfbfbf;
+        border-color: #d9d9d9;
+        transform: none;
+        box-shadow: 0 0 0 4px var(--ding-bg-color);
+      }
+    }
   }
 }
 
