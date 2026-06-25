@@ -2,7 +2,12 @@
   <div class="ding-condition-group">
     <!-- 条件组头部 -->
     <div class="ding-condition-group__header">
-      <span class="ding-condition-group__title">条件分支</span>
+      <span
+        class="ding-condition-group__title"
+        :class="{ 'ding-condition-group__title--clickable': !viewer }"
+        :title="!viewer ? '点击编辑决策配置' : ''"
+        @click="!viewer && $emit('edit', node)"
+      >条件分支</span>
       <span
         v-if="!viewer"
         class="ding-condition-group__add-branch"

@@ -463,7 +463,8 @@ function handleEditNode(node: DingNode) {
   editFormData.version = node.properties?.version || ''
   editFormData.preInterceptors = node.properties?.preInterceptors || ''
   editFormData.postInterceptors = node.properties?.postInterceptors || ''
-  editFormData.expr = ''
+  editFormData.expr = node.properties?.expr || ''
+  editFormData.handleClass = node.properties?.handleClass || ''
 
   emit('node-click', node)
 }
@@ -864,6 +865,7 @@ const editFormData = reactive<Record<string, string>>({
   preInterceptors: '',
   postInterceptors: '',
   expr: '',
+  handleClass: '',
 })
 
 const editPanelTitle = computed(() => {
@@ -876,6 +878,8 @@ const editPanelTitle = computed(() => {
     case 'task': return '编辑审批节点'
     case 'custom': return '编辑自定义节点'
     case 'subProcess': return '编辑子流程'
+    case 'condition': return '编辑条件分支（决策配置）'
+    case 'fork': return '编辑并行分支'
     default: return '编辑节点'
   }
 })
@@ -898,6 +902,18 @@ const editFormFields = computed<FDFormItemType[]>(() => {
     { name: 'displayName', label: '显示名称', component: 'Input', componentProps: { placeholder: '请输入显示名称' } },
   ]
   switch (baseType) {
+    case 'condition':
+      // 条件分支容器（decision 节点）：决策表达式 / 处理类 / 决策类 / 方法名 / 参数 / 拦截器
+      return [
+        ...common,
+        { name: 'expr', label: '决策表达式', component: 'Input', componentProps: { placeholder: '请输入决策表达式' } },
+        { name: 'handleClass', label: '处理类', component: 'Input', componentProps: { placeholder: '请输入处理类' } },
+        { name: 'clazz', label: '决策类路径', component: 'Input', componentProps: { placeholder: '请输入决策类路径' } },
+        { name: 'methodName', label: '方法名', component: 'Input', componentProps: { placeholder: '请输入方法名' } },
+        { name: 'args', label: '参数变量', component: 'Input', componentProps: { placeholder: '请输入参数变量' } },
+        { name: 'preInterceptors', label: '前置拦截器', component: 'Input', componentProps: { placeholder: '请输入前置拦截器' } },
+        { name: 'postInterceptors', label: '后置拦截器', component: 'Input', componentProps: { placeholder: '请输入后置拦截器' } },
+      ]
     case 'task':
       return [
         ...common,
@@ -966,6 +982,15 @@ function saveEdit() {
       editingNode.value.properties.taskType = editFormData.taskType
       editingNode.value.properties.performType = editFormData.performType
       editingNode.value.properties.form = editFormData.form
+      editingNode.value.properties.preInterceptors = editFormData.preInterceptors
+      editingNode.value.properties.postInterceptors = editFormData.postInterceptors
+    } else if (baseType === 'condition') {
+      // 条件分支容器（decision 节点）属性：决策表达式 / 处理类 / 决策类 / 方法名 / 参数 / 拦截器
+      editingNode.value.properties.expr = editFormData.expr
+      editingNode.value.properties.handleClass = editFormData.handleClass
+      editingNode.value.properties.clazz = editFormData.clazz
+      editingNode.value.properties.methodName = editFormData.methodName
+      editingNode.value.properties.args = editFormData.args
       editingNode.value.properties.preInterceptors = editFormData.preInterceptors
       editingNode.value.properties.postInterceptors = editFormData.postInterceptors
     } else if (baseType === 'custom') {

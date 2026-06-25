@@ -287,6 +287,16 @@
     border-radius: 10px;
     border: 1px solid var(--ding-border-color);
     font-weight: 500;
+    transition: all 0.2s;
+
+    &--clickable {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--ding-primary-color);
+        border-color: var(--ding-primary-color);
+      }
+    }
   }
 
   &__add-branch {
