@@ -49,13 +49,13 @@
     </template>
 
     <!-- 添加按钮（非 end 节点后面才有；fork 容器内自带 joinChildren 渲染，不再此处加按钮）
-         受保护节点（start/end/第一个申请节点）后也保留视觉连接线（readonly 模式：无 + 圆、不允许插入） -->
+         仅 start 节点后不可插入新节点（readonly 模式：仅短连接线，无 + 圆） -->
     <AddButton
       v-if="!isFork && baseType !== 'end'"
       :viewer="viewer"
       :type-prefix="typePrefix"
       :dnd-panel="dndPanel"
-      :readonly="protectedIdsComputed.has(node.id)"
+      :readonly="baseType === 'start'"
       @add="(nodeType) => $emit('add', nodeType, node)"
     />
 

@@ -12,11 +12,9 @@
       @select="handleSelect"
     />
   </div>
-  <!-- 受保护节点后：上线 + 灰色禁用圆 + 下线（形状对称，不允许插入） -->
+  <!-- 受保护节点后：仅渲染短连接线（不显示 + 圆） -->
   <div class="ding-add-btn ding-add-btn--readonly" v-else-if="!viewer && readonly">
-    <div class="ding-line-vertical"></div>
-    <div class="ding-add-btn__circle ding-add-btn__circle--disabled">+</div>
-    <div class="ding-line-vertical"></div>
+    <div class="ding-line-vertical ding-line-vertical--short"></div>
   </div>
   <!-- viewer 模式 -->
   <div class="ding-add-btn" v-else>
@@ -34,7 +32,7 @@ withDefaults(
     viewer: boolean
     typePrefix: string
     dndPanel?: FDPatternItem[]
-    /** 受保护节点后只渲染连接线，不允许插入 */
+    /** 不可插入：仅渲染短连接线，不显示 + 圆 */
     readonly?: boolean
   }>(),
   { readonly: false }
