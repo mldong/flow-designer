@@ -1,9 +1,9 @@
 <template>
   <div class="ding-designer" :style="containerStyle" @contextmenu.prevent="handleContextmenu">
-    <!-- 控制面板 -->
+    <!-- 控制面板（注入缩放/适应等画布工具） -->
     <ControlPanel
       :init-control="initControl"
-      :control="control"
+      :control="computedControlItems"
       :viewer="viewer"
       @save="handleControlSave"
       @clear="handleControlClear"
@@ -40,25 +40,6 @@
           @edit-branch="handleEditBranch"
           @add-to-branch="handleAddToBranch"
         />
-      </div>
-      <!-- 缩放/平移控件（画布模式风格） -->
-      <div class="ding-designer__zoom-controls" v-if="!viewer">
-        <button
-          class="ding-designer__zoom-btn"
-          title="缩小流程图"
-          @click="zoomOut"
-        >−</button>
-        <span class="ding-designer__zoom-label">{{ Math.round(transform.scale * 100) }}%</span>
-        <button
-          class="ding-designer__zoom-btn"
-          title="放大流程图"
-          @click="zoomIn"
-        >+</button>
-        <button
-          class="ding-designer__zoom-btn"
-          title="恢复初始位置和尺寸"
-          @click="resetView"
-        >适应</button>
       </div>
     </div>
     <!-- 编辑面板 -->
@@ -282,6 +263,25 @@ const transform = reactive({ scale: 1, x: 0, y: 0 })
 const isDragging = ref(false)
 const dragStart = { x: 0, y: 0, originX: 0, originY: 0 }
 const canvasRef = ref<HTMLElement | null>(null)
+
+// 缩放/适应与 ControlPanel 工具栏合并（统一到右侧图标组）
+// 外部传入的 control 优先保留（可覆盖默认）
+const computedControlItems = computed<Array<{ key: string; iconClass: string; title: string; text: string; sort?: number; onClick?: () => void }>>(() => {
+  const ext = (props.control || []) as any[]
+  if (props.viewer) return ext
+  const zoomItems: any[] = [
+    { key: 'ding-zoom-out', iconClass: 'ding-icon-zoom-out', title: '缩小流程图', text: '缩小', sort: 10, onClick: zoomOut },
+    { key: 'ding-zoom-in',  iconClass: 'ding-icon-zoom-in',  title: '放大流程图', text: '放大', sort: 20, onClick: zoomIn  },
+    { key: 'ding-fit',      iconClass: 'ding-icon-fit',      title: '恢复初始位置和尺寸', text: '适应', sort: 30, onClick: resetView },
+  ]
+  const merged = [...zoomItems]
+  for (const e of ext) {
+    const idx = merged.findIndex(m => m.key === e.key)
+    if (idx >= 0) merged[idx] = { ...merged[idx], ...e }
+    else merged.push(e)
+  }
+  return merged.sort((a, b) => (a.sort || 0) - (b.sort || 0))
+})
 
 const viewportStyle = computed(() => ({
   transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,

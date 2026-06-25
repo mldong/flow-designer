@@ -54,46 +54,6 @@
     min-width: 100%;
     will-change: transform;
   }
-
-  // 缩放/平移控件（浮动在画布右下角）
-  &__zoom-controls {
-    position: absolute;
-    left: 16px;
-    top: 16px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background-color: #ffffff;
-    border-radius: 6px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-    padding: 4px 6px;
-    z-index: 50;
-  }
-
-  &__zoom-btn {
-    min-width: 28px;
-    height: 28px;
-    padding: 0 8px;
-    border: none;
-    background-color: transparent;
-    color: #4e5969;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.15s ease;
-
-    &:hover {
-      background-color: #f2f3f5;
-    }
-  }
-
-  &__zoom-label {
-    min-width: 44px;
-    text-align: center;
-    font-size: 12px;
-    color: #4e5969;
-    user-select: none;
-  }
 }
 
 // 节点链容器
@@ -904,6 +864,18 @@
 
 .ding-icon-fullscreen {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cpolyline points='9 21 3 21 3 15'/%3E%3Cline x1='21' y1='3' x2='14' y2='10'/%3E%3Cline x1='3' y1='21' x2='10' y2='14'/%3E%3C/svg%3E");
+}
+
+.ding-icon-zoom-out {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3Cline x1='8' y1='11' x2='14' y2='11'/%3E%3C/svg%3E");
+}
+
+.ding-icon-zoom-in {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3Cline x1='11' y1='8' x2='11' y2='14'/%3E%3Cline x1='8' y1='11' x2='14' y2='11'/%3E%3C/svg%3E");
+}
+
+.ding-icon-fit {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3H5a2 2 0 00-2 2v3'/%3E%3Cpath d='M21 8V5a2 2 0 00-2-2h-3'/%3E%3Cpath d='M3 16v3a2 2 0 002 2h3'/%3E%3Cpath d='M16 21h3a2 2 0 002-2v-3'/%3E%3C/svg%3E");
 }
 
 // 弹窗遮罩层
