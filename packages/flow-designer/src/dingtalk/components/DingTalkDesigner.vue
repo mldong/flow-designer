@@ -11,24 +11,55 @@
       @import-data="handleControlImportData"
       @fullscreen="handleControlFullscreen"
     />
-    <div class="ding-designer__canvas">
-      <NodeChain
-        v-if="treeData"
-        :node="treeData"
-        :type-prefix="typePrefix"
-        :viewer="viewer"
-        :high-light="highLight"
-        :theme="theme"
-        :dnd-panel="computedDndPanel"
-        :protected-ids="protectedIds"
-        :can-delete-checker="canDeleteNode"
-        @edit="handleEditNode"
-        @delete="handleDeleteNode"
-        @add="handleAddNode"
-        @add-branch="handleAddBranch"
-        @edit-branch="handleEditBranch"
-        @add-to-branch="handleAddToBranch"
-      />
+    <div
+      class="ding-designer__canvas"
+      :class="{ 'is-dragging': isDragging }"
+      ref="canvasRef"
+      @wheel="handleWheel"
+      @mousedown="handleCanvasMouseDown"
+    >
+      <div
+        class="ding-designer__viewport"
+        :style="viewportStyle"
+        @mousedown="handleViewportMouseDown"
+      >
+        <NodeChain
+          v-if="treeData"
+          :node="treeData"
+          :type-prefix="typePrefix"
+          :viewer="viewer"
+          :high-light="highLight"
+          :theme="theme"
+          :dnd-panel="computedDndPanel"
+          :protected-ids="protectedIds"
+          :can-delete-checker="canDeleteNode"
+          @edit="handleEditNode"
+          @delete="handleDeleteNode"
+          @add="handleAddNode"
+          @add-branch="handleAddBranch"
+          @edit-branch="handleEditBranch"
+          @add-to-branch="handleAddToBranch"
+        />
+      </div>
+      <!-- 缩放/平移控件（画布模式风格） -->
+      <div class="ding-designer__zoom-controls" v-if="!viewer">
+        <button
+          class="ding-designer__zoom-btn"
+          title="缩小流程图"
+          @click="zoomOut"
+        >−</button>
+        <span class="ding-designer__zoom-label">{{ Math.round(transform.scale * 100) }}%</span>
+        <button
+          class="ding-designer__zoom-btn"
+          title="放大流程图"
+          @click="zoomIn"
+        >+</button>
+        <button
+          class="ding-designer__zoom-btn"
+          title="恢复初始位置和尺寸"
+          @click="resetView"
+        >适应</button>
+      </div>
     </div>
     <!-- 编辑面板 -->
     <div class="ding-edit-panel" v-if="editingNode || editingBranch">
@@ -96,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, PropType } from 'vue'
+import { ref, reactive, computed, watch, onBeforeUnmount, PropType } from 'vue'
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType, FDFormItemType } from '../../types'
 import type { DingNode, DingConditionNode, DingBranch, DingForkNode } from '../types'
 import { isConditionNode, isForkNode } from '../types'
@@ -245,6 +276,105 @@ const editingBranchType = ref<'condition' | 'fork' | null>(null)
 
 // 内部标记，避免 watch 循环
 let isInternalUpdate = false
+
+// ─── 画布平移/缩放状态 ──────────────────────────────────────────
+const transform = reactive({ scale: 1, x: 0, y: 0 })
+const isDragging = ref(false)
+const dragStart = { x: 0, y: 0, originX: 0, originY: 0 }
+const canvasRef = ref<HTMLElement | null>(null)
+
+const viewportStyle = computed(() => ({
+  transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+  transformOrigin: '0 0',
+}))
+
+function zoomIn() { zoomBy(1.1) }
+function zoomOut() { zoomBy(1 / 1.1) }
+function zoomBy(factor: number) {
+  const next = Math.min(2, Math.max(0.3, transform.scale * factor))
+  // 以画布中心为缩放原点
+  const canvas = canvasRef.value
+  if (canvas) {
+    const rect = canvas.getBoundingClientRect()
+    const cx = rect.width / 2
+    const cy = rect.height / 2
+    // 当前点在画布坐标系中的位置 = (cx - x) / scale
+    // 缩放后保持该点位置不变：newX = cx - (cx - x) * (next / scale)
+    transform.x = cx - (cx - transform.x) * (next / transform.scale)
+    transform.y = cy - (cy - transform.y) * (next / transform.scale)
+  }
+  transform.scale = next
+}
+
+function resetView() {
+  transform.scale = 1
+  transform.x = 0
+  transform.y = 0
+}
+
+function handleWheel(e: WheelEvent) {
+  // ctrl/cmd + wheel 缩放；普通 wheel 留给 AddButton / dnd panel
+  if (!(e.ctrlKey || e.metaKey)) return
+  e.preventDefault()
+  const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1
+  const canvas = canvasRef.value
+  if (canvas) {
+    const rect = canvas.getBoundingClientRect()
+    const px = e.clientX - rect.left
+    const py = e.clientY - rect.top
+    const next = Math.min(2, Math.max(0.3, transform.scale * factor))
+    transform.x = px - (px - transform.x) * (next / transform.scale)
+    transform.y = py - (py - transform.y) * (next / transform.scale)
+    transform.scale = next
+  }
+}
+
+function handleCanvasMouseDown(e: MouseEvent) {
+  // 仅中键/空白处左键启动拖动；AddButton / NodeCard 上的 mousedown 不启动拖动
+  if (e.button !== 0 && e.button !== 1) return
+  const target = e.target as HTMLElement
+  // 拖动起点：画布空白处、viewport（内容上空白处），但不在控件/按钮/卡片上
+  if (target.closest('.ding-node-card, button, .ding-edit-panel, .ding-modal, .ding-designer__zoom-controls, .ding-branch-col__head, .ding-condition-group__title, .ding-add-button')) {
+    return
+  }
+  startDrag(e)
+}
+
+function handleViewportMouseDown(e: MouseEvent) {
+  if (e.button !== 0 && e.button !== 1) return
+  const target = e.target as HTMLElement
+  if (target.closest('.ding-node-card, button, .ding-edit-panel, .ding-modal, .ding-designer__zoom-controls, .ding-branch-col__head, .ding-condition-group__title, .ding-add-button')) {
+    return
+  }
+  startDrag(e)
+}
+
+function startDrag(e: MouseEvent) {
+  isDragging.value = true
+  dragStart.x = e.clientX
+  dragStart.y = e.clientY
+  dragStart.originX = transform.x
+  dragStart.originY = transform.y
+  document.addEventListener('mousemove', handleDocumentMouseMove)
+  document.addEventListener('mouseup', handleDocumentMouseUp)
+}
+
+function handleDocumentMouseMove(e: MouseEvent) {
+  if (!isDragging.value) return
+  transform.x = dragStart.originX + (e.clientX - dragStart.x)
+  transform.y = dragStart.originY + (e.clientY - dragStart.y)
+}
+
+function handleDocumentMouseUp() {
+  isDragging.value = false
+  document.removeEventListener('mousemove', handleDocumentMouseMove)
+  document.removeEventListener('mouseup', handleDocumentMouseUp)
+}
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousemove', handleDocumentMouseMove)
+  document.removeEventListener('mouseup', handleDocumentMouseUp)
+})
 
 /** 递归查找分支所属的父节点类型 */
 function findBranchParentType(node: DingNode, branchId: string): 'condition' | 'fork' | null {
