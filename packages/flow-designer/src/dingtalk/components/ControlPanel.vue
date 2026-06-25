@@ -1,19 +1,45 @@
 <template>
-  <div class="ding-control-panel" v-if="visibleItems.length > 0">
-    <div
-      v-for="item in visibleItems"
-      :key="item.key"
-      class="ding-control-panel__item"
-      :title="item.title || item.text"
-      @click="handleClick(item)"
+  <div class="ding-control-panel" :class="{ 'is-mobile': isMobile, 'is-mobile-open': isMobile && mobileOpen }">
+    <!-- 移动端 FAB 折叠按钮 -->
+    <button
+      v-if="isMobile"
+      class="ding-control-panel__mobile-toggle"
+      :title="mobileOpen ? '收起操作' : '展开操作'"
+      @click.stop="toggleMobile"
     >
-      <span class="ding-control-panel__icon" :class="item.iconClass"></span>
+      <svg v-if="!mobileOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+      <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <!-- 工具项列表（桌面常显 / 移动 popover） -->
+    <div
+      v-if="visibleItems.length > 0 && (!isMobile || mobileOpen)"
+      class="ding-control-panel__list"
+      @click.stop
+    >
+      <div
+        v-for="item in visibleItems"
+        :key="item.key"
+        class="ding-control-panel__item"
+        :title="item.title || item.text"
+        @click="handleClick(item)"
+      >
+        <span class="ding-control-panel__icon" :class="item.iconClass"></span>
+        <span v-if="isMobile" class="ding-control-panel__text">{{ item.text }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, PropType } from 'vue'
 import type { FDControlItem } from '../../types'
 
 const props = defineProps({
@@ -37,6 +63,38 @@ const emit = defineEmits<{
   (e: 'import-data'): void
   (e: 'fullscreen'): void
 }>()
+
+// ─── 移动端折叠状态 ────────────────────────────────────────
+const isMobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
+const mobileOpen = ref(false)
+
+function handleResize() {
+  const next = window.innerWidth < 768
+  isMobile.value = next
+  if (!next) mobileOpen.value = false
+}
+
+function toggleMobile() {
+  mobileOpen.value = !mobileOpen.value
+}
+
+function closeMobile() {
+  mobileOpen.value = false
+}
+
+function handleClickOutside() {
+  if (isMobile.value && mobileOpen.value) closeMobile()
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+  document.removeEventListener('click', handleClickOutside)
+})
 
 const defaultControl: FDControlItem[] = [
   {
@@ -109,6 +167,9 @@ const visibleItems = computed<FDControlItem[]>(() => {
 })
 
 function handleClick(item: FDControlItem) {
+  // 移动端点击后关闭 popover
+  if (isMobile.value) closeMobile()
+
   // 自定义 onClick 优先
   if (item.onClick && typeof item.onClick === 'function') {
     item.onClick(item)

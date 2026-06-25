@@ -13,10 +13,14 @@
     />
     <div
       class="ding-designer__canvas"
-      :class="{ 'is-dragging': isDragging }"
+      :class="{ 'is-dragging': isDragging, 'is-touch-dragging': isTouchDragging, 'is-pinching': isPinching }"
       ref="canvasRef"
       @wheel="handleWheel"
       @mousedown="handleCanvasMouseDown"
+      @touchstart.passive="handleTouchStart"
+      @touchmove.passive="handleTouchMove"
+      @touchend.passive="handleTouchEnd"
+      @touchcancel.passive="handleTouchEnd"
     >
       <div
         class="ding-designer__viewport"
@@ -264,6 +268,18 @@ const isDragging = ref(false)
 const dragStart = { x: 0, y: 0, originX: 0, originY: 0 }
 const canvasRef = ref<HTMLElement | null>(null)
 
+// ─── 触摸状态（移动端 pan + pinch zoom）─────────────────────
+const isTouchDragging = ref(false)
+const isPinching = ref(false)
+const touchStart = {
+  // 单指 pan
+  x: 0, y: 0, originX: 0, originY: 0,
+  // 双指 pinch
+  distance: 0,
+  centerX: 0, centerY: 0,
+  originScale: 1,
+}
+
 // 缩放/适应与 ControlPanel 工具栏合并（统一到右侧图标组）
 // 外部传入的 control 优先保留（可覆盖默认）
 const computedControlItems = computed<Array<{ key: string; iconClass: string; title: string; text: string; sort?: number; onClick?: () => void }>>(() => {
@@ -369,6 +385,94 @@ function handleDocumentMouseUp() {
   isDragging.value = false
   document.removeEventListener('mousemove', handleDocumentMouseMove)
   document.removeEventListener('mouseup', handleDocumentMouseUp)
+}
+
+/** 是否在拖动起点命中"控件类"元素（按钮、卡片等），避免误拖 */
+function shouldIgnoreTouchStart(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null
+  if (!el) return false
+  return !!el.closest('.ding-node-card, button, .ding-edit-panel, .ding-modal, .ding-designer__zoom-controls, .ding-branch-col__head, .ding-condition-group__title, .ding-add-button')
+}
+
+function getTouchDistance(t1: Touch, t2: Touch): number {
+  const dx = t1.clientX - t2.clientX
+  const dy = t1.clientY - t2.clientY
+  return Math.hypot(dx, dy)
+}
+
+function getTouchCenter(t1: Touch, t2: Touch): { x: number; y: number } {
+  return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 }
+}
+
+function handleTouchStart(e: TouchEvent) {
+  // 命中控件元素时不启动 pan（按钮等保留原生 tap 行为）
+  if (shouldIgnoreTouchStart(e.target)) return
+  if (e.touches.length === 1) {
+    // 单指 pan
+    const t = e.touches[0]
+    isTouchDragging.value = true
+    touchStart.x = t.clientX
+    touchStart.y = t.clientY
+    touchStart.originX = transform.x
+    touchStart.originY = transform.y
+  } else if (e.touches.length === 2) {
+    // 双指 pinch zoom
+    const [t1, t2] = [e.touches[0], e.touches[1]]
+    isPinching.value = true
+    isTouchDragging.value = false
+    touchStart.distance = getTouchDistance(t1, t2)
+    touchStart.originScale = transform.scale
+    const center = getTouchCenter(t1, t2)
+    touchStart.centerX = center.x
+    touchStart.centerY = center.y
+  }
+}
+
+function handleTouchMove(e: TouchEvent) {
+  // 双指 pinch
+  if (e.touches.length === 2 && isPinching.value) {
+    const [t1, t2] = [e.touches[0], e.touches[1]]
+    const dist = getTouchDistance(t1, t2)
+    if (touchStart.distance > 0) {
+      const factor = dist / touchStart.distance
+      const next = Math.min(2, Math.max(0.3, touchStart.originScale * factor))
+      const canvas = canvasRef.value
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect()
+        // 把屏幕坐标转成画布坐标
+        const px = touchStart.centerX - rect.left
+        const py = touchStart.centerY - rect.top
+        // 缩放：以双指中心为原点，保持该点屏幕坐标不变
+        transform.x = px - (px - transform.x) * (next / transform.scale)
+        transform.y = py - (py - transform.y) * (next / transform.scale)
+        transform.scale = next
+      }
+    }
+    return
+  }
+  // 单指 pan
+  if (e.touches.length === 1 && isTouchDragging.value) {
+    const t = e.touches[0]
+    transform.x = touchStart.originX + (t.clientX - touchStart.x)
+    transform.y = touchStart.originY + (t.clientY - touchStart.y)
+  }
+}
+
+function handleTouchEnd(e: TouchEvent) {
+  if (e.touches.length === 0) {
+    // 所有手指抬起
+    isTouchDragging.value = false
+    isPinching.value = false
+  } else if (e.touches.length === 1 && isPinching.value) {
+    // 从双指变成单指，重置 pan 起点
+    const t = e.touches[0]
+    isPinching.value = false
+    isTouchDragging.value = true
+    touchStart.x = t.clientX
+    touchStart.y = t.clientY
+    touchStart.originX = transform.x
+    touchStart.originY = transform.y
+  }
 }
 
 onBeforeUnmount(() => {
