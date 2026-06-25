@@ -1062,63 +1062,87 @@ const editFormFields = computed<FDFormItemType[]>(() => {
 })
 
 function closeEditPanel() {
+  // 关闭前 emit 一次（把最终数据 emit 给外部 v-model）
+  if (editingNode.value || editingBranch.value) {
+    syncToGraph()
+  }
   editingNode.value = null
   editingBranch.value = null
 }
 
-function saveEdit() {
+/**
+ * 将 editFormData 当前值同步到 editingNode/editingBranch（实时生效，页面不需"保存"）
+ * 字段映射与原来的 saveEdit 一致，保证 properties 中未列出的原字段不丢失
+ */
+function applyEditFormToTarget() {
   if (editingBranch.value) {
-    // 保存分支编辑
+    // 分支编辑：displayName -> name, expr/name 写入 properties
     editingBranch.value.name = editFormData.displayName
     editingBranch.value.properties = {
       ...editingBranch.value.properties,
       expr: editFormData.expr,
       name: editFormData.name,
     }
-    editingBranch.value = null
-    syncToGraph()
     return
   }
   if (editingNode.value) {
-    // 保存节点编辑
+    // 节点编辑：displayName -> node.name, name 写入 properties.name
     editingNode.value.name = editFormData.displayName
     const baseType = editingNode.value.type.replace(props.typePrefix, '')
-    editingNode.value.properties = {
+    // 保留原 properties 全部字段（避免 assignmentHandler / autoExecute 等丢失）
+    const nextProps: Record<string, any> = {
       ...editingNode.value.properties,
       name: editFormData.name,
     }
     if (baseType === 'task') {
-      editingNode.value.properties.assignee = editFormData.assignee
-      editingNode.value.properties.taskType = editFormData.taskType
-      editingNode.value.properties.performType = editFormData.performType
-      editingNode.value.properties.form = editFormData.form
-      editingNode.value.properties.preInterceptors = editFormData.preInterceptors
-      editingNode.value.properties.postInterceptors = editFormData.postInterceptors
+      nextProps.assignee = editFormData.assignee
+      nextProps.taskType = editFormData.taskType
+      nextProps.performType = editFormData.performType
+      nextProps.form = editFormData.form
+      nextProps.preInterceptors = editFormData.preInterceptors
+      nextProps.postInterceptors = editFormData.postInterceptors
     } else if (baseType === 'condition') {
       // 条件分支容器（decision 节点）属性：决策表达式 / 处理类 / 决策类 / 方法名 / 参数 / 拦截器
-      editingNode.value.properties.expr = editFormData.expr
-      editingNode.value.properties.handleClass = editFormData.handleClass
-      editingNode.value.properties.clazz = editFormData.clazz
-      editingNode.value.properties.methodName = editFormData.methodName
-      editingNode.value.properties.args = editFormData.args
-      editingNode.value.properties.preInterceptors = editFormData.preInterceptors
-      editingNode.value.properties.postInterceptors = editFormData.postInterceptors
+      nextProps.expr = editFormData.expr
+      nextProps.handleClass = editFormData.handleClass
+      nextProps.clazz = editFormData.clazz
+      nextProps.methodName = editFormData.methodName
+      nextProps.args = editFormData.args
+      nextProps.preInterceptors = editFormData.preInterceptors
+      nextProps.postInterceptors = editFormData.postInterceptors
     } else if (baseType === 'custom') {
-      editingNode.value.properties.clazz = editFormData.clazz
-      editingNode.value.properties.methodName = editFormData.methodName
-      editingNode.value.properties.args = editFormData.args
-      editingNode.value.properties.preInterceptors = editFormData.preInterceptors
-      editingNode.value.properties.postInterceptors = editFormData.postInterceptors
+      nextProps.clazz = editFormData.clazz
+      nextProps.methodName = editFormData.methodName
+      nextProps.args = editFormData.args
+      nextProps.preInterceptors = editFormData.preInterceptors
+      nextProps.postInterceptors = editFormData.postInterceptors
     } else if (baseType === 'subProcess') {
-      editingNode.value.properties.form = editFormData.form
-      editingNode.value.properties.version = editFormData.version
+      nextProps.form = editFormData.form
+      nextProps.version = editFormData.version
     } else if (baseType === 'start' || baseType === 'end') {
-      editingNode.value.properties.preInterceptors = editFormData.preInterceptors
-      editingNode.value.properties.postInterceptors = editFormData.postInterceptors
+      nextProps.preInterceptors = editFormData.preInterceptors
+      nextProps.postInterceptors = editFormData.postInterceptors
     }
-    editingNode.value = null
-    syncToGraph()
+    editingNode.value.properties = nextProps
   }
+}
+
+// 实时同步：editFormData 任意字段变化都立即同步到目标节点
+// 注：不调 syncToGraph()，避免每次 input 都 emit；仅在 closeEditPanel 时提交一次
+// 写法：直接 watch reactive 对象（getter 套 {...obj} 会让 deep 失效）
+watch(
+  editFormData,
+  () => {
+    if (editingNode.value || editingBranch.value) {
+      applyEditFormToTarget()
+    }
+  },
+  { deep: true }
+)
+
+// 保留"保存"按钮点击逻辑：仅关闭面板（数据已实时同步）
+function saveEdit() {
+  closeEditPanel()
 }
 
 // ─── 右键菜单事件 ─────────────────────────────────────────────
