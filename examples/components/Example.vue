@@ -107,8 +107,9 @@ const graphData = ref(LeaveJson);
 <style>
 .mode-switcher {
   position: fixed;
-  left: 24px;
-  top: 24px;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
   z-index: 9999;
   display: flex;
   gap: 4px;
