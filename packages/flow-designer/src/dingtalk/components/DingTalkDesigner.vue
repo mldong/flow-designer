@@ -589,9 +589,13 @@ const eventCenter = {
 
 // ─── 节点/流程数据 ↔ 业务方感知格式转换 ────────────────────────────
 function nodeToFDData(node: DingNode): FDNodeData {
+  // DingConditionNode/DingForkNode 的 type 是内部表示（'condition' / 'fork'），
+  // 业务方感知应该带 typePrefix（'snaker:condition' / 'snaker:fork'），
+  // 与画布模式 LogicFlow 节点的 type 完全对齐。
+  const fullType = node.type.includes(':') ? node.type : `${props.typePrefix}${node.type}`
   return {
     id: node.id,
-    type: node.type,
+    type: fullType,
     text: { value: node.name },
     properties: node.properties || {}
   }

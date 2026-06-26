@@ -192,26 +192,32 @@ export function findNode(
 
 /**
  * 内部辅助：扁平化所有节点
+ *
+ * 同一节点可能被多个分支共享引用（如汇聚点 end 节点同时被所有 condition 分支 + 主链引用），
+ * 这里按 id 去重避免在调用方产生重复项。
  */
 export function flattenNodes(
   root: DingNode | DingConditionNode | DingForkNode | null | undefined,
-  acc: DingNode[] = []
+  acc: DingNode[] = [],
+  seen: Set<string> = new Set()
 ): DingNode[] {
   if (!root) return acc
+  if (seen.has(root.id)) return acc
+  seen.add(root.id)
   acc.push(root as DingNode)
   const cond = root as DingConditionNode
   if (cond.branches) {
     for (const b of cond.branches) {
-      if (b.children) flattenNodes(b.children, acc)
+      if (b.children) flattenNodes(b.children, acc, seen)
     }
   }
   const fork = root as DingForkNode
   if (fork.branches) {
     for (const b of fork.branches) {
-      if (b.children) flattenNodes(b.children, acc)
+      if (b.children) flattenNodes(b.children, acc, seen)
     }
-    if (fork.joinChildren) flattenNodes(fork.joinChildren, acc)
+    if (fork.joinChildren) flattenNodes(fork.joinChildren, acc, seen)
   }
-  if (root.children) flattenNodes(root.children, acc)
+  if (root.children) flattenNodes(root.children, acc, seen)
   return acc
 }

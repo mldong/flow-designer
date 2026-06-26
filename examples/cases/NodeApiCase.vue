@@ -46,8 +46,8 @@
           <div class="panel-header">📋 当前所有节点</div>
           <div class="node-list">
             <div
-              v-for="n in nodes"
-              :key="n.id"
+              v-for="(n, idx) in nodes"
+              :key="`${n.id}-${idx}`"
               :class="['node-item', { highlighted: isHighlighted(n.id) }]"
             >
               <div class="node-row1">
