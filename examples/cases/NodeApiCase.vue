@@ -14,10 +14,10 @@
   <div class="node-api-case">
     <div class="case-toolbar">
       <!--
-        模式切换按钮：仅 dev 环境（演示站）可见。
-        线上环境业务方只有一个模式（钉钉模式），不需要切换。
+        模式切换按钮：仅演示站可见。
+        - 线上环境业务方只有一个模式（钉钉），不需要切换。
+        - 移动端预览场景下也不需要（移动端本来就只有一个模式）。
         演示站为了对比画布/钉钉两种渲染效果才增加这个开关。
-        import.meta.env.DEV: vite dev 模式为 true，build 后为 false。
       -->
       <div v-if="showModeSwitch" class="mode-switch">
         <button :class="{ active: mode === 'canvas' }" @click="mode = 'canvas'">画布模式</button>
@@ -91,17 +91,22 @@
 import { ref, watch, computed } from 'vue'
 import FlowDesigner from '../../packages/index'
 import LeaveJson from '../assets/wf-leave.json'
+import { useIsMobilePreview } from '../composables/useIsMobilePreview'
 import type { FDHighLightType } from '../../packages/flow-designer/src/types'
 
 const mode = ref<'canvas' | 'dingtalk'>('dingtalk')
 
+const isMobilePreview = useIsMobilePreview()
+
 /**
  * 是否显示模式切换按钮（画布/钉钉）
- * - dev 环境（pnpm dev / 演示站）：显示
- * - build 后（线上环境）：自动隐藏（import.meta.env.DEV === false）
- * 线上环境业务方只有一个模式（钉钉），不需要切换控件。
+ * - dev 环境（演示站）下、且未开启移动端预览时：显示
+ * - 移动端预览：隐藏（移动端场景只有一个模式）
+ * - build 后（线上环境）：隐藏（Vite 静态消除 DEV === false 分支）
+ * 模式切换不是 flow-designer 组件的一部分，是 Example 演示
+ * 为了对比画布/钉钉两种渲染效果加的。
  */
-const showModeSwitch = computed(() => import.meta.env.DEV)
+const showModeSwitch = computed(() => import.meta.env.DEV && !isMobilePreview.value)
 const designerRef = ref<any>(null)
 const graphData = ref<any>(structuredClone(LeaveJson))
 
