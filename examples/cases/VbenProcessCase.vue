@@ -11,7 +11,13 @@
   <div class="vben-case">
     <!-- 顶部模式切换 + 操作栏 -->
     <div class="case-toolbar">
-      <div class="mode-switch">
+      <!--
+        模式切换按钮：仅 dev 环境（演示站）可见。
+        线上环境业务方只有一个模式（钉钉模式），不需要切换。
+        演示站为了对比画布/钉钉两种渲染效果才增加这个开关。
+        import.meta.env.DEV: vite dev 模式为 true，build 后为 false。
+      -->
+      <div v-if="showModeSwitch" class="mode-switch">
         <button :class="{ active: mode === 'canvas' }" @click="mode = 'canvas'">画布模式</button>
         <button :class="{ active: mode === 'dingtalk' }" @click="mode = 'dingtalk'">钉钉模式</button>
       </div>
@@ -118,12 +124,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, onBeforeUnmount, nextTick } from 'vue'
 import FlowDesigner from '../../packages/index'
 import LeaveJson from '../assets/wf-leave.json'
 import type { FDHighLightType } from '../../packages/flow-designer/src/types'
 
 const mode = ref<'canvas' | 'dingtalk'>('dingtalk')
+
+/**
+ * 是否显示模式切换按钮（画布/钉钉）
+ * - dev 环境（pnpm dev / 演示站）：显示
+ * - build 后（线上环境）：自动隐藏（import.meta.env.DEV === false）
+ * 线上环境业务方只有一个模式（钉钉），不需要切换控件。
+ */
+const showModeSwitch = computed(() => import.meta.env.DEV)
 const designerRef = ref<any>(null)
 
 // 父组件 v-model 状态

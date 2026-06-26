@@ -3,7 +3,13 @@
   <!-- <pre>
     {{ graphData }}
   </pre> -->
-  <div class="mode-switcher" :class="{ 'is-mobile': isMobile }">
+  <!--
+    模式切换按钮：仅 dev 环境（演示站）可见。
+    线上环境业务方只有一个模式（钉钉），不需要切换。
+    演示站为了对比画布/钉钉两种渲染效果才增加这个开关。
+    import.meta.env.DEV: vite dev 模式为 true，build 后为 false。
+  -->
+  <div v-if="showModeSwitch" class="mode-switcher" :class="{ 'is-mobile': isMobile }">
     <button :class="{ active: designerMode === 'canvas' }" @click="designerMode = 'canvas'">画布模式</button>
     <button :class="{ active: designerMode === 'dingtalk' }" @click="designerMode = 'dingtalk'">钉钉模式</button>
   </div>
@@ -19,8 +25,16 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 const designerMode = ref<'canvas' | 'dingtalk'>('canvas')
+
+/**
+ * 是否显示模式切换按钮（画布/钉钉）
+ * - dev 环境（pnpm dev / 演示站）：显示
+ * - build 后（线上环境）：自动隐藏（import.meta.env.DEV === false）
+ * 线上环境业务方只有一个模式（钉钉），不需要切换控件。
+ */
+const showModeSwitch = computed(() => import.meta.env.DEV)
 
 // 响应式状态 - 监听窗口尺寸
 const isMobile = ref(window.innerWidth < 768)
