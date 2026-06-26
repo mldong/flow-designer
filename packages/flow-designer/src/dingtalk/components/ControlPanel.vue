@@ -29,11 +29,10 @@
         :key="item.key"
         class="ding-control-panel__item"
         :title="item.title || item.text"
-        :data-tooltip="item.title || item.text"
         @click="handleClick(item)"
       >
         <span class="ding-control-panel__icon" :class="item.iconClass"></span>
-        <span v-if="isMobile" class="ding-control-panel__text">{{ item.text }}</span>
+        <span class="ding-control-panel__text">{{ item.text }}</span>
       </div>
     </div>
   </div>

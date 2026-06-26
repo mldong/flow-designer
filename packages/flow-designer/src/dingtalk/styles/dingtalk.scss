@@ -827,44 +827,24 @@
     gap: 4px;
   }
 
+  // 桌面端：每个工具项是「图标在上 + 文字在下」垂直布局
+  // 与画布模式（LogicFlow lf-control-item）一致，无需 hover tooltip 就能直观看到按钮名称
+  // 移动端 mixin 会覆盖为「图标 + 文字」水平布局
   &__item {
-    width: 32px;
-    height: 32px;
-    position: relative;
+    min-width: 32px;
+    height: auto;
+    padding: 6px 8px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.2s;
 
     &:hover {
       background: #f0f0f0;
-    }
-
-    // 桌面端 hover 时图标下方显示 title（仿画布模式 LogicFlow 的工具栏 tooltip）
-    // 移动端 mixin 内会重置 ::after（FAB 展开已经有图标+文字，不需要这个 tooltip）
-    &::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 3px 8px;
-      background: rgba(0, 0, 0, 0.78);
-      color: #fff;
-      font-size: 11px;
-      line-height: 1.4;
-      white-space: nowrap;
-      border-radius: 4px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-      z-index: 200;
-    }
-
-    &:hover::after {
-      opacity: 1;
     }
   }
 
@@ -875,6 +855,14 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: 11px;
+    line-height: 1.2;
+    color: #666;
+    white-space: nowrap;
   }
 }
 
@@ -1143,18 +1131,13 @@
     &__item {
       width: auto !important;
       height: auto !important;
-      display: flex;
+      flex-direction: row !important;  // 移动端：图标 + 文字 水平
       align-items: center;
       gap: 10px;
       padding: 10px 12px !important;
       border-radius: 4px;
       font-size: 14px;
       color: #333;
-
-      // 移动端不需要 hover tooltip（FAB 展开已经有图标+文字）
-      &::after {
-        content: none !important;
-      }
 
       &:active {
         background: #f0f0f0;
