@@ -24,6 +24,8 @@
       @save="(data) => emits('on-save', data)"
       @on-init="(api) => emits('on-init', api)"
       @on-render="(api) => emits('on-render', api)"
+      @node-click="(params) => emits('node-click', params)"
+      @edge-click="(params) => emits('edge-click', params)"
     />
     <div
       v-else
@@ -104,7 +106,7 @@ LogicFlow.use(Flow, {
   modalRef,
   toggleFullscreen,
 });
-const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save'])
+const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save', 'node-click', 'edge-click'])
 const lfInstance = ref();
 
 
@@ -212,6 +214,27 @@ function initLogicFlow() {
   // emits初始化事件
   emits('on-init', lf)
   const { eventCenter } = lf.graphModel;
+  // ⭐ 转发画布模式节点点击为 emit（与 Flow.ts 内部 props.nodeClick 处理并存）
+  // 构造与 Flow.ts 中 nodeClick(nodeEventParams) 完全一致的事件参数。
+  eventCenter.on('node:click', (event: any) => {
+    if (props.viewer === true) return
+    const shapeList: any[] = (props as any).dndPanel || []
+    const matchedItem = shapeList.find?.((it: any) => it.type === event?.data?.type?.replace?.(props.typePrefix, ''))
+    emits('node-click', {
+      ...event,
+      patternItem: matchedItem,
+      lf
+    })
+  })
+  // ⭐ 转发画布模式边点击为 emit（与 Flow.ts 内部 props.edgeClick 处理并存）
+  eventCenter.on('edge:click', (event: any) => {
+    if (props.viewer === true) return
+    emits('edge-click', {
+      ...event,
+      patternItem: { form: props.edgeForm },
+      lf
+    })
+  })
   // 监听画布变化事件
   eventCenter.on('history:change', () =>{
     isHistoryChange.value = true

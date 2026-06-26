@@ -37,6 +37,46 @@ export type FDEventName =
   | 'update:highlight'    // 高亮数据变化
 
 /**
+ * node-click / edge-click 事件回调参数（与画布模式 Flow.ts 中的
+ * eventCenter.on('node:click', e => { nodeClick({...event, patternItem, lf}) })
+ * 保持完全一致的签名结构）。
+ *
+ * 业务方在两种模式下写 `:node-click="onNodeClick"` 拿到的对象结构完全一致：
+ * ```ts
+ * const onNodeClick = ({ data, node, patternItem, lf }) => {
+ *   // data: { id, type, text: { value }, properties }    // 与画布模式 LF 节点 data 一致
+ *   // node: DingNode（钉钉模式原生节点对象；画布模式为 LF 的 BaseNodeModel）
+ *   // patternItem: dndPanel 中匹配到的项（含 form / nodeClick 等配置）
+ *   // lf: FDDesignerAPI（钉钉模式的 lf 等价 API；画布模式为 LogicFlow 实例）
+ * }
+ * ```
+ */
+export interface DingNodeEventParams {
+  /** 节点数据快照（与 LF 节点 data 同构，便于业务方统一处理） */
+  data: FDNodeData
+  /** 原始节点对象（钉钉模式 DingNode，画布模式 LF node model） */
+  node: DingNode
+  /** dndPanel 中匹配的节点类型配置（业务方可在 item.nodeClick 中覆盖） */
+  patternItem?: import('../../types').FDPatternItem
+  /** lf 实例引用（钉钉模式为 FDDesignerAPI，画布模式为 LogicFlow） */
+  lf?: FDDesignerAPI
+}
+
+/**
+ * edge-click 事件回调参数（与画布模式 Flow.ts 的 edge:click 签名对齐）
+ */
+export interface DingEdgeEventParams {
+  /** 分支/边数据快照 */
+  data: FDNodeData
+  /** 原始分支对象（钉钉模式 DingBranch；画布模式 LF edge model） */
+  edge: DingBranch
+  /** dndPanel 中边类型的配置（钉钉模式固定为 { form: props.edgeForm }） */
+  patternItem?: { form?: any }
+  /** lf 实例引用 */
+  lf?: FDDesignerAPI
+}
+
+/**
  * 事件总线（简化版，自实现，避免引入外部库）
  * 业务方用法：
  * ```ts

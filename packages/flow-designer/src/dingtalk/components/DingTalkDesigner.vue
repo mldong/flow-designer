@@ -146,7 +146,7 @@ import { ref, reactive, computed, watch, onBeforeUnmount, onMounted, PropType } 
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType, FDFormItemType } from '../../types'
 import type { DingNode, DingConditionNode, DingBranch, DingForkNode } from '../types'
 import { isConditionNode, isForkNode } from '../types'
-import type { FDDesignerAPI, FDEventName, FDNodeData, FDGraphModelProxy } from '../types/api'
+import type { FDDesignerAPI, FDEventName, FDNodeData, FDGraphModelProxy, DingNodeEventParams, DingEdgeEventParams } from '../types/api'
 import { findNode, flattenNodes } from '../types/api'
 import { graphToTree, treeToGraph } from '../utils/converter'
 import NodeChain from './NodeChain.vue'
@@ -216,7 +216,8 @@ const props = defineProps({
 
 const emit = defineEmits<{
   (e: 'update:value', data: FDConfigData): void
-  (e: 'node-click', node: DingNode): void
+  (e: 'node-click', params: DingNodeEventParams): void
+  (e: 'edge-click', params: DingEdgeEventParams): void
   (e: 'edit-branch', branch: DingBranch): void
   (e: 'save', data: FDConfigData): void
   (e: 'on-init', api: FDDesignerAPI): void
@@ -982,14 +983,13 @@ function handleEditNode(node: DingNode) {
     (item: FDPatternItem) => item.type === baseType
   )
 
-  const eventParams = {
-    data: {
-      id: node.id,
-      type: node.type,
-      text: node.name,
-      properties: node.properties
-    },
-    patternItem: matchedPatternItem
+  // ⭐ 对齐画布模式 Flow.ts 中 eventCenter.on('node:click', e => nodeClick({...event, patternItem, lf})) 的签名
+  // 业务方在两种模式下写 :node-click 拿到的对象结构完全一致
+  const eventParams: DingNodeEventParams = {
+    data: nodeToFDData(node),
+    node,
+    patternItem: matchedPatternItem,
+    lf: designerApi
   }
 
   // 优先级1: dndPanel 中该类型的 nodeClick
@@ -1023,7 +1023,9 @@ function handleEditNode(node: DingNode) {
   editFormData.expr = node.properties?.expr || ''
   editFormData.handleClass = node.properties?.handleClass || ''
 
-  emit('node-click', node)
+  // emit 与画布模式 lf.eventCenter.on('node:click') 拿到的签名一致，
+  // 业务方在钉钉/画布模式下都能用 @node-click="(p) => {...}" 监听
+  emit('node-click', eventParams)
 }
 
 /**
@@ -1032,14 +1034,17 @@ function handleEditNode(node: DingNode) {
 function handleEditBranch(branch: DingBranch) {
   if (props.viewer) return
 
-  const eventParams = {
+  // ⭐ 对齐画布模式 Flow.ts 中 eventCenter.on('edge:click', e => edgeClick({...event, patternItem, lf})) 的签名
+  const eventParams: DingEdgeEventParams = {
     data: {
       id: branch.id,
       type: 'transition',
-      text: branch.name,
-      properties: branch.properties
+      text: { value: branch.name },
+      properties: branch.properties || {}
     },
-    patternItem: { form: props.edgeForm }
+    edge: branch,
+    patternItem: { form: props.edgeForm },
+    lf: designerApi
   }
 
   // 优先级1: 全局 edgeClick prop
@@ -1056,6 +1061,9 @@ function handleEditBranch(branch: DingBranch) {
   editFormData.displayName = branch.name || ''
   editFormData.expr = branch.properties?.expr || ''
   editFormData.name = branch.properties?.name || branch.id
+
+  // emit 与画布模式 edge:click 签名一致，业务方 @edge-click="(p) => {...}" 可监听
+  emit('edge-click', eventParams)
 }
 
 /**

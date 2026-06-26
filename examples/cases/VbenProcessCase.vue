@@ -29,6 +29,8 @@
       :mode="mode"
       :high-light="highLightData"
       @on-init="handleInit"
+      @node-click="onNodeClick"
+      @edge-click="onEdgeClick"
     />
 
     <!-- 抽屉：模拟 vben5 process-drawer -->
@@ -281,6 +283,31 @@ const log = (type: string, msg: string) => {
 watch(() => graphData.value, (n) => {
   log('sync', `v-model 更新：name=${n?.name}, displayName=${n?.displayName}`)
 })
+
+/**
+ * @node-click 监听 - 验证事件签名对齐画布模式
+ * payload 结构（与画布模式 Flow.ts 中 eventCenter.on('node:click') 拿到的对象一致）：
+ *   { data: { id, type, text: { value }, properties }, node, patternItem, lf }
+ */
+const onNodeClick = (params: any) => {
+  log(
+    'event',
+    `node-click 触发：id=${params?.data?.id}, type=${params?.data?.type}, ` +
+    `hasLf=${!!params?.lf}`
+  )
+}
+
+/**
+ * @edge-click 监听 - 验证事件签名对齐画布模式
+ * payload 结构与画布模式 edge:click 一致
+ */
+const onEdgeClick = (params: any) => {
+  log(
+    'event',
+    `edge-click 触发：id=${params?.data?.id}, type=${params?.data?.type}, ` +
+    `hasLf=${!!params?.lf}`
+  )
+}
 
 onBeforeUnmount(() => {})
 </script>
