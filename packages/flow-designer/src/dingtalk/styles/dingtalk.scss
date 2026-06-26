@@ -821,6 +821,12 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 4px;
 
+  // 工具项容器：桌面端横排（与画布模式一致），移动端 mixin 覆盖为竖排
+  &__list {
+    display: flex;
+    gap: 4px;
+  }
+
   &__item {
     width: 32px;
     height: 32px;
