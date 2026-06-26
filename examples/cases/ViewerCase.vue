@@ -43,8 +43,16 @@
         <el-button type="primary" size="small" @click="viewer = !viewer">
           {{ viewer ? '切换到编辑模式' : '切换到预览模式' }}
         </el-button>
-        <el-button size="small" @click="simulateApprove" :disabled="!lastClickedNode">
-          模拟审批 {{ lastClickedNode?.data?.text?.value ? `（${lastClickedNode.data.text.value}）` : '' }}
+        <el-button
+          :type="playing ? 'warning' : 'success'"
+          size="small"
+          @click="togglePlay"
+          :disabled="sequence.length === 0"
+        >
+          {{ playing ? '⏸ 暂停审批' : '▶ 模拟审批' }}
+        </el-button>
+        <el-button size="small" @click="reset" :disabled="playing">
+          ↻ 重置
         </el-button>
       </div>
     </div>
@@ -70,7 +78,7 @@
     -->
     <div v-if="!isMobilePreview" class="event-log">
       <div class="log-header">
-        节点点击事件（preview 场景下业务方通常监听这个触发审批/审计）
+        审批进度（{{ activeIdx + (playing ? 1 : 0) }} / {{ sequence.length }}）
         <el-button size="small" text @click="logs = []">清空</el-button>
       </div>
       <div class="log-body">
@@ -79,7 +87,7 @@
           <span class="log-msg">{{ log.msg }}</span>
         </div>
         <div v-if="!logs.length" class="log-empty">
-          点击流程图任意节点，会触发 node-click 事件
+          点击「▶ 模拟审批」开始逐步审批流程
         </div>
       </div>
     </div>
@@ -87,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import FlowDesigner from '../../packages/index'
 import LeaveJson from '../assets/wf-leave.json'
 import { useIsMobilePreview } from '../composables/useIsMobilePreview'
@@ -103,29 +111,31 @@ const isMobilePreview = useIsMobilePreview()
 const designerRef = ref<any>(null)
 const graphData = ref<any>(structuredClone(LeaveJson))
 
-// 当前点击的节点（用于演示"模拟审批"按钮）
-interface LastClickedNode {
-  data: { id: string; type: string; text: { value: string }; properties: Record<string, any> }
-  node: any
-  patternItem: any
-  lf: any
-}
-const lastClickedNode = ref<LastClickedNode | null>(null)
-
-// 高亮（演示节点点击后高亮，模拟"已审批"效果）
+// 高亮：active 节点（蓝/正在审批）+ history 节点（绿/已审批）
 const highLightData = ref<any>({
   historyNodeNames: [],
   historyEdgeNames: [],
   activeNodeNames: [],
 })
 
+// 流程节点遍历顺序（钉钉模式实际渲染顺序，从 designerApi 拿到）
+const sequence = ref<{ id: string; text: string; type: string }[]>([])
+// 当前激活节点在 sequence 里的索引
+const activeIdx = ref(-1)
+// 模拟审批进行中
+const playing = ref(false)
+let playTimer: number | null = null
+const STEP_MS = 1200 // 每个节点停留 1.2s
+
 const handleInit = (api: any) => {
-  // 钉钉模式返回 designerApi
-  console.log('designerApi 已就绪（钉钉模式 viewer 演示）', api)
+  // 钉钉模式 api.getAllNodes 返回扁平化的、按渲染顺序的节点列表
+  const nodes = api?.getAllNodes?.() || []
+  sequence.value = nodes
+    .map((n: any) => ({ id: n.id, text: n.text?.value || n.id, type: n.type }))
+  console.log('designerApi 已就绪，节点顺序：', sequence.value.map((s) => s.id).join(' → '))
 }
 
 const onNodeClick = (params: any) => {
-  lastClickedNode.value = params
   log('event',
     `node-click: id=${params?.data?.id}, ` +
     `type=${params?.data?.type}, ` +
@@ -141,22 +151,85 @@ const onEdgeClick = (params: any) => {
 }
 
 /**
- * 模拟审批：业务方在 preview 场景下典型的反馈逻辑
- * 1. 把点击的节点加入 active 高亮
- * 2. 写一条日志
- *
- * 真实业务里会调后端接口，这里只是 UI 演示。
+ * 模拟审批：逐步推进
+ * - 点击 ▶ 后每 STEP_MS 把当前节点加入 history，激活下一个
+ * - ⏸ 暂停 / ↻ 重置 / 审批完成自动停
  */
-const simulateApprove = () => {
-  if (!lastClickedNode.value) return
-  const id = lastClickedNode.value.data.id
+function stepForward() {
+  if (activeIdx.value >= sequence.value.length - 1) {
+    // 流程跑完
+    playing.value = false
+    playTimer = null
+    log('ok', '✅ 流程审批完成')
+    return
+  }
+  activeIdx.value++
+  const cur = sequence.value[activeIdx.value]
+  log('event', `▶ 正在审批：${cur.text} (${cur.id})`)
+
+  // active 节点只放当前一个；history 累积已完成节点
+  const completedIds = sequence.value
+    .slice(0, activeIdx.value)
+    .map((s) => s.id)
   highLightData.value = {
     ...highLightData.value,
-    activeNodeNames: [...(highLightData.value.activeNodeNames || []), id],
-    historyNodeNames: [...(highLightData.value.historyNodeNames || []), id],
+    activeNodeNames: [cur.id],
+    historyNodeNames: completedIds,
   }
-  log('ok', `已模拟审批节点 ${id}`)
+
+  // end 节点历史里也加一下，更直观
+  if (activeIdx.value === sequence.value.length - 1) {
+    highLightData.value.historyNodeNames = [
+      ...highLightData.value.historyNodeNames,
+      cur.id,
+    ]
+    highLightData.value.activeNodeNames = []
+  }
 }
+
+function togglePlay() {
+  if (playing.value) {
+    pause()
+  } else {
+    play()
+  }
+}
+
+function play() {
+  if (sequence.value.length === 0) return
+  // 如果已经跑完，先重置
+  if (activeIdx.value >= sequence.value.length - 1) {
+    reset()
+  }
+  playing.value = true
+  // 立即走一步，避免等待
+  if (activeIdx.value < 0) stepForward()
+  playTimer = window.setInterval(stepForward, STEP_MS)
+}
+
+function pause() {
+  playing.value = false
+  if (playTimer !== null) {
+    clearInterval(playTimer)
+    playTimer = null
+  }
+  log('event', '⏸ 暂停审批')
+}
+
+function reset() {
+  pause()
+  activeIdx.value = -1
+  highLightData.value = {
+    historyNodeNames: [],
+    historyEdgeNames: [],
+    activeNodeNames: [],
+  }
+  log('event', '↻ 重置进度')
+}
+
+onBeforeUnmount(() => {
+  if (playTimer !== null) clearInterval(playTimer)
+})
 
 // ─── 事件日志 ───
 interface LogItem { time: string; msg: string; type: string }
