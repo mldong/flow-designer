@@ -146,7 +146,7 @@ import { ref, reactive, computed, watch, onBeforeUnmount, onMounted, PropType } 
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType, FDFormItemType } from '../../types'
 import type { DingNode, DingConditionNode, DingBranch, DingForkNode } from '../types'
 import { isConditionNode, isForkNode } from '../types'
-import type { FDDesignerAPI, FDEventName, FDNodeData } from '../types/api'
+import type { FDDesignerAPI, FDEventName, FDNodeData, FDGraphModelProxy } from '../types/api'
 import { findNode, flattenNodes } from '../types/api'
 import { graphToTree, treeToGraph } from '../utils/converter'
 import NodeChain from './NodeChain.vue'
@@ -699,7 +699,63 @@ const designerApi: FDDesignerAPI = {
   },
 
   // ── 事件总线 ──
-  eventCenter
+  eventCenter,
+
+  // ── graphModel 代理（与画布模式 lf.graphModel 兼容） ──
+  // 业务方 vben5 process-drawer.vue 的写法：
+  //   lfInstance.graphModel[key] = value
+  //   lfInstance.graphModel.eventCenter.emit('update:graphModel', graphModel)
+  // 在钉钉模式无需任何修改也能跑通
+  graphModel: makeGraphModelProxy()
+}
+
+/**
+ * 创建 graphModel Proxy 对象
+ *
+ * 设计要点：
+ * - get: 从 props.value 读取，eventCenter 返回真实事件总线
+ * - set: 把更新写入内部 _graphModelDraft 累积，每次 emit newValue = { ...props.value, ..._graphModelDraft }
+ *        解决连续 set 时父组件 v-model 异步更新导致前几次 set 被覆盖的 bug
+ * - watch props.value 变化时清空 draft（父组件 v-model 已应用完所有 pending 更新）
+ */
+let _graphModelDraft: Record<string, any> = {}
+
+watch(() => props.value, () => {
+  // 父组件 v-model 已更新：清空累积 draft（除非是内部 emit 触发的）
+  if (!isInternalUpdate) {
+    _graphModelDraft = {}
+  }
+})
+
+function makeGraphModelProxy(): FDGraphModelProxy {
+  return new Proxy({} as any, {
+    get(_target, key: string | symbol) {
+      // eventCenter 字段返回真实事件总线（兼容 vben5 写法）
+      if (key === 'eventCenter') return eventCenter
+      // 优先读 draft（最新写入），再 fallback 到 props.value
+      if ((key as string) in _graphModelDraft) return _graphModelDraft[key as string]
+      return (props.value as any)?.[key as string]
+    },
+    set(_target, key: string | symbol, value: any) {
+      // viewer 模式只读
+      if (props.viewer) return true
+      _graphModelDraft[key as string] = value
+      // 用 props.value 基础 + draft 累积派生新值
+      // 这样连续 set 时前几次的字段不会因为 props.value 还没异步更新而丢失
+      const newValue: FDConfigData = { ...props.value, ..._graphModelDraft }
+      isInternalUpdate = true
+      emit('update:value', newValue)
+      eventCenter.emit('update:graphModel', newValue)
+      return true
+    },
+    has(_target, key: string | symbol) {
+      return (
+        key === 'eventCenter' ||
+        (key as string) in _graphModelDraft ||
+        (key as string) in (props.value || {})
+      )
+    }
+  })
 }
 
 // 暴露给 defineExpose / 父组件 ref

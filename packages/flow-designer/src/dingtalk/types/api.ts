@@ -123,6 +123,34 @@ export interface FDDesignerAPI {
 
   // ─── 事件总线（业务方表单主动通知画布） ────────────────
   eventCenter: FDEventCenter
+
+  // ─── graphModel 代理（与画布模式 lf.graphModel 兼容） ───────
+  /**
+   * 画布模式下，业务方通过 `lf.graphModel[key] = value` 修改流程属性
+   * 钉钉模式没有 lf 实例，暴露一个 Proxy 对象，让业务方写法零修改：
+   *
+   * ```ts
+   * // vben5 process-drawer.vue 中原代码，在钉钉模式也能跑：
+   * lfInstance.value.graphModel[key] = values[key]
+   * lfInstance.value.graphModel.eventCenter.emit('update:graphModel', graphModel)
+   * ```
+   *
+   * - get: 从 props.value（v-model）读取任意字段；访问 eventCenter 返回真实事件总线
+   * - set: 写入 props.value 并 emit update:value + update:graphModel 事件
+   * - viewer 模式下 set 静默不生效
+   */
+  graphModel: FDGraphModelProxy
+}
+
+/**
+ * graphModel 代理的类型定义
+ * - 任意字符串 key 映射到 v-model.value 上的字段
+ * - 特殊 key 'eventCenter' 返回 FDEventCenter
+ *
+ * 注：用 Proxy 实现，TypeScript 类型声明为 Record<string, any>
+ */
+export interface FDGraphModelProxy {
+  [key: string]: any
 }
 
 /**
