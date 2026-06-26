@@ -967,15 +967,12 @@
 
 // ─── 移动端响应式（< 768px）─────────────────────────────────────────────
 // 钉钉模式 220px 节点卡片在 375px 手机视口下会严重溢出，
-// 两种触发途径（不重复样式）：
-// 1. 真实窄视口：@media (max-width: 768px)
-// 2. 演示页面手动切换：examples/App.vue 给 <html> 加 .is-mobile-preview
-//    （仅靠缩小容器不会触发 @media，故额外用类选择器绑定同一套 mixin）
-//
-// 注意：Sass mixin 内不能放裸声明（Declarations may only be used within style rules），
-// 故 CSS 变量定义由两个调用方各自负责（仅两行，重复可接受）；
-// mixin 只封装选择器样式。
-@mixin mobile-styles {
+// 通过重写 CSS 变量 + 局部样式让节点自动收缩
+@media (max-width: 768px) {
+  :root {
+    --ding-card-width: 160px;          // 节点卡片由 220px 缩为 160px
+    --ding-pill-radius: 14px;
+  }
 
   // 画布内边距收紧
   .ding-designer__viewport {
@@ -1151,21 +1148,4 @@
     border-radius: 0 !important;
     max-height: 100vh;
   }
-}
-
-// 触发途径 1：真实窄视口
-@media (max-width: 768px) {
-  :root {
-    --ding-card-width: 160px;          // 节点卡片由 220px 缩为 160px
-    --ding-pill-radius: 14px;
-  }
-  @include mobile-styles;
-}
-
-// 触发途径 2：演示页面手动切换（examples/App.vue 加 is-mobile-preview class）
-// 仅靠缩小容器不会触发 @media，故额外用类选择器绑定同一套 mixin
-:root.is-mobile-preview {
-  --ding-card-width: 160px;
-  --ding-pill-radius: 14px;
-  @include mobile-styles;
 }
