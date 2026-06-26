@@ -277,7 +277,8 @@ watch(mode, () => {
 
 .side-panel {
   flex-shrink: 0;
-  width: 400px;
+  width: 360px;
+  height: 100%;
   background: #fff;
   border-left: 1px solid #ebeef5;
   display: flex;
@@ -288,21 +289,21 @@ watch(mode, () => {
 .panel-section {
   display: flex;
   flex-direction: column;
+  min-height: 0;
   border-bottom: 1px solid #ebeef5;
 }
 
 .panel-section:first-child {
-  flex: 1;
-  min-height: 0;
+  flex: 1 1 0;
 }
 
 .panel-section:last-child {
-  flex: 0 0 280px;
+  flex: 1 1 0;
 }
 
 .panel-header {
   flex-shrink: 0;
-  padding: 10px 16px;
+  padding: 8px 14px;
   font-size: 13px;
   font-weight: 600;
   color: #303133;
@@ -313,8 +314,9 @@ watch(mode, () => {
 .node-list,
 .log-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 8px 12px;
+  padding: 6px 10px;
 }
 
 .node-item {
