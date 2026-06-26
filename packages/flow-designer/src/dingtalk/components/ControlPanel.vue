@@ -65,13 +65,29 @@ const emit = defineEmits<{
 }>()
 
 // ─── 移动端折叠状态 ────────────────────────────────────────
-const isMobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
+/**
+ * 是否移动端
+ * 两个触发条件，满足任一即为 true：
+ * 1. window.innerWidth < 768：真实窄屏设备（手机/平板竖屏）
+ * 2. <html> 根节点带 is-mobile-preview class：
+ *    演示站会把内容区域强制压成 375px 模拟手机视口，
+ *    此时浏览器窗口宽度本身不变（> 1024px），单靠窗口宽度判断不出来。
+ */
+const isMobile = ref(false)
 const mobileOpen = ref(false)
 
-function handleResize() {
-  const next = window.innerWidth < 768
+function syncIsMobile() {
+  const narrow = typeof window !== 'undefined' && window.innerWidth < 768
+  const preview =
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('is-mobile-preview')
+  const next = narrow || preview
   isMobile.value = next
   if (!next) mobileOpen.value = false
+}
+
+function handleResize() {
+  syncIsMobile()
 }
 
 function toggleMobile() {
@@ -86,14 +102,25 @@ function handleClickOutside() {
   if (isMobile.value && mobileOpen.value) closeMobile()
 }
 
+let mobilePreviewObserver: MutationObserver | null = null
+
 onMounted(() => {
+  syncIsMobile()
   window.addEventListener('resize', handleResize)
   document.addEventListener('click', handleClickOutside)
+  // 监听根节点 class 变化（演示站切换"📱 移动端预览"时会 toggle is-mobile-preview）
+  mobilePreviewObserver = new MutationObserver(syncIsMobile)
+  mobilePreviewObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  })
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
   document.removeEventListener('click', handleClickOutside)
+  mobilePreviewObserver?.disconnect()
+  mobilePreviewObserver = null
 })
 
 const defaultControl: FDControlItem[] = [
