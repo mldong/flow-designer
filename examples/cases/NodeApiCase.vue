@@ -12,7 +12,12 @@
 -->
 <template>
   <div class="node-api-case">
-    <div class="case-toolbar">
+    <!--
+      顶部 toolbar（模式切换 + 标题 + 操作按钮）
+      移动端预览时隐藏：演示站额外加的 UI 不属于 flow-designer 组件。
+      移动端预览的目的 = 还原用户在实际移动端上看到的画面。
+    -->
+    <div v-if="!isMobilePreview" class="case-toolbar">
       <!--
         模式切换按钮：仅演示站可见。
         - 线上环境业务方只有一个模式（钉钉），不需要切换。
@@ -35,7 +40,7 @@
     </div>
 
     <div class="case-body">
-      <!-- 左侧：设计器 -->
+      <!-- 左侧：设计器（移动端预览时是页面上唯一展示的元素） -->
       <div class="designer-wrap">
         <FlowDesigner
           ref="designerRef"
@@ -46,8 +51,11 @@
         />
       </div>
 
-      <!-- 右侧：节点列表 + 操作日志 -->
-      <div class="side-panel">
+      <!--
+        右侧面板（当前所有节点 + 操作日志）
+        移动端预览时隐藏（仅在演示站桌面端用于调试，不属于 flow-designer 组件）。
+      -->
+      <div v-if="!isMobilePreview" class="side-panel">
         <div class="panel-section">
           <div class="panel-header">📋 当前所有节点</div>
           <div class="node-list">

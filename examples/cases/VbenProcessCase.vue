@@ -9,8 +9,13 @@
 -->
 <template>
   <div class="vben-case">
-    <!-- 顶部模式切换 + 操作栏 -->
-    <div class="case-toolbar">
+    <!--
+      顶部模式切换 + 操作栏
+      移动端预览时隐藏：演示站额外加的 UI 不属于 flow-designer 组件。
+      移动端预览的目的 = 还原用户在实际移动端上看到的画面，
+      那个场景下只有 <FlowDesigner> 本身，不会有 toolbar / event-log。
+    -->
+    <div v-if="!isMobilePreview" class="case-toolbar">
       <!--
         模式切换按钮：仅演示站可见。
         - 线上环境业务方只有一个模式（钉钉），不需要切换。
@@ -28,7 +33,7 @@
       </div>
     </div>
 
-    <!-- 设计器 -->
+    <!-- 设计器（移动端预览时是页面上唯一展示的元素） -->
     <FlowDesigner
       ref="designerRef"
       v-model:value="graphData"
@@ -105,8 +110,11 @@
       </template>
     </el-drawer>
 
-    <!-- 底部事件日志 -->
-    <div class="event-log">
+    <!--
+      底部事件日志
+      移动端预览时隐藏（仅在演示站桌面端用，不属于 flow-designer 组件）。
+    -->
+    <div v-if="!isMobilePreview" class="event-log">
       <div class="log-header">
         事件日志（实时）
         <el-button size="small" text @click="logs = []">清空</el-button>
