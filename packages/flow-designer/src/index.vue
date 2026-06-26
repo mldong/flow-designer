@@ -2,6 +2,7 @@
   <div :class="['flow-container', { fullscreen: isFullscreen }]">
     <DingTalkDesigner
       v-if="currentMode === 'dingtalk'"
+      ref="dingtalkDesignerRef"
       :key="'dingtalk'"
       :value="value"
       :theme="theme"
@@ -21,6 +22,8 @@
       :default-edge-type="defaultEdgeType"
       @update:value="(data) => emits('update:value', data)"
       @save="(data) => emits('on-save', data)"
+      @on-init="(api) => emits('on-init', api)"
+      @on-render="(api) => emits('on-render', api)"
     />
     <div
       v-else
@@ -290,6 +293,28 @@ watch(()=>props.highLight, (newVal)=>{
   setHighLight(newVal)
 }, {
   deep: true
+})
+
+// ─── 钉钉模式 API 暴露（与画布模式 getLfInstance 同名风格）───────────
+const dingtalkDesignerRef = ref()
+
+/**
+ * 获取钉钉模式的"lf 等价 API"实例
+ * 业务方用法：
+ *   const ref = ... // 父组件 ref
+ *   const api = ref.getDesignerApi()
+ *   api.updateText('apply', '新名称')
+ */
+defineExpose({
+  getLfInstance() {
+    // 兼容画布模式
+    return lfInstance.value
+  },
+  getDesignerApi() {
+    // 钉钉模式专用
+    return (dingtalkDesignerRef.value as any)?.getDesignerApi?.()
+      ?? (dingtalkDesignerRef.value as any)
+  }
 })
 </script>
 <style scoped>

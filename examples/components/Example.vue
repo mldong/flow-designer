@@ -8,11 +8,12 @@
     <button :class="{ active: designerMode === 'dingtalk' }" @click="designerMode = 'dingtalk'">钉钉模式</button>
   </div>
   <FlowDesigner
-  
-  v-model:value="graphData" 
+
+  v-model:value="graphData"
   :mode="designerMode"
   :theme="theme"
   :highLight="highLightData"
+  :process-form="processForm"
   @on-init="handleInit"
   @on-save="handleSave"
   />
@@ -46,24 +47,37 @@ import LeaveJson from '../assets/wf-leave.json'
 const theme = {
   activeColor: 'red'
 }
-// const processForm = ref({
-//   labelWidth: '130px',
-//   formItems: [{
-//     name: "name1",
-//     label: "流程定义唯一编码1",
-//     component: "Input",
-//     componentProps: {
-//       placeholder: '请输入流程定义唯一编码1'
-//     }
-//   }, {
-//     name: "name",
-//     label: "流程定义唯一编码",
-//     component: 'Input',
-//     componentProps: {
-//       placeholder: '请输入流程定义唯一编码'
-//     }
-//   },]
-// })
+// 流程属性表单（钉钉模式右键无回调时 fallback 自动打开内置抽屉）
+const processForm = {
+  labelWidth: '130px',
+  formItems: [
+    {
+      name: 'name',
+      label: '流程编码',
+      component: 'Input',
+      componentProps: { placeholder: '请输入流程定义唯一编码' }
+    },
+    {
+      name: 'displayName',
+      label: '流程名称',
+      component: 'Input',
+      componentProps: { placeholder: '请输入流程显示名称' }
+    },
+    {
+      name: 'type',
+      label: '流程类型',
+      component: 'Select',
+      defaultValue: 'snaker',
+      componentProps: {
+        placeholder: '请选择流程类型',
+        options: [
+          { label: '主流程', value: 'snaker' },
+          { label: '子流程', value: 'sub' }
+        ]
+      }
+    }
+  ]
+}
 const highLightData = ref<FDHighLightType>()
 // const dndPanel :Array<FDPatternItem>= [{
 //       sort: 1,
@@ -114,7 +128,10 @@ const graphData = ref(LeaveJson);
   //   }
   // }
   const handleInit = (lf: any) => {
-    lf.register(CustomHtml);
+    // 钉钉模式 emit 的 api 实例没有 register 方法（只在画布模式的 lf 上存在）
+    if (typeof lf?.register === 'function') {
+      lf.register(CustomHtml);
+    }
   }
   const handleSave = (data: any) => {
     console.log('save', data)
