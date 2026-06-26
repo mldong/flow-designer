@@ -588,14 +588,32 @@ const eventCenter = {
 }
 
 // ─── 节点/流程数据 ↔ 业务方感知格式转换 ────────────────────────────
+
+/**
+ * 把 DingTree 内部 type 转换成业务方感知的完整 type（带 prefix）
+ *
+ * 钉钉内部表示（无 prefix）：
+ *   - 'condition' → 画布模式为 'snaker:decision'（注意：不是 condition！）
+ *   - 'fork'      → 画布模式为 'snaker:fork'
+ *
+ * DingNode 自带的 type 通常已带 prefix（'snaker:task' / 'snaker:start' / 'snaker:join'），
+ * 这里只对内部表示做映射，对已有 prefix 的原样返回。
+ */
+function normalizeNodeType(rawType: string): string {
+  const prefix = props.typePrefix
+  if (rawType === 'condition') return `${prefix}decision`
+  if (rawType === 'fork') return `${prefix}fork`
+  if (rawType === 'join') return `${prefix}join`
+  // 其他类型（task/start/end/custom/subProcess 等）通常已带 prefix，原样返回
+  if (rawType.startsWith(prefix)) return rawType
+  // 兜底：未识别的内部表示，自动补 prefix（保守做法）
+  return `${prefix}${rawType}`
+}
+
 function nodeToFDData(node: DingNode): FDNodeData {
-  // DingConditionNode/DingForkNode 的 type 是内部表示（'condition' / 'fork'），
-  // 业务方感知应该带 typePrefix（'snaker:condition' / 'snaker:fork'），
-  // 与画布模式 LogicFlow 节点的 type 完全对齐。
-  const fullType = node.type.includes(':') ? node.type : `${props.typePrefix}${node.type}`
   return {
     id: node.id,
-    type: fullType,
+    type: normalizeNodeType(node.type),
     text: { value: node.name },
     properties: node.properties || {}
   }
