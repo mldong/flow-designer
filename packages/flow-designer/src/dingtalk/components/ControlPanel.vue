@@ -184,9 +184,11 @@ const mergedItems = computed<FDControlItem[]>(() => {
 const visibleItems = computed<FDControlItem[]>(() => {
   let items = mergedItems.value.filter(item => !item.hide)
 
-  // viewer 模式隐藏编辑类按钮
+  // viewer 模式隐藏编辑类按钮（与画布模式 LogicFlow isSilentMode 行为对齐）
+  // - save / clear / import 都是修改操作，预览模式不应该出现
+  // - 缩放/适应/查看数据/全屏 保留
   if (props.viewer) {
-    items = items.filter(item => !['clear', 'import'].includes(item.key || ''))
+    items = items.filter(item => !['save', 'clear', 'import'].includes(item.key || ''))
   }
 
   // 按 sort 排序

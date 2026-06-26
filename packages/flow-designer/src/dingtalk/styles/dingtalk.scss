@@ -229,6 +229,11 @@
   &--history {
     box-shadow: 0 0 0 2px var(--ding-history-color);
   }
+
+  // 编辑模式下可点击打开编辑面板（viewer 模式无 cursor: pointer）
+  &.is-clickable {
+    cursor: pointer;
+  }
 }
 
 // 添加按钮（轻量化：虚线圈 + 轻符号；上线 + 圆 + 下线 垂直叠放）
@@ -417,6 +422,17 @@
   &:hover {
     border-color: #f59e0b;
     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+  }
+
+  // viewer 模式下不可点击，禁用 hover 反馈
+  &:not(.is-clickable):hover {
+    border-color: inherit;
+    box-shadow: none;
+  }
+
+  // viewer 模式下不可点击，cursor 维持默认
+  &.is-clickable {
+    cursor: pointer;
   }
 
   // 覆盖父级条件组的默认 justify（避免影响内部对齐）

@@ -3,6 +3,7 @@ import { ref, shallowRef, watch } from 'vue'
 import Example from './components/Example.vue'
 import VbenProcessCase from './cases/VbenProcessCase.vue'
 import NodeApiCase from './cases/NodeApiCase.vue'
+import ViewerCase from './cases/ViewerCase.vue'
 
 interface CaseItem {
   key: string
@@ -15,6 +16,7 @@ const cases: CaseItem[] = [
   { key: 'home', label: '首页演示', desc: '画布/钉钉模式基础演示', component: Example },
   { key: 'vben-process', label: '案例1: vben5 process-drawer 风格', desc: '业务方真实写法移植测试', component: VbenProcessCase },
   { key: 'node-api', label: '案例2: 节点 API 操作', desc: 'updateText / setProperties / deleteProperty', component: NodeApiCase },
+  { key: 'viewer', label: '案例3: 钉钉模式 · 预览模式', desc: ':viewer=true 与画布模式 isSilentMode 对齐', component: ViewerCase },
 ]
 
 const activeKey = ref<string>('home')

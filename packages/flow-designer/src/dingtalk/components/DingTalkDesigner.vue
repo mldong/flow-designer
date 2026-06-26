@@ -319,7 +319,7 @@ const touchStart = {
 // 外部传入的 control 优先保留（可覆盖默认）
 const computedControlItems = computed<Array<{ key: string; iconClass: string; title: string; text: string; sort?: number; onClick?: () => void }>>(() => {
   const ext = (props.control || []) as any[]
-  if (props.viewer) return ext
+  // 缩放/适应按钮对编辑/查看场景都有用，editor + viewer 都默认带
   const zoomItems: any[] = [
     { key: 'ding-zoom-out', iconClass: 'ding-icon-zoom-out', title: '缩小流程图', text: '缩小', sort: 10, onClick: zoomOut },
     { key: 'ding-zoom-in',  iconClass: 'ding-icon-zoom-in',  title: '放大流程图', text: '放大', sort: 20, onClick: zoomIn  },
@@ -973,10 +973,10 @@ function willEmptyBranch(root: DingNode, targetId: string): boolean {
 
 /**
  * 编辑节点 - 事件优先级: dndPanel.nodeClick > 全局 nodeClick > 默认编辑面板
+ * viewer 模式：不打开编辑面板，但仍走 nodeClick 监听链路（业务方在
+ * preview 场景下通常需要监听 @node-click 触发审批/审计）
  */
 function handleEditNode(node: DingNode) {
-  if (props.viewer) return
-
   const baseType = node.type.replace(props.typePrefix, '')
   // 从 dndPanel 匹配对应类型的配置项
   const matchedPatternItem = computedDndPanel.value.find(
@@ -1004,7 +1004,13 @@ function handleEditNode(node: DingNode) {
     return
   }
 
-  // 优先级3: 打开内置编辑面板
+  // viewer 模式：到此为止，不打开编辑面板
+  if (props.viewer) {
+    emit('node-click', eventParams)
+    return
+  }
+
+  // 优先级3: 打开内置编辑面板（非 viewer 模式）
   editingBranch.value = null
   editingNode.value = node
   editFormData.name = node.properties?.name || node.id

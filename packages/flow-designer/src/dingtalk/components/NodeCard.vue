@@ -2,9 +2,8 @@
   <!-- 开始节点 -->
   <div
     v-if="baseType === 'start'"
-    :class="['ding-node-pill', 'ding-node-pill--start', highlightClass]"
-    @click="$emit('edit', node)"
-    style="cursor: pointer;"
+    :class="['ding-node-pill', 'ding-node-pill--start', highlightClass, { 'is-clickable': !viewer }]"
+    @click="!viewer && $emit('edit', node)"
   >
     开始
   </div>
@@ -12,9 +11,8 @@
   <!-- 结束节点 -->
   <div
     v-else-if="baseType === 'end'"
-    :class="['ding-node-pill', 'ding-node-pill--end', highlightClass]"
-    @click="$emit('edit', node)"
-    style="cursor: pointer;"
+    :class="['ding-node-pill', 'ding-node-pill--end', highlightClass, { 'is-clickable': !viewer }]"
+    @click="!viewer && $emit('edit', node)"
   >
     结束
   </div>
@@ -22,9 +20,8 @@
   <!-- 合并节点（join）：与并行分支容器对称的虚线框容器 -->
   <div
     v-else-if="baseType === 'join'"
-    :class="['ding-condition-group', 'ding-join-marker', highlightClass]"
-    @click="$emit('edit', node)"
-    style="cursor: pointer;"
+    :class="['ding-condition-group', 'ding-join-marker', highlightClass, { 'is-clickable': !viewer }]"
+    @click="!viewer && $emit('edit', node)"
   >
     <div class="ding-condition-group__header">
       <span class="ding-condition-group__title">合并节点</span>
@@ -39,7 +36,7 @@
   <div
     v-else
     :class="['ding-node-card', highlightClass]"
-    @click="handleClick"
+    @click="$emit('edit', node)"
   >
     <div class="ding-node-card__bar" :style="barStyle"></div>
     <div class="ding-node-card__header">
@@ -139,8 +136,4 @@ const barStyle = computed(() => {
   }
   return {}
 })
-
-function handleClick() {
-  // 卡片点击（由父组件通过 edit 事件处理）
-}
 </script>
