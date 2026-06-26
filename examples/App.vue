@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, watch } from 'vue'
 import Example from './components/Example.vue'
 import VbenProcessCase from './cases/VbenProcessCase.vue'
 import NodeApiCase from './cases/NodeApiCase.vue'
@@ -19,6 +19,21 @@ const cases: CaseItem[] = [
 
 const activeKey = ref<string>('home')
 const activeCase = shallowRef<any>(Example)
+
+/**
+ * 移动端预览开关
+ * 激活后主区域宽度收缩为 375px（手机视口），
+ * 并给 <html> 加 is-mobile-preview class 触发钉钉模式移动端样式
+ * （@media (max-width: 768px) 不会被缩小容器触发，需额外用类选择器）
+ * 便于业务方查看节点卡片自适应 + pan/pinch 交互
+ */
+const isMobilePreview = ref(false)
+const toggleMobilePreview = () => {
+  isMobilePreview.value = !isMobilePreview.value
+}
+watch(isMobilePreview, (v) => {
+  document.documentElement.classList.toggle('is-mobile-preview', v)
+}, { immediate: true })
 
 // 监听 hash 变化支持直接访问指定案例
 const syncFromHash = () => {
@@ -57,10 +72,20 @@ syncFromHash()
         >
           {{ item.label }}
         </button>
+        <button
+          :class="['case-tab', 'case-tab--mobile', { active: isMobilePreview }]"
+          :title="isMobilePreview ? '退出移动端预览' : '预览移动端效果（375px）'"
+          @click="toggleMobilePreview"
+        >
+          <span class="mobile-icon">{{ isMobilePreview ? '📱' : '📱' }}</span>
+          {{ isMobilePreview ? '移动端（开）' : '移动端' }}
+        </button>
       </div>
     </nav>
-    <main class="app-main">
-      <component :is="activeCase" />
+    <main :class="['app-main', { 'app-main--mobile': isMobilePreview }]">
+      <div class="app-main__viewport">
+        <component :is="activeCase" />
+      </div>
     </main>
   </div>
 </template>
@@ -129,10 +154,69 @@ syncFromHash()
   box-shadow: 0 2px 6px rgba(48, 104, 236, 0.3);
 }
 
+/* 移动端预览开关按钮 */
+.case-tab--mobile {
+  margin-left: 12px;
+  border: 1px dashed #c0c4cc;
+  background: #f5f7fa;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.case-tab--mobile:hover:not(.active) {
+  background: #e8f0fe;
+  border-color: #3068EC;
+  color: #3068EC;
+}
+
+.case-tab--mobile.active {
+  background: #67c23a;
+  border-color: #67c23a;
+  box-shadow: 0 2px 6px rgba(103, 194, 58, 0.3);
+}
+
+.mobile-icon {
+  font-size: 14px;
+}
+
 .app-main {
   flex: 1;
   min-height: 0;
   position: relative;
+  overflow: hidden;
+}
+
+.app-main__viewport {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+/**
+ * 移动端预览：
+ * 主区域收缩为 375px 宽（iPhone 视口），居中显示，
+ * 外面用阴影 + 留白模拟手机外壳；
+ * 内部的 :root 上会触发 :root.is-mobile-preview 类选择器，
+ * 钉钉模式节点卡片自动从 220px 缩为 160px，padding 收紧等。
+ */
+.app-main--mobile {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: #2c2c2c; /* 手机外壳外侧深色背景 */
+  padding: 12px;
+}
+
+.app-main--mobile .app-main__viewport {
+  flex: 0 0 375px;       /* 防止被 flex 拉伸到全宽 */
+  width: 375px;
+  max-width: 375px;
+  background: #f5f7fa;
+  border-radius: 24px; /* 手机圆角 */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 8px #1a1a1a, 0 0 0 10px #333;
   overflow: hidden;
 }
 </style>
