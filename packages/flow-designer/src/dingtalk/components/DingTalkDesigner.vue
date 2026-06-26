@@ -108,14 +108,46 @@
         </div>
       </div>
     </div>
+    <!-- 流程属性内置抽屉（processForm fallback：业务方未传 blankContextmenu 时自动打开） -->
+    <div class="ding-edit-panel" v-if="showProcessDrawer && processFormFields.length > 0">
+      <div class="ding-edit-panel__header">
+        <span>流程属性</span>
+        <button class="ding-edit-panel__close" @click="closeProcessDrawer">&times;</button>
+      </div>
+      <div class="ding-edit-panel__body">
+        <div class="ding-form-item" v-for="field in processFormFields" :key="field.name">
+          <label class="ding-form-item__label">{{ field.label || field.name }}</label>
+          <input
+            v-if="!field.component || field.component === 'Input'"
+            class="ding-form-item__input"
+            v-model="processFormData[field.name]"
+            :placeholder="field.componentProps?.placeholder || `请输入${field.label || field.name}`"
+          />
+          <select
+            v-else-if="field.component === 'Select'"
+            class="ding-form-item__select"
+            v-model="processFormData[field.name]"
+          >
+            <option value="">{{ field.componentProps?.placeholder || '请选择' }}</option>
+            <option
+              v-for="opt in (field.componentProps?.options || [])"
+              :key="opt.value"
+              :value="opt.value"
+            >{{ opt.label }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onBeforeUnmount, PropType } from 'vue'
+import { ref, reactive, computed, watch, onBeforeUnmount, onMounted, PropType } from 'vue'
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType, FDFormItemType } from '../../types'
 import type { DingNode, DingConditionNode, DingBranch, DingForkNode } from '../types'
 import { isConditionNode, isForkNode } from '../types'
+import type { FDDesignerAPI, FDEventName, FDNodeData } from '../types/api'
+import { findNode, flattenNodes } from '../types/api'
 import { graphToTree, treeToGraph } from '../utils/converter'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
@@ -187,6 +219,8 @@ const emit = defineEmits<{
   (e: 'node-click', node: DingNode): void
   (e: 'edit-branch', branch: DingBranch): void
   (e: 'save', data: FDConfigData): void
+  (e: 'on-init', api: FDDesignerAPI): void
+  (e: 'on-render', api: FDDesignerAPI): void
 }>()
 
 // ─── 默认面板项 ─────────────────────────────────────────────────────────
@@ -528,10 +562,154 @@ function syncToGraph() {
   }
   isInternalUpdate = true
   emit('update:value', newValue)
+  // 触发 update:graphData 事件（业务方可通过 api.eventCenter.on 订阅）
+  eventCenter.emit('update:graphData', newValue)
 }
 
 // 初始转换
 convertToTree()
+
+// ─── 事件总线（与画布模式 lf.eventCenter 兼容命名）────────────────────
+const eventHandlers: Record<string, Array<(data?: any) => void>> = reactive({})
+const eventCenter = {
+  emit(event: FDEventName, data?: any) {
+    const handlers = eventHandlers[event] || []
+    handlers.forEach(h => h(data))
+  },
+  on(event: FDEventName, handler: (data?: any) => void) {
+    if (!eventHandlers[event]) eventHandlers[event] = []
+    eventHandlers[event].push(handler)
+  },
+  off(event: FDEventName, handler: (data?: any) => void) {
+    const handlers = eventHandlers[event] || []
+    const idx = handlers.indexOf(handler)
+    if (idx >= 0) handlers.splice(idx, 1)
+  }
+}
+
+// ─── 节点/流程数据 ↔ 业务方感知格式转换 ────────────────────────────
+function nodeToFDData(node: DingNode): FDNodeData {
+  return {
+    id: node.id,
+    type: node.type,
+    text: { value: node.name },
+    properties: node.properties || {}
+  }
+}
+
+function findByIdOrName(idOrName: string): DingNode | null {
+  return findNode(treeData.value, (n) =>
+    n.id === idOrName || n.properties?.name === idOrName
+  )
+}
+
+// ─── 公开 API（与画布模式 lf 实例兼容命名）────────────────────────────
+function _resolveNode(id: string, allowFallback: boolean): DingNode | null {
+  if (!treeData.value) return null
+  const found = findByIdOrName(id)
+  if (found) return found
+  // base-form 习惯用 properties.name 作 key；如果传入的不是 id 但匹配 name 也能找到
+  if (allowFallback) {
+    return findNode(treeData.value, (n) => n.properties?.name === id)
+  }
+  return null
+}
+
+const designerApi: FDDesignerAPI = {
+  // ── 查询 ──
+  getNodeDataById(id: string) {
+    if (props.viewer) return null
+    const n = findNode(treeData.value, (x) => x.id === id)
+    return n ? nodeToFDData(n) : null
+  },
+  getNodeDataByName(name: string) {
+    if (props.viewer) return null
+    const n = findNode(treeData.value, (x) => x.properties?.name === name)
+    return n ? nodeToFDData(n) : null
+  },
+  getAllNodes() {
+    return flattenNodes(treeData.value).map(nodeToFDData)
+  },
+
+  // ── 更新 ──
+  updateText(id: string, text: string) {
+    if (props.viewer) return
+    const n = _resolveNode(id, true)
+    if (n) n.name = text
+    syncToGraph()
+  },
+  changeNodeId(oldId: string, newId: string) {
+    if (props.viewer) return false
+    const n = findNode(treeData.value, (x) => x.id === oldId)
+    if (!n) return false
+    n.id = newId
+    // 同步 properties.name（base-form 习惯）
+    n.properties = { ...n.properties, name: newId }
+    syncToGraph()
+    return true
+  },
+  setProperties(id: string, props: Record<string, any>) {
+    if (props.viewer) return
+    const n = _resolveNode(id, true)
+    if (n) n.properties = { ...n.properties, ...props }
+    syncToGraph()
+  },
+  deleteProperty(id: string, key: string) {
+    if (props.viewer) return
+    const n = _resolveNode(id, true)
+    if (n && n.properties && key in n.properties) {
+      const next = { ...n.properties }
+      delete next[key]
+      n.properties = next
+    }
+    syncToGraph()
+  },
+
+  // ── 流程属性（v-model.value） ──
+  setProcessProperty(key: string, value: any) {
+    if (props.viewer) return
+    const newValue: FDConfigData = { ...props.value, [key]: value }
+    isInternalUpdate = true
+    emit('update:value', newValue)
+    eventCenter.emit('update:graphModel', newValue)
+  },
+
+  // ── 导出/重渲染 ──
+  getGraphData() {
+    const graphData = treeToGraph(treeData.value, props.typePrefix)
+    return {
+      ...props.value,
+      nodes: graphData.nodes,
+      edges: graphData.edges,
+      mode: 'dingtalk',
+    }
+  },
+  render(data: FDConfigData) {
+    isInternalUpdate = true
+    treeData.value = graphToTree(data?.nodes || [], data?.edges || [], props.typePrefix)
+    isInternalUpdate = false
+    // 重渲染后 emit 一次 update:value 保持 v-model 同步
+    syncToGraph()
+    eventCenter.emit('update:graphData', data)
+  },
+
+  // ── 高亮 ──
+  setHighlight(data: FDHighLightType) {
+    eventCenter.emit('update:highlight', data)
+  },
+
+  // ── 事件总线 ──
+  eventCenter
+}
+
+// 暴露给 defineExpose / 父组件 ref
+defineExpose<FDDesignerAPI>(designerApi)
+
+// 初始渲染完成时触发 on-init / on-render，让业务方拿到 api 实例
+onMounted(() => {
+  emit('on-init', designerApi)
+  emit('on-render', designerApi)
+})
 
 // 监听外部数据变化
 watch(() => props.value, () => {
@@ -1395,8 +1573,12 @@ function handleContextmenu(_e: MouseEvent) {
 
   if (props.blankContextmenu && typeof props.blankContextmenu === 'function') {
     props.blankContextmenu(eventParams)
+    return
   }
-  // 没有回调则不做任何事
+  // fallback：业务方未传 blankContextmenu，且有 processForm 配置，自动打开内置抽屉
+  if (processFormFields.value.length > 0) {
+    openProcessDrawer()
+  }
 }
 
 // ─── 控制面板事件 ─────────────────────────────────────────────
@@ -1406,6 +1588,44 @@ const viewDataJson = ref('')
 const showImportModal = ref(false)
 const importDataJson = ref('')
 const importError = ref('')
+
+// ─── 流程属性内置抽屉 ─────────────────────────────────────
+const showProcessDrawer = ref(false)
+const processFormData = reactive<Record<string, any>>({})
+const processFormFields = computed<FDFormItemType[]>(() => {
+  if (!props.processForm?.formItems) return []
+  return props.processForm.formItems.filter(f => f.name !== '__schema__')
+})
+
+function openProcessDrawer() {
+  // 从 props.value 初始化表单
+  processFormFields.value.forEach(f => {
+    processFormData[f.name] = (props.value as any)?.[f.name] ?? f.defaultValue ?? ''
+  })
+  showProcessDrawer.value = true
+}
+function closeProcessDrawer() {
+  showProcessDrawer.value = false
+  // 提交一次 emit + 触发事件
+  const newValue: FDConfigData = { ...props.value, ...processFormData }
+  isInternalUpdate = true
+  emit('update:value', newValue)
+  eventCenter.emit('update:graphModel', newValue)
+}
+
+// 字段变化时实时同步到 props.value（与画布模式 handleValuesChange 一致）
+watch(
+  processFormData,
+  () => {
+    if (!showProcessDrawer.value) return
+    // 直接 emit（避免循环 setProcessProperty）
+    const newValue: FDConfigData = { ...props.value, ...processFormData }
+    isInternalUpdate = true
+    emit('update:value', newValue)
+    eventCenter.emit('update:graphModel', newValue)
+  },
+  { deep: true }
+)
 
 function handleControlSave() {
   const graphData = treeToGraph(treeData.value, props.typePrefix)
