@@ -1,0 +1,397 @@
+<!--
+  案例1：vben5 process-drawer 风格移植测试
+
+  目标：在钉钉模式下，验证 vben5 业务方 process-drawer.vue 的真实写法
+        （lfInstance.graphModel[k] = values[k] + eventCenter.emit）能否直接复用
+
+  关键点：本组件不直接用 lf / api.graphModel 之类专用概念，
+         而是通过 ref 取 lfInstance 后像 vben5 一样直接调用
+-->
+<template>
+  <div class="vben-case">
+    <!-- 顶部模式切换 + 操作栏 -->
+    <div class="case-toolbar">
+      <div class="mode-switch">
+        <button :class="{ active: mode === 'canvas' }" @click="mode = 'canvas'">画布模式</button>
+        <button :class="{ active: mode === 'dingtalk' }" @click="mode = 'dingtalk'">钉钉模式</button>
+      </div>
+      <div class="case-actions">
+        <el-button type="primary" size="small" @click="openDrawer">打开流程属性抽屉</el-button>
+        <el-button size="small" @click="logCurrent">打印当前 lfInstance.graphModel</el-button>
+        <el-button size="small" @click="reset">重置数据</el-button>
+      </div>
+    </div>
+
+    <!-- 设计器 -->
+    <FlowDesigner
+      ref="designerRef"
+      v-model:value="graphData"
+      :mode="mode"
+      :high-light="highLightData"
+      @on-init="handleInit"
+    />
+
+    <!-- 抽屉：模拟 vben5 process-drawer -->
+    <el-drawer
+      v-model="drawerVisible"
+      title="流程属性（vben5 process-drawer 移植演示）"
+      direction="rtl"
+      size="500px"
+      :before-close="handleDrawerClose"
+    >
+      <el-form
+        ref="formRef"
+        :model="formData"
+        label-width="120px"
+        @submit.prevent
+      >
+        <el-form-item label="流程编码" prop="name">
+          <el-input
+            v-model="formData.name"
+            placeholder="请输入流程定义唯一编码"
+            @input="(v) => handleFieldChange('name', v)"
+          />
+        </el-form-item>
+        <el-form-item label="流程名称" prop="displayName">
+          <el-input
+            v-model="formData.displayName"
+            placeholder="请输入流程显示名称"
+            @input="(v) => handleFieldChange('displayName', v)"
+          />
+        </el-form-item>
+        <el-form-item label="流程类型" prop="type">
+          <el-select
+            v-model="formData.type"
+            placeholder="请选择流程类型"
+            style="width: 100%"
+            @change="(v) => handleFieldChange('type', v)"
+          >
+            <el-option label="主流程" value="snaker" />
+            <el-option label="子流程" value="sub" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="实例URL" prop="instanceUrl">
+          <el-input
+            v-model="formData.instanceUrl"
+            placeholder="表单地址"
+            @input="(v) => handleFieldChange('instanceUrl', v)"
+          />
+        </el-form-item>
+        <el-form-item label="过期时间" prop="expireTime">
+          <el-input
+            v-model="formData.expireTime"
+            placeholder="过期时间（小时）"
+            @input="(v) => handleFieldChange('expireTime', v)"
+          />
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <div class="drawer-footer">
+          <div class="drawer-tip">
+            💡 抽屉表单 onChange 后，handleValuesChange 中使用 vben5 原写法：
+            <code>lfInstance.graphModel[k] = values[k]</code>
+          </div>
+          <el-button @click="drawerVisible = false">关闭</el-button>
+        </div>
+      </template>
+    </el-drawer>
+
+    <!-- 底部事件日志 -->
+    <div class="event-log">
+      <div class="log-header">
+        事件日志（实时）
+        <el-button size="small" text @click="logs = []">清空</el-button>
+      </div>
+      <div class="log-body">
+        <div v-for="(log, i) in logs" :key="i" :class="['log-item', log.type]">
+          <span class="log-time">{{ log.time }}</span>
+          <span class="log-tag">{{ log.tag }}</span>
+          <span class="log-msg">{{ log.msg }}</span>
+        </div>
+        <div v-if="!logs.length" class="log-empty">暂无日志</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch, onBeforeUnmount, nextTick } from 'vue'
+import FlowDesigner from '../../packages/index'
+import LeaveJson from '../assets/wf-leave.json'
+import type { FDHighLightType } from '../../packages/flow-designer/src/types'
+
+const mode = ref<'canvas' | 'dingtalk'>('dingtalk')
+const designerRef = ref<any>(null)
+
+// 父组件 v-model 状态
+const graphData = ref<any>(structuredClone(LeaveJson))
+
+const highLightData = ref<FDHighLightType>({
+  historyNodeNames: ['start'],
+  historyEdgeNames: [],
+  activeNodeNames: ['apply'],
+})
+
+// lfInstance：与 vben5 写法保持一致，使用 .value 取实例
+const lfInstance = ref<any>(null)
+
+const handleInit = (api: any) => {
+  // 兼容两种模式：画布模式返回 lf，钉钉模式返回 designerApi
+  lfInstance.value = api
+  log('init', `lfInstance 已就绪（模式：${mode.value}）`)
+
+  // 订阅 update:graphModel 事件，业务方常常需要监听
+  api.eventCenter?.on('update:graphModel', (data: any) => {
+    log('event', `update:graphModel 触发，name=${data?.name}`)
+  })
+}
+
+// ───── 抽屉相关 ─────
+const drawerVisible = ref(false)
+const formRef = ref<any>(null)
+const formData = ref({
+  name: '',
+  displayName: '',
+  type: 'snaker',
+  instanceUrl: '',
+  expireTime: '',
+})
+const isIniting = ref(false)
+
+const openDrawer = () => {
+  // 从 graphData 同步初始值（模拟 vben5 业务方写法）
+  isIniting.value = true
+  formData.value = {
+    name: graphData.value.name ?? '',
+    displayName: graphData.value.displayName ?? '',
+    type: graphData.value.type ?? 'snaker',
+    instanceUrl: graphData.value.instanceUrl ?? '',
+    expireTime: graphData.value.expireTime ?? '',
+  }
+  drawerVisible.value = true
+  nextTick(() => {
+    isIniting.value = false
+  })
+}
+
+const handleDrawerClose = (done: () => void) => {
+  done()
+}
+
+// ⭐ 关键：复刻 vben5 process-drawer.vue 的 handleValuesChange
+// 原 vben5 代码（vben-form 内部会在字段 onChange 时回调）：
+//   handleValuesChange(values, fieldsChanged) {
+//     if (lfInstance.value?.graphModel) {
+//       fieldsChanged.forEach((key) => {
+//         lfInstance.value.graphModel[key] = values[key];
+//       });
+//       const { eventCenter } = lfInstance.value.graphModel;
+//       eventCenter.emit('update:graphModel', lfInstance.value.graphModel);
+//     }
+//   }
+//
+// 这里用 element-plus 的 @input/@change 事件模拟 vben-form 的 onChange 回调
+const handleFieldChange = (key: string, value: any) => {
+  if (isIniting.value) return
+  if (!lfInstance.value?.graphModel) {
+    log('warn', 'lfInstance.value.graphModel 不可用')
+    return
+  }
+
+  log('change', `字段变化: ${key} = ${JSON.stringify(value)}`)
+
+  // ⭐⭐⭐ vben5 真实写法：直接写 graphModel 顶层 ⭐⭐⭐
+  lfInstance.value.graphModel[key] = value
+  // 业务方还会显式 emit
+  const { eventCenter } = lfInstance.value.graphModel
+  eventCenter.emit('update:graphModel', lfInstance.value.graphModel)
+
+  log('ok', `已通过 graphModel 直写更新 ${key}`)
+}
+
+const logCurrent = () => {
+  if (!lfInstance.value) {
+    log('warn', 'lfInstance 未就绪')
+    return
+  }
+  log('info', `graphModel.name=${lfInstance.value.graphModel?.name}`)
+  log('info', `graphModel.displayName=${lfInstance.value.graphModel?.displayName}`)
+  log('info', `graphData.name=${graphData.value.name}`)
+}
+
+const reset = () => {
+  graphData.value = structuredClone(LeaveJson)
+  log('reset', '已重置为初始数据')
+}
+
+// ───── 事件日志 ─────
+interface LogItem { time: string; tag: string; msg: string; type: string }
+const logs = ref<LogItem[]>([])
+const log = (type: string, msg: string) => {
+  const now = new Date()
+  const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
+  logs.value.unshift({ time, tag: type, msg, type })
+  if (logs.value.length > 50) logs.value.pop()
+}
+
+// 监听 graphData 同步变化（验证 v-model 是否真的被更新）
+watch(() => graphData.value, (n) => {
+  log('sync', `v-model 更新：name=${n?.name}, displayName=${n?.displayName}`)
+})
+
+onBeforeUnmount(() => {})
+</script>
+
+<style scoped>
+.vben-case {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 1px solid #ebeef5;
+  z-index: 5;
+}
+
+.mode-switch {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: #f5f7fa;
+  border-radius: 18px;
+}
+
+.mode-switch button {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: #606266;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.mode-switch button.active {
+  background: #3068EC;
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(48, 104, 236, 0.3);
+}
+
+.case-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.drawer-tip {
+  font-size: 12px;
+  color: #909399;
+  flex: 1;
+  line-height: 1.6;
+}
+
+.drawer-tip code {
+  background: #f0f2f5;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #d63384;
+}
+
+.event-log {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 380px;
+  max-height: 280px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+}
+
+.log-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #303133;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.log-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 12px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+}
+
+.log-item {
+  display: flex;
+  gap: 6px;
+  padding: 3px 0;
+  line-height: 1.4;
+  border-bottom: 1px dashed #f0f2f5;
+}
+
+.log-time {
+  color: #909399;
+  flex-shrink: 0;
+}
+
+.log-tag {
+  flex-shrink: 0;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.log-item.ok .log-tag { background: #67c23a; }
+.log-item.change .log-tag { background: #e6a23c; }
+.log-item.event .log-tag { background: #909399; }
+.log-item.sync .log-tag { background: #3068EC; }
+.log-item.info .log-tag { background: #606266; }
+.log-item.warn .log-tag { background: #f56c6c; }
+.log-item.reset .log-tag { background: #9c27b0; }
+.log-item.init .log-tag { background: #00bcd4; }
+
+.log-msg {
+  flex: 1;
+  color: #303133;
+  word-break: break-all;
+}
+
+.log-empty {
+  text-align: center;
+  padding: 20px;
+  color: #c0c4cc;
+  font-size: 12px;
+}
+</style>
