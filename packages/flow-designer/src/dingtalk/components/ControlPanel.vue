@@ -29,6 +29,7 @@
         :key="item.key"
         class="ding-control-panel__item"
         :title="item.title || item.text"
+        :data-tooltip="item.title || item.text"
         @click="handleClick(item)"
       >
         <span class="ding-control-panel__icon" :class="item.iconClass"></span>
