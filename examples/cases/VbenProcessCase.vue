@@ -160,15 +160,19 @@ const formData = ref({
 const isIniting = ref(false)
 
 const openDrawer = () => {
-  // 从 graphData 同步初始值（模拟 vben5 业务方写法）
+  // ⭐ 关键：Object.assign 赋值保持原 reactive object 不变，
+  // 这样外部注册的 watch(formData, { deep: true }) 依赖不丢失。
+  // 若用 formData.value = { ...新对象 } 整体替换，watch 会失效。
   isIniting.value = true
-  formData.value = {
+  Object.assign(formData.value, {
     name: graphData.value.name ?? '',
     displayName: graphData.value.displayName ?? '',
     type: graphData.value.type ?? 'snaker',
     instanceUrl: graphData.value.instanceUrl ?? '',
     expireTime: graphData.value.expireTime ?? '',
-  }
+  })
+  // 同步 prevFormData 快照，避免 openDrawer 后第一次 watch 误报所有字段变化
+  prevFormData = { ...formData.value }
   drawerVisible.value = true
   nextTick(() => {
     isIniting.value = false
@@ -179,36 +183,74 @@ const handleDrawerClose = (done: () => void) => {
   done()
 }
 
-// ⭐ 关键：复刻 vben5 process-drawer.vue 的 handleValuesChange
-// 原 vben5 代码（vben-form 内部会在字段 onChange 时回调）：
-//   handleValuesChange(values, fieldsChanged) {
-//     if (lfInstance.value?.graphModel) {
-//       fieldsChanged.forEach((key) => {
-//         lfInstance.value.graphModel[key] = values[key];
-//       });
-//       const { eventCenter } = lfInstance.value.graphModel;
-//       eventCenter.emit('update:graphModel', lfInstance.value.graphModel);
-//     }
-//   }
-//
-// 这里用 element-plus 的 @input/@change 事件模拟 vben-form 的 onChange 回调
-const handleFieldChange = (key: string, value: any) => {
+/**
+ * 同步表单数据到画布（vben5 process-drawer.vue handleValuesChange 等价）
+ *
+ * 演示两种调用方式：
+ * ① callback（vben5 真实写法，由 form 组件 onChange 主动回调）
+ * ② watch（依赖收集被动触发，Object.assign 后可用）
+ *
+ * 用 isSyncing 标志互斥防重：callback 触发时设 true，watch 看到 true 跳过。
+ */
+const isSyncing = ref(false)
+
+const syncToGraph = (key: string, value: any, source: 'callback' | 'watch') => {
   if (isIniting.value) return
   if (!lfInstance.value?.graphModel) {
     log('warn', 'lfInstance.value.graphModel 不可用')
     return
   }
+  if (source === 'callback') {
+    isSyncing.value = true
+  } else if (isSyncing.value) {
+    // watch 误判为重复
+    return
+  }
 
-  log('change', `字段变化: ${key} = ${JSON.stringify(value)}`)
+  log('change', `[${source}] ${key} = ${JSON.stringify(value)}`)
 
   // ⭐⭐⭐ vben5 真实写法：直接写 graphModel 顶层 ⭐⭐⭐
   lfInstance.value.graphModel[key] = value
-  // 业务方还会显式 emit
   const { eventCenter } = lfInstance.value.graphModel
   eventCenter.emit('update:graphModel', lfInstance.value.graphModel)
 
   log('ok', `已通过 graphModel 直写更新 ${key}`)
+
+  // callback 触发的同步走完后释放标志
+  if (source === 'callback') {
+    nextTick(() => {
+      isSyncing.value = false
+    })
+  }
 }
+
+// ① callback 模式（vben5 真实写法演示）
+const handleFieldChange = (key: string, value: any) => {
+  syncToGraph(key, value, 'callback')
+}
+
+// ② watch 模式（业务方不写 callback 时也能 work）
+//
+// 注意：vue3 watch(formData, cb, { deep: true }) 调用 cb 时
+// newVal 和 oldVal 是同一个引用（因为 formData 内部属性被修改，未替换整体），
+// 需要外部维护 prevFormData 快照进行 diff。
+let prevFormData: Record<string, any> = { ...formData.value }
+watch(
+  formData,
+  (newVal) => {
+    if (isIniting.value || isSyncing.value) {
+      prevFormData = { ...newVal }
+      return
+    }
+    for (const key of Object.keys(newVal)) {
+      if (newVal[key] !== prevFormData[key]) {
+        syncToGraph(key, newVal[key], 'watch')
+      }
+    }
+    prevFormData = { ...newVal }
+  },
+  { deep: true }
+)
 
 const logCurrent = () => {
   if (!lfInstance.value) {
