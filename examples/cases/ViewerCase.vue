@@ -168,22 +168,15 @@ function stepForward() {
   log('event', `▶ 正在审批：${cur.text} (${cur.id})`)
 
   // active 节点只放当前一个；history 累积已完成节点
+  // 最后节点（end）会同时进入 history + active，呈现"边线蓝色进行中 + 节点绿色已完成"的双高亮
   const completedIds = sequence.value
     .slice(0, activeIdx.value)
     .map((s) => s.id)
+  const isLast = activeIdx.value === sequence.value.length - 1
   highLightData.value = {
     ...highLightData.value,
     activeNodeNames: [cur.id],
-    historyNodeNames: completedIds,
-  }
-
-  // end 节点历史里也加一下，更直观
-  if (activeIdx.value === sequence.value.length - 1) {
-    highLightData.value.historyNodeNames = [
-      ...highLightData.value.historyNodeNames,
-      cur.id,
-    ]
-    highLightData.value.activeNodeNames = []
+    historyNodeNames: isLast ? [...completedIds, cur.id] : completedIds,
   }
 }
 

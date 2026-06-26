@@ -77,10 +77,33 @@
   background-size: 2px 6px;
   background-repeat: repeat-y;
   position: relative;
+  transition: background-image 0.3s ease;
 
   // readonly 模式：更短的连接线（不可插入位置使用）
   &--short {
     height: 20px;
+  }
+
+  // 进行中：蓝色虚线（指向当前正在审批的节点的连线）
+  &--active {
+    background-image: linear-gradient(
+      to bottom,
+      #3068ec 0,
+      #3068ec 3px,
+      transparent 3px,
+      transparent 6px
+    );
+  }
+
+  // 已完成：绿色虚线（两端都是已审批节点的连线）
+  &--history {
+    background-image: linear-gradient(
+      to bottom,
+      #67c23a 0,
+      #67c23a 3px,
+      transparent 3px,
+      transparent 6px
+    );
   }
 }
 

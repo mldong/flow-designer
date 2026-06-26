@@ -58,6 +58,9 @@
       :type-prefix="typePrefix"
       :dnd-panel="dndPanel"
       :readonly="baseType === 'start'"
+      :prev-node-id="node.id"
+      :next-node-id="node.children?.id"
+      :high-light="highLight"
       @add="(nodeType) => $emit('add', nodeType, node)"
     />
 
