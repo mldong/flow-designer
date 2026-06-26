@@ -587,22 +587,21 @@
 }
 
 // 节点选择器
+//
+// 原本用 <div class="ding-node-selector__overlay" position: fixed> 作为外部点击遮罩。
+// 但钉钉模式的画布 pan/zoom 容器 .ding-designer__viewport 上有
+// transform: translate(x,y) scale(s) + will-change: transform，
+// 根据 CSS 规范，这会导致 position: fixed 元素不再相对 viewport 定位，
+// overlay 退化为只能覆盖父容器大小，导致点击外部画布区域无法关闭面板。
+//
+// 修复方案：废弃 overlay，改用 NodeSelector.vue 内的 document click 监听
+// （见 handleDocumentClick），绕过 transform 边界。
 .ding-node-selector {
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
   z-index: 100;
   margin-top: 4px;
-
-  &__overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99;
-  }
 
   &__panel {
     background: var(--ding-card-bg);
@@ -612,6 +611,8 @@
     min-width: 160px;
     position: relative;
     z-index: 100;
+    // 接手父容器的水平居中（无 fixed 子元素，transform 不影响定位）
+    transform: translateX(-50%);
   }
 
   &__item {

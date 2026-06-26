@@ -1,7 +1,6 @@
 <template>
   <div class="ding-node-selector" v-if="visible">
-    <div class="ding-node-selector__overlay" @click="close"></div>
-    <div class="ding-node-selector__panel">
+    <div ref="panelRef" class="ding-node-selector__panel">
       <div
         v-for="item in filteredItems"
         :key="item.type"
@@ -32,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import type { FDPatternItem } from '../../types'
 
 const props = defineProps<{
@@ -45,6 +44,8 @@ const emit = defineEmits<{
   (e: 'select', nodeType: string): void
   (e: 'update:visible', value: boolean): void
 }>()
+
+const panelRef = ref<HTMLElement | null>(null)
 
 /** 过滤掉 start/end 以及 decision/fork 类型 */
 const filteredItems = computed(() => {
@@ -99,4 +100,30 @@ function handleSelectParallel() {
 function close() {
   emit('update:visible', false)
 }
+
+/**
+ * 点击外部画布区域关闭面板。
+ *
+ * 背景：原本用 <div class="ding-node-selector__overlay" position: fixed> 作为遮罩，
+ * 但钉钉模式的画布 pan/zoom 容器 .ding-designer__viewport 上有
+ * transform: translate(x,y) scale(s) + will-change: transform，
+ * 根据 CSS 规范（CSS Containment / Fixed positioning），这会导致
+ * position: fixed 元素不再相对 viewport，而是相对该祖先，
+ * overlay 退化为只能覆盖父容器大小（约 176x196），点击画布其他位置无反应。
+ *
+ * 改用 document click 监听绕过 transform 边界：
+ * - toggle 按钮已用 @click.stop 阻止冒泡，点 toggle 时本 handler 不触发（避免误关）
+ * - 点 panel 内部 / panel 上的 item 也不关（panel.contains(target) 判定）
+ * - 其他任何 click（画布空白、其他节点、其他按钮）都关
+ */
+function handleDocumentClick(e: MouseEvent) {
+  if (!props.visible) return
+  const target = e.target as Node | null
+  if (!target) return
+  if (panelRef.value?.contains(target)) return
+  close()
+}
+
+onMounted(() => document.addEventListener('click', handleDocumentClick))
+onBeforeUnmount(() => document.removeEventListener('click', handleDocumentClick))
 </script>
