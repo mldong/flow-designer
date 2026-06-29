@@ -1097,7 +1097,10 @@
   // 分支列：mobile 缩小 padding 和 min-width，让两条分支能在 375px 视口下并排
   // 原桌面: padding: 0 30px; min-width: 220 + 60 = 280px
   // 移动: padding: 0 8px; min-width: card-width (160px) → 2 列 = 320px，375 仍能放下
-  [class*='ding-branch-col'] {
+  // 注意：必须用 .ding-branch-col 而非 [class*='ding-branch-col']，
+  // 否则 __head/__line-top/__line-bottom 等子元素会被错误地撑宽
+  // （曾导致 line-top 变成 160px 宽、虚线框左右边断裂）
+  .ding-branch-col {
     padding: 0 8px !important;
     min-width: var(--ding-card-width) !important;
     max-width: calc(50vw - 20px) !important;
@@ -1111,9 +1114,50 @@
     padding: 3px 6px !important;
   }
 
-  // 横向/纵向连线变细
+  // 移动端所有线条优化：
+  // 1) 节奏更"虚"（2px 实 + 4px 透），避免在小空间里看起来过于密集
+  // 2) 颜色更浅（#d9d9d9 → #dfe1e6），不喧宾夺主
+  // 3) 节点间垂直连线缩短为 22px
+  // 4) 条件分支外框用更浅的 dashed 颜色 + 略细的 1px 边
+  .ding-line-vertical,
+  .ding-branch-col__line-top,
+  .ding-branch-col__line-bottom {
+    background-image: linear-gradient(
+      to bottom,
+      #dfe1e6 0,
+      #dfe1e6 2px,
+      transparent 2px,
+      transparent 6px
+    ) !important;
+    background-size: 2px 6px !important;
+    background-repeat: repeat-y !important;
+  }
+
+  .ding-condition-group__top-line,
+  .ding-condition-group__bottom-line {
+    background-image: linear-gradient(
+      to right,
+      #dfe1e6 0,
+      #dfe1e6 2px,
+      transparent 2px,
+      transparent 6px
+    ) !important;
+    background-size: 6px 2px !important;
+    background-repeat: repeat-x !important;
+  }
+
   .ding-line-vertical {
-    height: 24px;
+    height: 22px;
+  }
+
+  .ding-branch-col__line-top {
+    height: 20px;
+  }
+
+  // 条件分支外框：更浅的虚线颜色，与内框线条协调
+  .ding-condition-group {
+    border: 1px dashed #dfe1e6;
+    padding: 24px 4px 12px;
   }
 
   // 节点按钮变小
