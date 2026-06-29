@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import type { DingConditionNode, DingNode, DingBranch } from '../types'
 import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import BranchColumn from './BranchColumn.vue'
@@ -86,6 +86,7 @@ defineEmits<{
 const branchesRef = ref<HTMLElement>()
 const lineWidth = ref('0px')
 const lineLeft = ref('0px')
+let resizeObserver: ResizeObserver | null = null
 
 function updateLines() {
   if (!branchesRef.value) return
@@ -115,7 +116,20 @@ const bottomLineStyle = computed(() => ({
 }))
 
 onMounted(() => {
-  nextTick(updateLines)
+  nextTick(() => {
+    updateLines()
+    // 监听容器尺寸变化（PC ↔ 移动端切换 / 浏览器缩放 / 父容器 resize）
+    // 重新计算 __top-line / __bottom-line 的 left + width，
+    // 否则移动端切换后横线位置会"飘"出框外（视觉上乱）
+    if (branchesRef.value && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => updateLines())
+      resizeObserver.observe(branchesRef.value)
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
 })
 
 watch(() => props.node.branches.length, () => {
