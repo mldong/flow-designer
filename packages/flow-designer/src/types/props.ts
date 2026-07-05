@@ -1,5 +1,5 @@
-import { PropType } from "vue"
-import { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType } from "."
+import type { PropType } from "vue"
+import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType } from "."
 
 /**
  * 组件属性

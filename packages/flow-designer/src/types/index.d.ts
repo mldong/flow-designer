@@ -1,6 +1,6 @@
-import { GraphConfigData } from "@logicflow/core";
+import type { GraphConfigData } from "@logicflow/core";
 import { de } from "element-plus/es/locales.mjs";
-import { VNode, PropType } from "vue";
+import type { VNode, PropType } from "vue";
 /**
  * 流程设计器配置数据
  */

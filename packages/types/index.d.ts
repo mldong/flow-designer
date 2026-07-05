@@ -1,6 +1,6 @@
 import type { DefineComponent, ExtractPropTypes } from "vue";
-import * as LogicFlowCore from '@logicflow/core';
-import * as LogicFlowExtension from '@logicflow/extension';
+import type * as LogicFlowCore from '@logicflow/core';
+import type * as LogicFlowExtension from '@logicflow/extension';
 import { MldongFlowDesignerProps } from '../flow-designer/src/types/props.ts'
 type mProps = Partial<ExtractPropTypes<typeof MldongFlowDesignerProps>>
 
