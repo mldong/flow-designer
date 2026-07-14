@@ -83,6 +83,16 @@ syncFromHash()
           {{ isMobilePreview ? '移动端（开）' : '移动端' }}
         </button>
       </div>
+      <a
+        class="source-link"
+        href="https://gitee.com/mldong/flow-designer"
+        target="_blank"
+        title="源码仓库"
+      >
+        <span class="source-icon">
+          <img src="https://gitee.com/mldong/flow-designer/badge/star.svg" alt="star" width="80" height="20" />
+        </span>
+      </a>
     </nav>
     <main :class="['app-main', { 'app-main--mobile': isMobilePreview }]">
       <div class="app-main__viewport">
@@ -105,7 +115,6 @@ syncFromHash()
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 24px;
   height: 56px;
   background: #fff;
@@ -127,9 +136,43 @@ syncFromHash()
   font-size: 22px;
 }
 
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 12px;
+  padding: 3px 10px;
+  border: 1px solid #dcdfe6;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-decoration: none;
+  transition: all 0.18s;
+}
+
+.source-link:hover {
+  color: #3068EC;
+  border-color: #3068EC;
+  background: rgba(48, 104, 236, 0.06);
+}
+
+.source-icon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.source-icon img {
+  display: block;
+  height: 20px;
+  width: auto;
+}
+
 .case-nav__tabs {
   display: flex;
   gap: 6px;
+  margin-left: auto;
 }
 
 .case-tab {
