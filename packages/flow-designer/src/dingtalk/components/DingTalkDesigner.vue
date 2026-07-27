@@ -653,6 +653,11 @@ const designerApi: FDDesignerAPI = {
   getAllNodes() {
     return flattenNodes(treeData.value).map(nodeToFDData)
   },
+  getProperties(id: string) {
+    // 只读查询，viewer 模式也允许（对齐 canvas 模式 lf.getProperties 语义）
+    const n = _resolveNode(id, true)
+    return n ? { ...n.properties } : {}
+  },
 
   // ── 更新 ──
   updateText(id: string, text: string) {

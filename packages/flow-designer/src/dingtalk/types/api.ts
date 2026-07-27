@@ -114,6 +114,18 @@ export interface FDDesignerAPI {
   /** 获取所有节点数据（扁平） */
   getAllNodes(): FDNodeData[]
 
+  /**
+   * 按 id 取节点 properties（对应 lf.getProperties）
+   *
+   * vben5-wf 的字段权限配置（process-form.vue）依赖此方法读取节点 field 属性：
+   * ```ts
+   * lfInstance.getProperties(nodeId)?.field || {}
+   * ```
+   * 接受节点 id 或 properties.name（与 _resolveNode 一致）。
+   * viewer 模式下行为与 canvas 模式一致——读取不受 viewer 限制（只读查询）。
+   */
+  getProperties(id: string): Record<string, any>
+
   // ─── 节点更新（实时同步 props.value） ─────────────────────
   /**
    * 更新节点显示文本（对应 lf.updateText）
