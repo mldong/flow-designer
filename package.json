@@ -7,11 +7,8 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "build:lib": "vue-tsc -b && vite build --config vite.config.lib.ts",
+    "postinstall": "node postinstall.mjs",
     "preview": "vite preview"
-  },
-  "overrides": {
-    "rollup": "npm:@rollup/wasm-node@4.62.3",
-    "@rollup/rollup-linux-x64-gnu": false
   },
   "pnpm": {
     "overrides": {
@@ -52,6 +49,7 @@
     "vue-json-pretty": "^2.4.0"
   },
   "devDependencies": {
+    "@rollup/wasm-node": "4.62.3",
     "@vitejs/plugin-vue": "^5.0.5",
     "sass": "^1.100.0",
     "typescript": "^5.2.2",
