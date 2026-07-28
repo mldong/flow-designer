@@ -13,6 +13,11 @@
     "rollup": "npm:@rollup/wasm-node@4.62.3",
     "@rollup/rollup-linux-x64-gnu": false
   },
+  "pnpm": {
+    "overrides": {
+      "rollup": "npm:@rollup/wasm-node@4.62.3"
+    }
+  },
   "keywords": [
     "工作流",
     "流程设计器",
