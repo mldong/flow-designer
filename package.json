@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "build:lib": "vue-tsc -b && vite build --config vite.config.lib.ts",
+    "build:lib": "ROLLUP_SKIP_NATIVE=true vue-tsc -b && vite build --config vite.config.lib.ts",
     "preview": "vite preview"
   },
   "keywords": [
