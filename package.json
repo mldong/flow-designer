@@ -9,6 +9,10 @@
     "build:lib": "vue-tsc -b && vite build --config vite.config.lib.ts",
     "preview": "vite preview"
   },
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node@4.62.3",
+    "@rollup/rollup-linux-x64-gnu": false
+  },
   "keywords": [
     "工作流",
     "流程设计器",
@@ -28,22 +32,11 @@
       "require": "./lib/mldong-flow-designer-plus.umd.cjs"
     },
     "./lib/style.css": "./lib/style.css",
-    "./lib/*": "./lib/*"
+    "./*": "./*"
   },
   "files": [
-    "lib",
-    "packages"
+    "lib"
   ],
-  "author": "mldong",
-  "license": "Apache License 2.0",
-  "homepage": "https://www.npmjs.com/package/mldong-flow-designer-plus",
-  "repository": {
-    "type": "git",
-    "url": "git+https://gitee.com/mldong/flow-designer.git"
-  },
-  "bugs": {
-    "url": "https://gitee.com/mldong/flow-designer/issues"
-  },
   "dependencies": {
     "@logicflow/core": "^2.2.3",
     "@logicflow/extension": "^2.2.3",
@@ -59,5 +52,16 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
     "vue-tsc": "2.0.22"
+  },
+  "peerDependencies": {
+    "ant-design-vue": "^4.0.0",
+    "element-plus": "^2.0.0",
+    "vue": "^3.4.0"
+  },
+  "license": "MIT",
+  "homepage": "https://gitee.com/mldong/mldong-flow-designer-plus",
+  "repository": {
+    "type": "git",
+    "url": "git@gitee.com:mldong/mldong-flow-designer-plus.git"
   }
 }
