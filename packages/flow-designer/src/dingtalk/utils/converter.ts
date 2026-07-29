@@ -37,6 +37,7 @@ export function graphToTree(
  * 递归构建节点链表
  * @param nodeId 当前要处理的节点 ID
  * @param stopIds 汇聚点集合（遇到时停止，不包含在当前链中）
+ * @param visited 已访问节点集合（防止环路导致无限递归；命中时返回叶子节点）
  */
 function buildChain(
   nodeId: string,
@@ -44,24 +45,36 @@ function buildChain(
   nodeMap: Map<string, GraphNode>,
   outEdgesMap: Map<string, GraphEdge[]>,
   allEdges: GraphEdge[],
-  prefix: string
+  prefix: string,
+  visited: Set<string> = new Set()
 ): DingNode | undefined {
   if (stopIds.has(nodeId)) return undefined
 
   const graphNode = nodeMap.get(nodeId)
   if (!graphNode) return undefined
 
+  // 环路检测：已访问过该节点则返回叶子节点，不再继续展开
+  if (visited.has(nodeId)) {
+    return {
+      id: graphNode.id,
+      type: graphNode.type,
+      name: graphNode.text?.value || '',
+      properties: { ...graphNode.properties },
+    }
+  }
+  visited.add(nodeId)
+
   const outEdges = outEdgesMap.get(nodeId) || []
   const baseType = graphNode.type.replace(prefix, '')
 
   // 判断是否为分支节点（decision 或 fork，且有多条出边）
   if (baseType === 'decision' && outEdges.length > 1) {
-    return buildConditionNode(graphNode, outEdges, stopIds, nodeMap, outEdgesMap, allEdges, prefix)
+    return buildConditionNode(graphNode, outEdges, stopIds, nodeMap, outEdgesMap, allEdges, prefix, visited)
   }
 
   // fork 节点：并行分支，对齐 wf-fork-join.json 数据结构（fork 节点 + 多个独立 task 节点 + join 节点）
   if (baseType === 'fork' && outEdges.length > 1) {
-    return buildForkNode(graphNode, outEdges, stopIds, nodeMap, outEdgesMap, allEdges, prefix)
+    return buildForkNode(graphNode, outEdges, stopIds, nodeMap, outEdgesMap, allEdges, prefix, visited)
   }
 
   // 普通节点
@@ -77,7 +90,7 @@ function buildChain(
 
   // 单出边，继续构建链表
   if (outEdges.length === 1) {
-    const next = buildChain(outEdges[0].targetNodeId, stopIds, nodeMap, outEdgesMap, allEdges, prefix)
+    const next = buildChain(outEdges[0].targetNodeId, stopIds, nodeMap, outEdgesMap, allEdges, prefix, visited)
     if (next) dingNode.children = next
   }
 
@@ -94,7 +107,8 @@ function buildConditionNode(
   nodeMap: Map<string, GraphNode>,
   outEdgesMap: Map<string, GraphEdge[]>,
   allEdges: GraphEdge[],
-  prefix: string
+  prefix: string,
+  visited: Set<string>
 ): DingConditionNode {
   // 找到汇聚点（decision 走"公共可达节点"算法）
   const convergence = findCommonConvergence(
@@ -116,7 +130,8 @@ function buildConditionNode(
       nodeMap,
       outEdgesMap,
       allEdges,
-      prefix
+      prefix,
+      visited
     )
     return {
       id: edge.id,
@@ -136,7 +151,7 @@ function buildConditionNode(
 
   // 汇聚点作为 children 继续
   if (convergence) {
-    const next = buildChain(convergence, parentStopIds, nodeMap, outEdgesMap, allEdges, prefix)
+    const next = buildChain(convergence, parentStopIds, nodeMap, outEdgesMap, allEdges, prefix, visited)
     if (next) condNode.children = next
   }
 
@@ -161,7 +176,8 @@ function buildForkNode(
   nodeMap: Map<string, GraphNode>,
   outEdgesMap: Map<string, GraphEdge[]>,
   allEdges: GraphEdge[],
-  prefix: string
+  prefix: string,
+  visited: Set<string>
 ): DingForkNode {
   // 找到 join 节点
   const joinId = findJoinNode(
@@ -182,7 +198,8 @@ function buildForkNode(
       nodeMap,
       outEdgesMap,
       allEdges,
-      prefix
+      prefix,
+      visited
     )
     return {
       id: edge.id,
@@ -210,7 +227,8 @@ function buildForkNode(
       nodeMap,
       outEdgesMap,
       allEdges,
-      prefix
+      prefix,
+      visited
     )
     if (joinChildren) forkNode.joinChildren = joinChildren
   }
