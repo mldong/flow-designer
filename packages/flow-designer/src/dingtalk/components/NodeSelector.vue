@@ -10,7 +10,7 @@
         <span :class="['ding-node-selector__item__icon', getIconClass(item)]">
           {{ getIconText(item) }}
         </span>
-        <span>{{ item.label || item.text || item.type }}</span>
+        <span>{{ item.label || item.text || getDefaultLabel(item) }}</span>
       </div>
       <!-- 条件分支选项 -->
       <div class="ding-node-selector__item" @click="handleSelectCondition">
@@ -77,6 +77,18 @@ function getIconText(item: FDPatternItem) {
     case 'custom': return '\u2605'
     case 'subProcess': return '\u25A3'
     default: return '\u2713'
+  }
+}
+
+/** 兜底中文标签（type → 名称映射，兼容 canvas 模式 dndPanel 无 label 的写法） */
+function getDefaultLabel(item: FDPatternItem) {
+  if (!item.type) return '未知'
+  const baseType = item.type.replace(props.typePrefix, '')
+  switch (baseType) {
+    case 'task': return '审批节点'
+    case 'custom': return '自定义节点'
+    case 'subProcess': return '子流程'
+    default: return item.type
   }
 }
 
