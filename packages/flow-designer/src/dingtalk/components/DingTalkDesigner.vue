@@ -984,8 +984,9 @@ function willEmptyBranch(root: DingNode, targetId: string): boolean {
 function handleEditNode(node: DingNode) {
   const baseType = node.type.replace(props.typePrefix, '')
   // 从 dndPanel 匹配对应类型的配置项
+  // 兼容两种 type 写法：'task'（去前缀）和 'snaker:task'（带前缀）
   const matchedPatternItem = computedDndPanel.value.find(
-    (item: FDPatternItem) => item.type === baseType
+    (item: FDPatternItem) => item.type === baseType || item.type === node.type
   )
 
   // ⭐ 对齐画布模式 Flow.ts 中 eventCenter.on('node:click', e => nodeClick({...event, patternItem, lf})) 的签名
@@ -1665,7 +1666,8 @@ function handleContextmenu(_e: MouseEvent) {
       type: 'process',
       properties: processProperties
     },
-    patternItem: { form: props.processForm }
+    patternItem: { form: props.processForm },
+    lf: designerApi,
   }
 
   if (props.blankContextmenu && typeof props.blankContextmenu === 'function') {
