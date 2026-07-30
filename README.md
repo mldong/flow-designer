@@ -220,6 +220,7 @@ const graphData = ref({
 | typePrefix | string | snaker: | 自定义节点/边类型前缀 | - |
 | viewer | boolean | false | 是否查看模式 | - |
 | dagreOptions | Object | - | [自动布局配置](https://site.logic-flow.cn/tutorial/extension/layout#%E5%B8%83%E5%B1%80%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9) | 2.0.8+ |
+| mode | `'canvas'` \| `'dingtalk'` | `'canvas'` | 渲染模式：canvas 为拖拽画布，dingtalk 为钉钉风格树形设计器 | 3.0.0+ |
 #### FDThemeConfig
 ```typescript
 export declare type FDThemeConfig = {
@@ -293,6 +294,56 @@ export declare type FDFormItemType = {
 | on-init | 初始化事件 | (lf: any) => void |
 | on-render | 渲染事件 | (lf: any) => void |
 | on-save | 控制面板保存事件 | (graphData: any) => void |
+
+## 钉钉模式（v3.0.0+）
+
+通过 `mode="dingtalk"` 启用钉钉风格树形设计器，替代拖拽画布。适合审批流等线性流程场景。
+
+### 启用方式
+
+```html
+<MldongFlowDesignerPlus v-model:value="graphData" mode="dingtalk" />
+```
+
+也可以通过流程定义数据中的 `mode` 字段自动识别：
+
+```json
+{ "mode": "dingtalk", "nodes": [...], "edges": [...] }
+```
+
+优先级：`prop > 数据字段 > 默认 'canvas'`
+
+### API 兼容
+
+钉钉模式暴露 `FDDesignerAPI`（`@on-init` / `@on-render` 回调参数），API 命名与 LogicFlow 实例一致：
+
+| 方法 | 说明 |
+|------|------|
+| `updateText(id, text)` | 更新节点显示文本 |
+| `setProperties(id, props)` | 设置节点属性（合并） |
+| `getProperties(id)` | 读取节点属性 |
+| `deleteProperty(id, key)` | 删除节点属性 |
+| `changeNodeId(oldId, newId)` | 修改节点 ID |
+| `getNodeDataById(id)` | 按 ID 查节点数据 |
+| `setProcessProperty(key, value)` | 设置流程属性 |
+| `getGraphData()` | 导出图数据 |
+| `render(data)` | 重新渲染 |
+| `graphModel` | Proxy，兼容 `lf.graphModel[key] = value` 写法 |
+| `eventCenter` | 事件总线 |
+
+业务方原有 vben5 的 `task-drawer` / `process-drawer` 等二次开发代码可在两种模式下复用。
+
+### 自研组件
+
+钉钉模式内置以下 UI 组件，零外部依赖：
+
+- **DingDrawer**：右侧滑出抽屉，class 驱动 slide 动画
+- **DingModal**：居中弹窗，zoom + fade 动画
+- **DingTooltip**：hover 提示，替代原生 title
+
+### dndPanel 合并策略
+
+业务方自定义的 `dndPanel`（含 `nodeClick` 等配置）会与钉钉模式默认项（审批节点 / 自定义节点 / 子流程）合并，业务方同名 type 优先。
 
 ## 课程章节
 * 第一章·基础篇
