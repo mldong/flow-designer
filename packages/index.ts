@@ -16,3 +16,6 @@ export default MFlowDesigner as typeof MFlowDesigner &
 export const LogicFlow = LogicFlowCo
 export const LogicFlowCore = LogicFlowC;
 export const LogicFlowExtension = LogicFlowExt
+
+// 钉钉模式扩展 API 类型（与画布模式 lf 实例兼容命名）
+export type { FDDesignerAPI, FDEventCenter, FDEventName, FDNodeData } from './flow-designer/src/dingtalk/types/api'

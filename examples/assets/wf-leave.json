@@ -47,6 +47,20 @@
       "properties": { "width": 120, "height": 80 }
     },
     {
+      "id": "approveHr",
+      "type": "snaker:task",
+      "x": 1080,
+      "y": 100,
+      "properties": {
+        "width": 120, "height": 80,
+        "assignmentHandler": "com.mldong.config.HrAssignmentHandler",
+        "taskType": "Major",
+        "performType": "ANY",
+        "autoExecute": "N"
+      },
+      "text": { "x": 1080, "y": 100, "value": "人事审批" }
+    },
+    {
       "id": "approveBoss",
       "type": "snaker:task",
       "x": 1080,
@@ -75,7 +89,7 @@
     { "id": "t3", "type": "snaker:transition", "sourceNodeId": "approveDept", "targetNodeId": "d1", "properties": {} },
     {
       "id": "t4", "type": "snaker:transition",
-      "sourceNodeId": "d1", "targetNodeId": "end",
+      "sourceNodeId": "d1", "targetNodeId": "approveHr",
       "properties": { "expr": "#f_day<3" },
       "text": { "value": "请假天数小于3" }
     },
@@ -85,6 +99,7 @@
       "properties": { "expr": "#f_day>=3" },
       "text": { "value": "请假天数大于等于3" }
     },
-    { "id": "t6", "type": "snaker:transition", "sourceNodeId": "approveBoss", "targetNodeId": "end", "properties": {} }
+    { "id": "t6", "type": "snaker:transition", "sourceNodeId": "approveBoss", "targetNodeId": "end", "properties": {} },
+    { "id": "t7", "type": "snaker:transition", "sourceNodeId": "approveHr", "targetNodeId": "end", "properties": {} }
   ]
 }

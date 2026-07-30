@@ -1,13 +1,19 @@
 {
   "name": "mldong-flow-designer-plus",
   "private": false,
-  "version": "2.0.13",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "build:lib": "vue-tsc -b && vite build --config vite.config.lib.ts",
+    "postinstall": "node postinstall.mjs",
     "preview": "vite preview"
+  },
+  "pnpm": {
+    "overrides": {
+      "rollup": "npm:@rollup/wasm-node@4.62.3"
+    }
   },
   "keywords": [
     "工作流",
@@ -28,7 +34,7 @@
       "require": "./lib/mldong-flow-designer-plus.umd.cjs"
     },
     "./lib/style.css": "./lib/style.css",
-    "./lib/*": "./lib/*"
+    "./*": "./*"
   },
   "files": [
     "lib",
@@ -54,9 +60,16 @@
     "vue-json-pretty": "^2.4.0"
   },
   "devDependencies": {
+    "@rollup/wasm-node": "4.62.3",
     "@vitejs/plugin-vue": "^5.0.5",
+    "sass": "^1.100.0",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
     "vue-tsc": "2.0.22"
+  },
+  "peerDependencies": {
+    "ant-design-vue": "^4.0.0",
+    "element-plus": "^2.0.0",
+    "vue": "^3.4.0"
   }
 }

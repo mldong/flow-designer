@@ -1,6 +1,7 @@
 import type { PropType } from "vue"
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType } from "."
 
+
 /**
  * 组件属性
  */
@@ -71,6 +72,10 @@ export const  MldongFlowDesignerProps = {
   typePrefix: { // 自定义节点/边类型前缀,如snaker:task,snaker:transition，只是snaker:则为前辍
     type: String,
     default: 'snaker:'
+  },
+  mode: { // 渲染模式
+    type: String as PropType<'canvas' | 'dingtalk'>,
+    default: undefined
   },
   viewer: { // 是否查看模式
     type: Boolean,

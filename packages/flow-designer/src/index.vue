@@ -1,10 +1,45 @@
 <template>
-  <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
-  <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
-  <div ref="container" :class="{ fullscreen: isFullscreen }" style="width: 100%;height:100%"></div>
+  <div :class="['flow-container', { fullscreen: isFullscreen }]">
+    <DingTalkDesigner
+      v-if="currentMode === 'dingtalk'"
+      ref="dingtalkDesignerRef"
+      :key="'dingtalk'"
+      :value="value"
+      :theme="theme"
+      :high-light="highLight"
+      :viewer="viewer"
+      :dnd-panel="dndPanel"
+      :process-form="processForm"
+      :edge-form="edgeForm"
+      :node-click="nodeClick"
+      :edge-click="edgeClick"
+      :blank-contextmenu="blankContextmenu"
+      :control="control"
+      :init-control="initControl"
+      :drawer-width="drawerWidth"
+      :modal-width="modalWidth"
+      :type-prefix="typePrefix"
+      :default-edge-type="defaultEdgeType"
+      @update:value="(data) => emits('update:value', data)"
+      @save="(data) => emits('on-save', data)"
+      @on-init="(api) => emits('on-init', api)"
+      @on-render="(api) => emits('on-render', api)"
+      @node-click="(params) => emits('node-click', params)"
+      @edge-click="(params) => emits('edge-click', params)"
+    />
+    <div
+      v-else
+      :key="'canvas'"
+      style="display: flex; flex-direction: column; width: 100%; height: 100%"
+    >
+      <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
+      <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
+      <div ref="container" style="flex: 1; min-height: 0"></div>
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, computed, watch, nextTick } from 'vue';
 
 const container = ref<HTMLElement>()
 import LogicFlow from "@logicflow/core";
@@ -17,11 +52,22 @@ import { MldongFlowDesignerProps } from './types/props'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
+import DingTalkDesigner from './dingtalk/components/DingTalkDesigner.vue';
 // 添加全屏状态
 const isFullscreen = ref(false);
 const drawerRef = ref()
 const modalRef = ref()
 const props = defineProps(MldongFlowDesignerProps)
+
+// 计算当前渲染模式
+const currentMode = computed(() => {
+  // prop 优先
+  if (props.mode) return props.mode
+  // 其次读数据中的 mode
+  if (props.value?.mode) return props.value.mode
+  // 默认 canvas
+  return 'canvas'
+})
 /**
  * 更新全屏控制按钮的文本和图标
  */
@@ -60,7 +106,7 @@ LogicFlow.use(Flow, {
   modalRef,
   toggleFullscreen,
 });
-const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save'])
+const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save', 'node-click', 'edge-click'])
 const lfInstance = ref();
 
 
@@ -135,8 +181,29 @@ const myRender = (data: any) =>{
   emits('on-render', lf)
 }
 const isHistoryChange = ref(false)
-onMounted(()=>{
-  if(!container.value) return;
+
+/**
+ * 销毁 LogicFlow 实例
+ */
+function destroyLogicFlow() {
+  if (!lfInstance.value) return
+  try {
+    lfInstance.value.destroy?.()
+  } catch (e) {
+    console.warn('[FD] lf.destroy failed', e)
+  }
+  lfInstance.value = null
+}
+
+/**
+ * 初始化 LogicFlow 实例（仅 canvas 模式调用，整个组件生命周期内只 init 一次）
+ * 当初始 mode 为 dingtalk 时，onMounted 不 init；待用户切到 canvas 时由 watch 触发
+ * 模式切换 canvas → dingtalk → canvas 时，需要 destroy 旧实例重新 init（新 container DOM）
+ */
+function initLogicFlow() {
+  if (!container.value) return
+  // 容器变化或实例不存在时，重新创建
+  destroyLogicFlow()
   lfInstance.value = new LogicFlow({
     container: container.value,
     grid: true,
@@ -147,13 +214,34 @@ onMounted(()=>{
   // emits初始化事件
   emits('on-init', lf)
   const { eventCenter } = lf.graphModel;
+  // ⭐ 转发画布模式节点点击为 emit（与 Flow.ts 内部 props.nodeClick 处理并存）
+  // 构造与 Flow.ts 中 nodeClick(nodeEventParams) 完全一致的事件参数。
+  eventCenter.on('node:click', (event: any) => {
+    if (props.viewer === true) return
+    const shapeList: any[] = (props as any).dndPanel || []
+    const matchedItem = shapeList.find?.((it: any) => it.type === event?.data?.type?.replace?.(props.typePrefix, ''))
+    emits('node-click', {
+      ...event,
+      patternItem: matchedItem,
+      lf
+    })
+  })
+  // ⭐ 转发画布模式边点击为 emit（与 Flow.ts 内部 props.edgeClick 处理并存）
+  eventCenter.on('edge:click', (event: any) => {
+    if (props.viewer === true) return
+    emits('edge-click', {
+      ...event,
+      patternItem: { form: props.edgeForm },
+      lf
+    })
+  })
   // 监听画布变化事件
-  eventCenter.on('history:change', ()=>{
+  eventCenter.on('history:change', () =>{
     isHistoryChange.value = true
     emits('update:value', lf.getGraphData())
   })
   // 监听自定义的update:graphModel事件
-  eventCenter.on('update:graphModel',()=>{
+  eventCenter.on('update:graphModel',() =>{
     isHistoryChange.value = true
     emits('update:value', lf.getGraphData())
   })
@@ -177,7 +265,6 @@ onMounted(()=>{
       isFullscreen.value = false;
     }
   });
-  
   // 监听全屏变化事件
   document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
@@ -188,11 +275,33 @@ onMounted(()=>{
   // 暴露 lf 实例给 Playwright/测试/调试用
   //   浏览器 console: window.__lf
   //   Playwright evaluate: () => window.__lf
-  // 命名用 __ 前缀避免与用户业务变量冲突
-  // 注意：vue 3 prod build 不挂 __vueParentComponent，window 是唯一稳的拿法
   if (typeof window !== 'undefined') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(window as any).__lf = lf
+  }
+}
+
+onMounted(() => {
+  // 钉钉模式下不初始化 LogicFlow，由 watch(currentMode) 在切到 canvas 时补 init
+  if (currentMode.value !== 'canvas') return;
+  initLogicFlow()
+})
+
+/**
+ * 监听模式切换：dingtalk → canvas 时补 init LogicFlow
+ * 用 nextTick 等 canvas 模板挂载完成（container.value 可用）
+ *
+ * 关键点：模板 v-if 切换模式时会重建 canvas 分支的 DOM（container div 是新的），
+ * 因此必须 destroy 旧的 LogicFlow 实例，再用新 container 重新 init。
+ * 仅当 lfInstance.value 为空时才跳过（初次 onMounted 时 init 过的情况除外）
+ */
+watch(currentMode, async (newMode, oldMode) => {
+  if (newMode === 'canvas') {
+    await nextTick()
+    initLogicFlow()
+  } else if (oldMode === 'canvas' && newMode === 'dingtalk') {
+    // canvas → dingtalk：清理 LogicFlow 实例释放资源
+    destroyLogicFlow()
   }
 })
 watch(()=>props.value, (newVal)=>{
@@ -207,6 +316,28 @@ watch(()=>props.highLight, (newVal)=>{
   setHighLight(newVal)
 }, {
   deep: true
+})
+
+// ─── 钉钉模式 API 暴露（与画布模式 getLfInstance 同名风格）───────────
+const dingtalkDesignerRef = ref()
+
+/**
+ * 获取钉钉模式的"lf 等价 API"实例
+ * 业务方用法：
+ *   const ref = ... // 父组件 ref
+ *   const api = ref.getDesignerApi()
+ *   api.updateText('apply', '新名称')
+ */
+defineExpose({
+  getLfInstance() {
+    // 兼容画布模式
+    return lfInstance.value
+  },
+  getDesignerApi() {
+    // 钉钉模式专用
+    return (dingtalkDesignerRef.value as any)?.getDesignerApi?.()
+      ?? (dingtalkDesignerRef.value as any)
+  }
 })
 </script>
 <style scoped>
