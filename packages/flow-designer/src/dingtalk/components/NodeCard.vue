@@ -43,9 +43,6 @@
       <span class="ding-node-card__icon">{{ typeIcon }}</span>
       <span class="ding-node-card__title">{{ typeLabel }}</span>
       <span class="ding-node-card__actions" v-if="!viewer">
-        <button class="ding-node-card__action-btn" @click.stop="$emit('edit', node)" title="编辑">
-          &#x270E;
-        </button>
         <button
           v-if="canDelete"
           class="ding-node-card__action-btn ding-node-card__action-btn--delete"
@@ -56,9 +53,11 @@
         </button>
       </span>
     </div>
-    <div class="ding-node-card__body">
-      {{ node.name || '未命名节点' }}
-    </div>
+    <DingTooltip :title="node.name || '未命名节点'">
+      <div class="ding-node-card__body">
+        {{ node.name || '未命名节点' }}
+      </div>
+    </DingTooltip>
   </div>
 </template>
 
@@ -66,6 +65,7 @@
 import { computed } from 'vue'
 import type { DingNode } from '../types'
 import type { FDHighLightType, FDThemeConfig } from '../../types'
+import DingTooltip from './DingTooltip.vue'
 
 const props = withDefaults(defineProps<{
   node: DingNode
@@ -75,8 +75,11 @@ const props = withDefaults(defineProps<{
   theme?: FDThemeConfig
   /** 是否可删除（默认 true：start/end/firstChild 等系统节点传 false） */
   canDelete?: boolean
+  /** 节点深度（0=start, 1=第一个任务=申请人, >=2=审批人） */
+  depth?: number
 }>(), {
-  canDelete: true
+  canDelete: true,
+  depth: 0
 })
 
 defineEmits<{
@@ -90,7 +93,7 @@ const baseType = computed(() => {
 
 const typeLabel = computed(() => {
   switch (baseType.value) {
-    case 'task': return '审批人'
+    case 'task': return props.depth === 1 ? '申请人' : '审批人'
     case 'custom': return '自定义节点'
     case 'subProcess': return '子流程'
     default: return '任务'

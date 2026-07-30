@@ -44,6 +44,7 @@
         :viewer="viewer"
         :high-light="highLight"
         :theme="theme"
+        :depth="depth"
         :can-delete="canDelete(node)"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
@@ -73,6 +74,7 @@
       :high-light="highLight"
       :theme="theme"
       :dnd-panel="dndPanel"
+      :depth="depth + 1"
       :protected-ids="protectedIdsComputed"
       :can-delete-checker="canDeleteCheckerComputed"
       @edit="(n) => $emit('edit', n)"
@@ -106,10 +108,13 @@ interface Props {
   protectedIds?: Set<string>
   /** 节点是否可删除检查器（false 时隐藏 × 按钮；默认全部可删除） */
   canDeleteChecker?: (node: DingNode) => boolean
+  /** 节点深度（0=start, 1=第一个任务=申请人, >=2=审批人） */
+  depth?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  protectedIds: () => new Set<string>()
+  protectedIds: () => new Set<string>(),
+  depth: 0
 })
 
 // 兜底：props 是只读的，统一通过 protectedIdsComputed 访问，避免 undefined 调用 .has

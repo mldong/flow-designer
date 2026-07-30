@@ -46,88 +46,17 @@
         />
       </div>
     </div>
-    <!-- 编辑面板 -->
-    <div class="ding-edit-panel" v-if="editingNode || editingBranch">
-      <div class="ding-edit-panel__header">
-        <span>{{ editPanelTitle }}</span>
-        <button class="ding-edit-panel__close" @click="closeEditPanel">&times;</button>
-      </div>
-      <div class="ding-edit-panel__body">
-        <div class="ding-form-item" v-for="field in editFormFields" :key="field.name">
-          <label class="ding-form-item__label">{{ field.label }}</label>
-          <template v-if="field.component === 'Select'">
-            <select class="ding-form-item__select" v-model="editFormData[field.name]">
-              <option value="">{{ field.componentProps?.placeholder || '请选择' }}</option>
-              <option
-                v-for="opt in (field.componentProps?.options || [])"
-                :key="opt.value"
-                :value="opt.value"
-              >{{ opt.label }}</option>
-            </select>
-          </template>
-          <template v-else>
-            <input
-              class="ding-form-item__input"
-              v-model="editFormData[field.name]"
-              :placeholder="field.componentProps?.placeholder || ''"
-            />
-          </template>
-        </div>
-      </div>
-    </div>
-    <!-- 查看数据弹窗 -->
-    <div class="ding-modal-overlay" v-if="showDataModal" @click="showDataModal = false">
-      <div class="ding-modal" @click.stop>
-        <div class="ding-modal__header">
-          <span>流程数据</span>
-          <button class="ding-edit-panel__close" @click="showDataModal = false">&times;</button>
-        </div>
-        <div class="ding-modal__body">
-          <textarea class="ding-modal__textarea" readonly :value="viewDataJson"></textarea>
-        </div>
-        <div class="ding-modal__footer">
-          <button class="ding-edit-panel__btn" @click="copyData">复制</button>
-          <button class="ding-edit-panel__btn" @click="showDataModal = false">关闭</button>
-        </div>
-      </div>
-    </div>
-    <!-- 导入数据弹窗 -->
-    <div class="ding-modal-overlay" v-if="showImportModal" @click="showImportModal = false">
-      <div class="ding-modal" @click.stop>
-        <div class="ding-modal__header">
-          <span>导入流程数据</span>
-          <button class="ding-edit-panel__close" @click="showImportModal = false">&times;</button>
-        </div>
-        <div class="ding-modal__body">
-          <textarea class="ding-modal__textarea" v-model="importDataJson" placeholder="请粘贴 JSON 数据"></textarea>
-          <div v-if="importError" class="ding-modal__error">{{ importError }}</div>
-        </div>
-        <div class="ding-modal__footer">
-          <button class="ding-edit-panel__btn ding-edit-panel__btn--primary" @click="doImport">导入</button>
-          <button class="ding-edit-panel__btn" @click="showImportModal = false">取消</button>
-        </div>
-      </div>
-    </div>
-    <!-- 流程属性内置抽屉（processForm fallback：业务方未传 blankContextmenu 时自动打开） -->
-    <div class="ding-edit-panel" v-if="showProcessDrawer && processFormFields.length > 0">
-      <div class="ding-edit-panel__header">
-        <span>流程属性</span>
-        <button class="ding-edit-panel__close" @click="closeProcessDrawer">&times;</button>
-      </div>
-      <div class="ding-edit-panel__body">
-        <div class="ding-form-item" v-for="field in processFormFields" :key="field.name">
-          <label class="ding-form-item__label">{{ field.label || field.name }}</label>
-          <input
-            v-if="!field.component || field.component === 'Input'"
-            class="ding-form-item__input"
-            v-model="processFormData[field.name]"
-            :placeholder="field.componentProps?.placeholder || `请输入${field.label || field.name}`"
-          />
-          <select
-            v-else-if="field.component === 'Select'"
-            class="ding-form-item__select"
-            v-model="processFormData[field.name]"
-          >
+    <!-- 节点/分支编辑抽屉 -->
+    <DingDrawer
+      :visible="showEditPanel"
+      :title="editPanelTitle"
+      :show-footer="false"
+      @cancel="cancelEditPanel"
+    >
+      <div class="ding-form-item" v-for="field in editFormFields" :key="field.name">
+        <label class="ding-form-item__label">{{ field.label }}</label>
+        <template v-if="field.component === 'Select'">
+          <select class="ding-form-item__select" v-model="editFormData[field.name]">
             <option value="">{{ field.componentProps?.placeholder || '请选择' }}</option>
             <option
               v-for="opt in (field.componentProps?.options || [])"
@@ -135,11 +64,72 @@
               :value="opt.value"
             >{{ opt.label }}</option>
           </select>
-        </div>
+        </template>
+        <template v-else>
+          <input
+            class="ding-form-item__input"
+            v-model="editFormData[field.name]"
+            :placeholder="field.componentProps?.placeholder || ''"
+          />
+        </template>
       </div>
+    </DingDrawer>
+    <!-- 查看数据弹窗 -->
+    <DingModal
+      v-model:visible="showDataModal"
+      title="流程数据"
+      cancel-text="关闭"
+      ok-text="复制"
+      @ok="copyData"
+      @cancel="showDataModal = false"
+      width="600px"
+    >
+      <textarea class="ding-modal__textarea" readonly :value="viewDataJson"></textarea>
+    </DingModal>
+
+    <!-- 导入数据弹窗 -->
+    <DingModal
+      v-model:visible="showImportModal"
+      title="导入流程数据"
+      @ok="doImport"
+      @cancel="showImportModal = false"
+      width="600px"
+    >
+      <textarea class="ding-modal__textarea" v-model="importDataJson" placeholder="请粘贴 JSON 数据"></textarea>
+      <div v-if="importError" class="ding-modal__error">{{ importError }}</div>
+    </DingModal>
+
+    <!-- 流程属性弹窗（processForm fallback） -->
+    <DingModal
+      v-model:visible="showProcessDrawer"
+      title="流程属性"
+      @ok="closeProcessDrawer"
+      @cancel="closeProcessDrawer"
+    >
+      <div class="ding-form-item" v-for="field in processFormFields" :key="field.name">
+        <label class="ding-form-item__label">{{ field.label || field.name }}</label>
+        <input
+          v-if="!field.component || field.component === 'Input'"
+          class="ding-form-item__input"
+          v-model="processFormData[field.name]"
+          :placeholder="field.componentProps?.placeholder || `请输入${field.label || field.name}`"
+        />
+        <select
+          v-else-if="field.component === 'Select'"
+          class="ding-form-item__select"
+          v-model="processFormData[field.name]"
+        >
+          <option value="">{{ field.componentProps?.placeholder || '请选择' }}</option>
+          <option
+            v-for="opt in (field.componentProps?.options || [])"
+              :key="opt.value"
+              :value="opt.value"
+            >{{ opt.label }}</option>
+          </select>
+        </div>
+      </DingModal>
     </div>
-  </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onBeforeUnmount, onMounted, PropType } from 'vue'
@@ -151,6 +141,8 @@ import { findNode, flattenNodes } from '../types/api'
 import { graphToTree, treeToGraph } from '../utils/converter'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
+import DingModal from './DingModal.vue'
+import DingDrawer from './DingDrawer.vue'
 import '../styles/dingtalk.scss'
 
 const props = defineProps({
@@ -661,7 +653,7 @@ const designerApi: FDDesignerAPI = {
 
   // ── 更新 ──
   updateText(id: string, text: string) {
-    if (props.viewer) return
+    // viewer 模式允许 updateText：业务方通过 assigneeTextData 回显参与人名称
     const n = _resolveNode(id, true)
     if (n) n.name = text
     syncToGraph()
@@ -978,10 +970,13 @@ function willEmptyBranch(root: DingNode, targetId: string): boolean {
 
 /**
  * 编辑节点 - 事件优先级: dndPanel.nodeClick > 全局 nodeClick > 默认编辑面板
- * viewer 模式：不打开编辑面板，但仍走 nodeClick 监听链路（业务方在
- * preview 场景下通常需要监听 @node-click 触发审批/审计）
+ * viewer 模式：不触发任何编辑回调，与画布模式 index.vue 中
+ *   eventCenter.on('node:click', e => { if (props.viewer === true) return }) 行为一致
  */
 function handleEditNode(node: DingNode) {
+  // viewer 模式下不打开任何编辑弹窗（与画布模式行为对齐）
+  if (props.viewer) return
+
   const baseType = node.type.replace(props.typePrefix, '')
   // 从 dndPanel 匹配对应类型的配置项
   // 兼容两种 type 写法：'task'（去前缀）和 'snaker:task'（带前缀）
@@ -1010,13 +1005,7 @@ function handleEditNode(node: DingNode) {
     return
   }
 
-  // viewer 模式：到此为止，不打开编辑面板
-  if (props.viewer) {
-    emit('node-click', eventParams)
-    return
-  }
-
-  // 优先级3: 打开内置编辑面板（非 viewer 模式）
+  // 优先级3: 打开内置编辑面板
   editingBranch.value = null
   editingNode.value = node
   editFormData.name = node.properties?.name || node.id
@@ -1466,6 +1455,7 @@ function getDefaultName(nodeType: string): string {
 
 const editingNode = ref<DingNode | null>(null)
 const editingBranch = ref<DingBranch | null>(null)
+const showEditPanel = computed(() => !!editingNode.value || !!editingBranch.value)
 const editFormData = reactive<Record<string, string>>({
   name: '',
   displayName: '',
@@ -1572,6 +1562,11 @@ function closeEditPanel() {
   if (editingNode.value || editingBranch.value) {
     syncToGraph()
   }
+  editingNode.value = null
+  editingBranch.value = null
+}
+
+function cancelEditPanel() {
   editingNode.value = null
   editingBranch.value = null
 }
