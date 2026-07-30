@@ -224,8 +224,18 @@ const defaultDndPanelItems: FDPatternItem[] = [
 ]
 
 const computedDndPanel = computed<FDPatternItem[]>(() => {
-  if (props.dndPanel && props.dndPanel.length > 0) return props.dndPanel
-  return defaultDndPanelItems
+  // 合并业务方自定义项 + 默认项，业务方同名 type 优先（保留 nodeClick 等自定义配置）
+  const custom = props.dndPanel || []
+  const merged = [...defaultDndPanelItems]
+  for (const item of custom) {
+    const idx = merged.findIndex(m => m.type === item.type || m.type === item.type?.replace(props.typePrefix, ''))
+    if (idx >= 0) {
+      merged[idx] = { ...merged[idx], ...item }
+    } else {
+      merged.push(item)
+    }
+  }
+  return merged
 })
 
 // 树形数据
