@@ -44,6 +44,10 @@
           @edit-branch="handleEditBranch"
           @add-to-branch="handleAddToBranch"
         />
+        <!-- viewer 空状态：仅提示 -->
+        <div v-else class="ding-empty">
+          <div class="ding-empty__title">暂无流程数据</div>
+        </div>
       </div>
     </div>
     <!-- 节点/分支编辑抽屉 -->
@@ -139,6 +143,7 @@ import { isConditionNode, isForkNode } from '../types'
 import type { FDDesignerAPI, FDEventName, FDNodeData, FDGraphModelProxy, DingNodeEventParams, DingEdgeEventParams } from '../types/api'
 import { findNode, flattenNodes } from '../types/api'
 import { graphToTree, treeToGraph } from '../utils/converter'
+import { DEFAULT_FLOW_NODES, DEFAULT_FLOW_EDGES } from '../data/default-flow'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
 import DingModal from './DingModal.vue'
@@ -547,11 +552,33 @@ function findBranchParentType(node: DingNode, branchId: string): 'condition' | '
   return null
 }
 
+/** 是否已初始化过默认三节点（防止外部空数据触发重复初始化） */
+let defaultFlowInitialized = false
+
 /** 从 graph 数据转为树 */
 function convertToTree() {
   const nodes = props.value?.nodes || []
   const edges = props.value?.edges || []
-  treeData.value = graphToTree(nodes, edges, props.typePrefix)
+  const tree = graphToTree(nodes, edges, props.typePrefix)
+  if (tree) {
+    treeData.value = tree
+  } else if (!props.viewer && !defaultFlowInitialized) {
+    // 空流程数据（编辑模式）：初始化默认三节点 开始 → 审批人 → 结束，仅首次
+    defaultFlowInitialized = true
+    initDefaultFlow()
+  }
+  // tree 为空且已初始化过：保持现有 treeData 不变（防止外部空数据覆盖已初始化的默认流程）
+}
+
+/**
+ * 初始化默认流程：start → task → end 三个节点
+ * 使用标准图数据（DEFAULT_FLOW_NODES/EDGES，与演示 wf-leave.json 同构），
+ * 通过 graphToTree 走标准转换链路，保证数据结构与业务格式一致。
+ * 注：不 emit update:value，初始化只作为内部状态；
+ *     用户后续编辑/保存时由 syncToGraph 将完整数据回写外部 v-model
+ */
+function initDefaultFlow() {
+  treeData.value = graphToTree(DEFAULT_FLOW_NODES, DEFAULT_FLOW_EDGES, props.typePrefix)
 }
 
 /** 从树转回 graph 数据并 emit */
@@ -568,9 +595,6 @@ function syncToGraph() {
   // 触发 update:graphData 事件（业务方可通过 api.eventCenter.on 订阅）
   eventCenter.emit('update:graphData', newValue)
 }
-
-// 初始转换
-convertToTree()
 
 // ─── 事件总线（与画布模式 lf.eventCenter 兼容命名）────────────────────
 const eventHandlers: Record<string, Array<(data?: any) => void>> = reactive({})
@@ -589,6 +613,9 @@ const eventCenter = {
     if (idx >= 0) handlers.splice(idx, 1)
   }
 }
+
+// 初始转换（需在 eventCenter 定义后执行，initDefaultFlow → syncToGraph 依赖它）
+convertToTree()
 
 // ─── 节点/流程数据 ↔ 业务方感知格式转换 ────────────────────────────
 
