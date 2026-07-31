@@ -44,6 +44,26 @@
           @edit-branch="handleEditBranch"
           @add-to-branch="handleAddToBranch"
         />
+        <!-- 空状态：无流程数据时引导创建首个节点 -->
+        <div v-else-if="!viewer" class="ding-empty">
+          <div class="ding-empty__icon">&#x270E;</div>
+          <div class="ding-empty__title">还没有流程节点</div>
+          <div class="ding-empty__desc">选择节点类型，创建第一个审批节点</div>
+          <div class="ding-empty__actions">
+            <button
+              v-for="item in emptyStateItems"
+              :key="item.type"
+              class="ding-empty__btn"
+              @click="handleCreateInitial(item.type)"
+            >
+              {{ item.label || item.text || item.type }}
+            </button>
+          </div>
+        </div>
+        <!-- viewer 空状态：仅提示 -->
+        <div v-else class="ding-empty">
+          <div class="ding-empty__title">暂无流程数据</div>
+        </div>
       </div>
     </div>
     <!-- 节点/分支编辑抽屉 -->
@@ -843,6 +863,40 @@ function ensureTypePrefix(type: string): string {
   if (!type) return type
   if (type.startsWith(props.typePrefix)) return type
   return `${props.typePrefix}${type}`
+}
+
+/**
+ * 空状态可选节点类型（过滤 start/end/decision/fork/join 等特殊类型）
+ */
+const emptyStateItems = computed<FDPatternItem[]>(() => {
+  return computedDndPanel.value.filter(item => {
+    if (!item.type) return false
+    if (item.hide) return false
+    const baseType = item.type.replace(props.typePrefix, '')
+    return !['start', 'end', 'decision', 'fork', 'join'].includes(baseType)
+  })
+})
+
+/**
+ * 空状态创建初始流程：start 节点 + 首个业务节点
+ */
+function handleCreateInitial(nodeType: string) {
+  const fullType = ensureTypePrefix(nodeType)
+  const startNode: DingNode = {
+    id: generateId(),
+    type: `${props.typePrefix}start`,
+    name: '开始',
+    properties: {},
+  }
+  const firstNode: DingNode = {
+    id: generateId(),
+    type: fullType,
+    name: getDefaultName(fullType),
+    properties: {},
+  }
+  startNode.children = firstNode
+  treeData.value = startNode
+  syncToGraph()
 }
 
 /**
