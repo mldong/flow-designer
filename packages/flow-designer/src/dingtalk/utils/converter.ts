@@ -506,10 +506,6 @@ function buildOutEdgesMap(edges: GraphEdge[]): Map<string, GraphEdge[]> {
   return map
 }
 
-function isConditionLike(node: DingNode): boolean {
-  return isConditionNode(node) || isForkNode(node)
-}
-
 function createGraphNode(dingNode: DingNode, ctx: ConvertContext): GraphNode {
   const x = ctx.layoutX
   const y = ctx.layoutY

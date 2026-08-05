@@ -87,7 +87,8 @@ const MFormItem = uiAdapter.createFormItem();
 const MInput = uiAdapter.createInput();
 const MSelect = uiAdapter.createSelect();
 const MOption = uiAdapter.createOption();
-const MTooltip = uiAdapter.createTooltip();
+// any 断言：defineAsyncComponent 动态组件 slots 类型联合导致 vue-tsc 3.x 插槽检查误报（#content）
+const MTooltip: any = uiAdapter.createTooltip();
 const form = ref<FDFormType>({} as any)
 const currentData = ref()
 let watchMap: any = {}

@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount } from 'vue'
 import FlowDesigner from '../../packages/index'
 import LeaveJson from '../assets/wf-leave.json'
 import { useIsMobilePreview } from '../composables/useIsMobilePreview'
@@ -109,6 +109,8 @@ const viewer = ref(true)
 const isMobilePreview = useIsMobilePreview()
 
 const designerRef = ref<any>(null)
+// 模板 ref 仅挂载用，显式引用避免 vue-tsc 3.x TS6133 误报
+void designerRef
 const graphData = ref<any>(structuredClone(LeaveJson))
 
 // 高亮：active 节点（蓝/正在审批）+ history 节点（绿/已审批）

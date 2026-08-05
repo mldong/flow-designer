@@ -65,12 +65,9 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+// 模板 ref 绑定（弹窗 DOM 根节点），仅挂载用；显式引用避免 vue-tsc 3.x TS6133 误报
 const modalRef = ref<HTMLElement | null>(null)
-
-function handleClose() {
-  emit('update:visible', false)
-  emit('close')
-}
+void modalRef
 
 function handleOk() {
   emit('ok')

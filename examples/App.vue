@@ -4,6 +4,7 @@ import Example from './components/Example.vue'
 import VbenProcessCase from './cases/VbenProcessCase.vue'
 import NodeApiCase from './cases/NodeApiCase.vue'
 import ViewerCase from './cases/ViewerCase.vue'
+import CountersignCase from './cases/CountersignCase.vue'
 
 interface CaseItem {
   key: string
@@ -17,6 +18,7 @@ const cases: CaseItem[] = [
   { key: 'vben-process', label: '案例1: vben5 process-drawer 风格', desc: '业务方真实写法移植测试', component: VbenProcessCase },
   { key: 'node-api', label: '案例2: 节点 API 操作', desc: 'updateText / setProperties / deleteProperty', component: NodeApiCase },
   { key: 'viewer', label: '案例3: 钉钉模式 · 预览模式', desc: ':viewer=true 与画布模式 isSilentMode 对齐', component: ViewerCase },
+  { key: 'countersign', label: '案例4: 会签进度回显', desc: 'countersignProgress 角标 + 成员列表回显', component: CountersignCase },
 ]
 
 const activeKey = ref<string>('home')

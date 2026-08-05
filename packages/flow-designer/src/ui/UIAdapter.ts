@@ -124,9 +124,10 @@ class UIAdapter {
    */
   public createTooltip = () => {
     if (this.uiLibrary === 'ant-design-vue' || this.uiLibrary === 'antd') {
-      return defineAsyncComponent(() => import('ant-design-vue/es/tooltip').then(mod => mod.default));
+      // 显式泛型：defineAsyncComponent 默认推导 slots 为联合类型，导致模板插槽（如 #content）类型检查失败
+      return defineAsyncComponent<typeof import('ant-design-vue/es/tooltip')['default']>(() => import('ant-design-vue/es/tooltip').then(mod => mod.default));
     } else if (this.uiLibrary === 'element-plus') {
-      return defineAsyncComponent(() => import('element-plus/es/components/tooltip/index').then(mod=> mod.default));
+      return defineAsyncComponent<typeof import('element-plus/es/components/tooltip/index')['default']>(() => import('element-plus/es/components/tooltip/index').then(mod=> mod.default));
     }
   }
 }

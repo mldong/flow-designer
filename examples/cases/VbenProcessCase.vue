@@ -62,14 +62,14 @@
           <el-input
             v-model="formData.name"
             placeholder="请输入流程定义唯一编码"
-            @input="(v) => handleFieldChange('name', v)"
+            @input="(v: any) => handleFieldChange('name', v)"
           />
         </el-form-item>
         <el-form-item label="流程名称" prop="displayName">
           <el-input
             v-model="formData.displayName"
             placeholder="请输入流程显示名称"
-            @input="(v) => handleFieldChange('displayName', v)"
+            @input="(v: any) => handleFieldChange('displayName', v)"
           />
         </el-form-item>
         <el-form-item label="流程类型" prop="type">
@@ -77,7 +77,7 @@
             v-model="formData.type"
             placeholder="请选择流程类型"
             style="width: 100%"
-            @change="(v) => handleFieldChange('type', v)"
+            @change="(v: any) => handleFieldChange('type', v)"
           >
             <el-option label="主流程" value="snaker" />
             <el-option label="子流程" value="sub" />
@@ -87,14 +87,14 @@
           <el-input
             v-model="formData.instanceUrl"
             placeholder="表单地址"
-            @input="(v) => handleFieldChange('instanceUrl', v)"
+            @input="(v: any) => handleFieldChange('instanceUrl', v)"
           />
         </el-form-item>
         <el-form-item label="过期时间" prop="expireTime">
           <el-input
             v-model="formData.expireTime"
             placeholder="过期时间（小时）"
-            @input="(v) => handleFieldChange('expireTime', v)"
+            @input="(v: any) => handleFieldChange('expireTime', v)"
           />
         </el-form-item>
       </el-form>
@@ -152,6 +152,8 @@ const isMobilePreview = useIsMobilePreview()
  */
 const showModeSwitch = computed(() => import.meta.env.DEV && !isMobilePreview.value)
 const designerRef = ref<any>(null)
+// 模板 ref 仅挂载用，显式引用避免 vue-tsc 3.x TS6133 误报
+void designerRef
 
 // 父组件 v-model 状态
 const graphData = ref<any>(structuredClone(LeaveJson))
@@ -179,6 +181,8 @@ const handleInit = (api: any) => {
 // ───── 抽屉相关 ─────
 const drawerVisible = ref(false)
 const formRef = ref<any>(null)
+// 模板 ref 仅挂载用，显式引用避免 vue-tsc 3.x TS6133 误报
+void formRef
 const formData = ref({
   name: '',
   displayName: '',
@@ -271,7 +275,7 @@ watch(
       prevFormData = { ...newVal }
       return
     }
-    for (const key of Object.keys(newVal)) {
+    for (const key of Object.keys(newVal) as (keyof typeof formData.value)[]) {
       if (newVal[key] !== prevFormData[key]) {
         syncToGraph(key, newVal[key], 'watch')
       }

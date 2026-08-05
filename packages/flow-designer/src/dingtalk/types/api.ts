@@ -236,7 +236,8 @@ export function findNode(
       if (found) return found
     }
   }
-  if (root.children) {
+  // fork 容器无 children 字段（用 branches/joinChildren），'children' in 收窄普通节点/条件容器
+  if ('children' in root && root.children) {
     return findNode(root.children, predicate)
   }
   return null
@@ -270,6 +271,7 @@ export function flattenNodes(
     }
     if (fork.joinChildren) flattenNodes(fork.joinChildren, acc, seen)
   }
-  if (root.children) flattenNodes(root.children, acc, seen)
+  // fork 容器无 children 字段（用 branches/joinChildren），'children' in 收窄普通节点/条件容器
+  if ('children' in root && root.children) flattenNodes(root.children, acc, seen)
   return acc
 }

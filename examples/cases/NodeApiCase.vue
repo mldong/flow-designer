@@ -116,6 +116,8 @@ const isMobilePreview = useIsMobilePreview()
  */
 const showModeSwitch = computed(() => import.meta.env.DEV && !isMobilePreview.value)
 const designerRef = ref<any>(null)
+// 模板 ref 仅挂载用，显式引用避免 vue-tsc 3.x TS6133 误报
+void designerRef
 const graphData = ref<any>(structuredClone(LeaveJson))
 
 const highLightData = ref<FDHighLightType>({

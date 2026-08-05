@@ -31,7 +31,7 @@
         :can-delete-checker="canDeleteCheckerComputed"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
-        @add="(nodeType, parentNode, branchIndex) => $emit('add', nodeType, parentNode)"
+        @add="(nodeType, parentNode) => $emit('add', nodeType, parentNode)"
         @add-branch="(n) => $emit('add-branch', n)"
         @edit-branch="(b) => $emit('edit-branch', b)"
         @add-to-branch="(nodeType, b) => $emit('add-to-branch', nodeType, b)"

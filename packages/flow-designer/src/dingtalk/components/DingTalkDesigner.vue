@@ -292,7 +292,8 @@ function findEndNodeId(node: DingNode | undefined): string | null {
       if (id) return id
     }
   }
-  if (node.children) {
+  // fork 容器无 children 字段（用 branches/joinChildren），'children' in 收窄普通节点/条件容器
+  if ('children' in node && node.children) {
     return findEndNodeId(node.children)
   }
   return null
@@ -1593,15 +1594,6 @@ const editFormFields = computed<FDFormItemType[]>(() => {
       return common
   }
 })
-
-function closeEditPanel() {
-  // 关闭前 emit 一次（把最终数据 emit 给外部 v-model）
-  if (editingNode.value || editingBranch.value) {
-    syncToGraph()
-  }
-  editingNode.value = null
-  editingBranch.value = null
-}
 
 function cancelEditPanel() {
   editingNode.value = null

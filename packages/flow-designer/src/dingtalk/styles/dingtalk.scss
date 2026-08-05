@@ -202,6 +202,94 @@
     white-space: nowrap;
   }
 
+  // 会签角标（并行蓝 / 顺序橙）
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 10px;
+    line-height: 1;
+    color: #fff;
+    flex-shrink: 0;
+    white-space: nowrap;
+
+    &--PARALLEL {
+      background-color: #1677ff;
+    }
+
+    &--SEQUENTIAL {
+      background-color: #fa8c16;
+    }
+  }
+
+  // 会签成员列表（highLight.countersignProgress 回显）
+  &__members {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 12px 10px 16px;
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ding-text-secondary);
+
+    &-mark {
+      width: 14px;
+      height: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 10px;
+      flex-shrink: 0;
+      background: #f0f0f0;
+      color: #a8abb2;
+    }
+
+    &-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    // 已处理：打勾 + 历史色
+    &.is-done {
+      color: var(--ding-text-color);
+
+      .ding-node-card__member-mark {
+        background-color: var(--ding-history-color, #52c41a);
+        color: #fff;
+      }
+    }
+
+    // 当前轮到（顺序会签）：▶ + 橙色高亮
+    &.is-active {
+      color: var(--ding-text-color);
+      font-weight: 500;
+
+      .ding-node-card__member-mark {
+        background-color: #fa8c16;
+        color: #fff;
+      }
+    }
+  }
+
+  // 会签卡片修饰（定义在高亮状态之前：active/history 描边优先于会签描边）
+  &--parallel-countersign {
+    box-shadow: 0 0 0 1.5px #1677ff, var(--ding-shadow);
+  }
+
+  &--seq-countersign {
+    box-shadow: 0 0 0 1.5px #fa8c16, var(--ding-shadow);
+  }
+
   // 高亮状态
   &--active {
     .ding-node-card__bar {
