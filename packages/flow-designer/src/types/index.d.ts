@@ -24,12 +24,32 @@ export declare type FDThemeConfig = {
   backgroundColor ?: string;// 画布背景颜色
 }
 /**
+ * 节点成员进度（nodeProgress 列表项）
+ */
+export declare type FDNodeProgressMember = {
+  id: string; // 用户ID
+  name: string; // 用户姓名（后端组装）
+  done?: boolean; // 是否已完成（历史任务办理人）
+  active?: boolean; // 当前轮到的办理人（进行中任务 / 顺序会签）
+}
+/**
  * 高亮数据类型
  */
 export declare type FDHighLightType = {
   historyNodeNames?: Array<string>; // 历史节点名称
   historyEdgeNames?: Array<string>; // 历史边名称
   activeNodeNames?: Array<string>; // 活跃节点名称
+  /**
+   * 节点成员进度（可选）：key=节点 id，value=该节点办理人列表及完成状态
+   * 任意节点可带（历史节点 done、进行中节点 active）；会签节点额外带 type 区分并行/顺序
+   * 钉钉模式 NodeCard 存在时渲染成员列表回显，不存在时保持现状
+   */
+  nodeProgress?: {
+    [nodeId: string]: {
+      type?: 'PARALLEL' | 'SEQUENTIAL'; // 会签类型（仅会签节点）
+      members: Array<FDNodeProgressMember>;
+    }
+  }
 }
 /**
  * 拖拽面板数据类型
