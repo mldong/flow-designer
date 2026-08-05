@@ -18,8 +18,10 @@ class CustomHtmlView extends HtmlResize.view {
     this.preProperties = JSON.stringify(data)
     return true
   }
-  setHtml(rootEl: HTMLElement) {
-    rootEl.innerHTML = '';
+  // LogicFlow HtmlResizeView 基类签名：rootEl 为 SVGForeignObjectElement，内部按 HTMLElement 使用
+  setHtml(rootEl: SVGForeignObjectElement) {
+    const root = rootEl as unknown as HTMLElement;
+    root.innerHTML = '';
     const el: HTMLElement = document.createElement('div');
     el.style.width = '100%';
     el.style.height = '100%';
@@ -29,10 +31,11 @@ class CustomHtmlView extends HtmlResize.view {
       el.style.background = 'red'
     }
     el.innerHTML = this.props.model.isHovered+'-'+this.props.model.isSelected+JSON.stringify(this.props.model.properties)
-    rootEl.appendChild(el)
+    root.appendChild(el)
   }
-  getText(): ''{
-    return ''
+  // 自定义 Html 节点无文本渲染，返回 null（与基类签名 preact.JSX.Element | null 兼容）
+  getText(): null {
+    return null
   }
 }
 export default {

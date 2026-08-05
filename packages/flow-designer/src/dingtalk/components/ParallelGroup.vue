@@ -121,11 +121,6 @@ const emit = defineEmits<{
   (e: 'add-to-branch', nodeType: string, branch: DingBranch): void
 }>()
 
-function handleEditBranch(branch: DingBranch) {
-  if (props.viewer) return
-  emit('edit-branch', branch)
-}
-
 const branchesRef = ref<HTMLElement>()
 const lineWidth = ref('0px')
 const lineLeft = ref('0px')

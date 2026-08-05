@@ -39,14 +39,16 @@ class CustomVueView extends HtmlResize.view {
     this.preProperties = JSON.stringify(data)
     return true
   }
-  setHtml(rootEl: HTMLElement) {
+  // LogicFlow HtmlResizeView 基类签名：rootEl 为 SVGForeignObjectElement，内部按 HTMLElement 使用
+  setHtml(rootEl: SVGForeignObjectElement) {
+    const root = rootEl as unknown as HTMLElement;
     if(!this.isMounted) {
-      rootEl.innerHTML = '';
+      root.innerHTML = '';
       const el: HTMLElement = document.createElement('div');
       el.style.width = '100%';
       el.style.height = '100%';
       el.style.background = 'red';
-      rootEl.appendChild(el)
+      root.appendChild(el)
       this.app.mount(el)
       this.isMounted = true;
     } else {
@@ -70,8 +72,9 @@ class CustomVueView extends HtmlResize.view {
     }
     
   }
-  getText(): ''{
-    return ''
+  // 自定义 Vue 节点无文本渲染，返回 null（与基类签名 preact.JSX.Element | null 兼容）
+  getText(): null {
+    return null
   }
 }
 export default {
