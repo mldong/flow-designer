@@ -51,7 +51,7 @@
       </div>
     </div>
     <!-- 节点/分支编辑抽屉 -->
-    <DingDrawer
+    <FDDrawer
       :visible="showEditPanel"
       :title="editPanelTitle"
       :show-footer="false"
@@ -60,26 +60,22 @@
       <div class="ding-form-item" v-for="field in editFormFields" :key="field.name">
         <label class="ding-form-item__label">{{ field.label }}</label>
         <template v-if="field.component === 'Select'">
-          <select class="ding-form-item__select" v-model="editFormData[field.name]">
-            <option value="">{{ field.componentProps?.placeholder || '请选择' }}</option>
-            <option
-              v-for="opt in (field.componentProps?.options || [])"
-              :key="opt.value"
-              :value="opt.value"
-            >{{ opt.label }}</option>
-          </select>
+          <FDSelect
+            v-model="editFormData[field.name]"
+            :options="field.componentProps?.options || []"
+            :placeholder="field.componentProps?.placeholder || '请选择'"
+          />
         </template>
         <template v-else>
-          <input
-            class="ding-form-item__input"
+          <FDInput
             v-model="editFormData[field.name]"
             :placeholder="field.componentProps?.placeholder || ''"
           />
         </template>
       </div>
-    </DingDrawer>
+    </FDDrawer>
     <!-- 查看数据弹窗 -->
-    <DingModal
+    <FDModal
       v-model:visible="showDataModal"
       title="流程数据"
       cancel-text="关闭"
@@ -88,23 +84,23 @@
       @cancel="showDataModal = false"
       width="600px"
     >
-      <textarea class="ding-modal__textarea" readonly :value="viewDataJson"></textarea>
-    </DingModal>
+      <FDTextarea class="ding-modal__textarea" readonly :model-value="viewDataJson"></FDTextarea>
+    </FDModal>
 
     <!-- 导入数据弹窗 -->
-    <DingModal
+    <FDModal
       v-model:visible="showImportModal"
       title="导入流程数据"
       @ok="doImport"
       @cancel="showImportModal = false"
       width="600px"
     >
-      <textarea class="ding-modal__textarea" v-model="importDataJson" placeholder="请粘贴 JSON 数据"></textarea>
+      <FDTextarea class="ding-modal__textarea" v-model="importDataJson" placeholder="请粘贴 JSON 数据"></FDTextarea>
       <div v-if="importError" class="ding-modal__error">{{ importError }}</div>
-    </DingModal>
+    </FDModal>
 
     <!-- 流程属性弹窗（processForm fallback） -->
-    <DingModal
+    <FDModal
       v-model:visible="showProcessDrawer"
       title="流程属性"
       @ok="closeProcessDrawer"
@@ -112,33 +108,26 @@
     >
       <div class="ding-form-item" v-for="field in processFormFields" :key="field.name">
         <label class="ding-form-item__label">{{ field.label || field.name }}</label>
-        <input
+        <FDInput
           v-if="!field.component || field.component === 'Input'"
-          class="ding-form-item__input"
           v-model="processFormData[field.name]"
           :placeholder="field.componentProps?.placeholder || `请输入${field.label || field.name}`"
         />
-        <select
+        <FDSelect
           v-else-if="field.component === 'Select'"
-          class="ding-form-item__select"
           v-model="processFormData[field.name]"
-        >
-          <option value="">{{ field.componentProps?.placeholder || '请选择' }}</option>
-          <option
-            v-for="opt in (field.componentProps?.options || [])"
-              :key="opt.value"
-              :value="opt.value"
-            >{{ opt.label }}</option>
-          </select>
-        </div>
-      </DingModal>
+          :options="field.componentProps?.options || []"
+          :placeholder="field.componentProps?.placeholder || '请选择'"
+        />
+      </div>
+    </FDModal>
     </div>
   </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onBeforeUnmount, onMounted, PropType } from 'vue'
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType, FDFormItemType } from '../../types'
-import type { DingNode, DingConditionNode, DingBranch, DingForkNode } from '../types'
+import type { DingNode, DingConditionNode, DingBranch, DingForkNode, GraphNode, GraphEdge } from '../types'
 import { isConditionNode, isForkNode } from '../types'
 import type { FDDesignerAPI, FDEventName, FDNodeData, FDGraphModelProxy, DingNodeEventParams, DingEdgeEventParams } from '../types/api'
 import { findNode, flattenNodes } from '../types/api'
@@ -146,8 +135,7 @@ import { graphToTree, treeToGraph } from '../utils/converter'
 import { DEFAULT_FLOW_NODES, DEFAULT_FLOW_EDGES } from '../data/default-flow'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
-import DingModal from './DingModal.vue'
-import DingDrawer from './DingDrawer.vue'
+import { FDModal, FDDrawer, FDInput, FDSelect, FDTextarea } from '../../ui/fd'
 import '../styles/dingtalk.scss'
 
 const props = defineProps({
@@ -560,7 +548,7 @@ let defaultFlowInitialized = false
 function convertToTree() {
   const nodes = props.value?.nodes || []
   const edges = props.value?.edges || []
-  const tree = graphToTree(nodes, edges, props.typePrefix)
+  const tree = graphToTree(nodes as GraphNode[], edges as GraphEdge[], props.typePrefix)
   if (tree) {
     treeData.value = tree
   } else if (!props.viewer && !defaultFlowInitialized) {
@@ -744,7 +732,7 @@ const designerApi: FDDesignerAPI = {
   },
   render(data: FDConfigData) {
     isInternalUpdate = true
-    treeData.value = graphToTree(data?.nodes || [], data?.edges || [], props.typePrefix)
+    treeData.value = graphToTree((data?.nodes || []) as GraphNode[], (data?.edges || []) as GraphEdge[], props.typePrefix)
     isInternalUpdate = false
     // 重渲染后 emit 一次 update:value 保持 v-model 同步
     syncToGraph()
@@ -1845,7 +1833,7 @@ function doImport() {
       mode: data.mode === 'canvas' ? 'canvas' : 'dingtalk',
     }
     emit('update:value', newValue)
-    treeData.value = graphToTree(newValue.nodes, newValue.edges, props.typePrefix)
+    treeData.value = graphToTree((newValue.nodes || []) as GraphNode[], (newValue.edges || []) as GraphEdge[], props.typePrefix)
     showImportModal.value = false
   } catch (err) {
     importError.value = '导入失败：JSON 格式不正确'

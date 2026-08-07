@@ -15,7 +15,9 @@
 
 注：业务后端不开源
 ## npm 包
-[mldong-flow-designer-plus](https://www.npmjs.com/package/mldong-flow-designer-plus)
+[mldong-flow-designer-plus](https://www.npmjs.com/package/mldong-flow-designer-plus)（双模式包：canvas 拖拽画布 + 钉钉风格树形设计器，mode prop 切换）
+
+[mldong-flow-designer-dingtalk](https://www.npmjs.com/package/mldong-flow-designer-dingtalk)（钉钉精简包：仅钉钉风格设计器，零 LogicFlow 依赖，3.1.0 起与双模式包同版本联动发布）
 
 国内用户可走 [淘宝镜像](https://registry.npmmirror.com/mldong-flow-designer-plus) 加速安装。
 
@@ -45,15 +47,12 @@ import { createApp } from 'vue'
 import FlowDesigner from 'mldong-flow-designer-plus'
 import 'mldong-flow-designer-plus/lib/style.css'
 const app = createApp(App)
-// 注：uiLibrary和当前项目使用的UI库保持一致
-// 如果为局部注册，则需要指定uiLibrary
-// app.config.globalProperties.$uiLibrary= 'element-plus'
-
-app.use(FlowDesigner,{
-  // 指定UI库：antd | element-plus
-  uiLibrary: 'element-plus'
-})
+app.use(FlowDesigner)
 ```
+> 4.0.0 起内置 UI（抽屉/弹窗/表单/下拉/提示/JSON 查看器）全部自研（FD 组件族），
+> **不再依赖 ant-design-vue / element-plus / vue-json-pretty**，
+> 旧版 `uiLibrary` 安装参数不再生效（传入也不报错）。
+> 集成方宿主项目自身的 UI 库不受影响。
 ### 使用样例
 #### 编辑模式
 ```html
@@ -237,6 +236,24 @@ export declare type FDHighLightType = {
   historyNodeNames?: Array<string>; // 历史节点名称
   historyEdgeNames?: Array<string>; // 历史边名称
   activeNodeNames?: Array<string>; // 活跃节点名称
+  /**
+   * 节点成员进度（可选，3.0.3+）：key=节点 id，value=该节点办理人列表及完成状态
+   * 任意节点可带（历史节点 done、进行中节点 active）；会签节点额外带 type 区分并行/顺序
+   * 钉钉模式 NodeCard 存在时渲染成员列表回显（✓已完成 / ▶当前轮到 / ·未处理）
+   */
+  nodeProgress?: {
+    [nodeId: string]: {
+      type?: 'PARALLEL' | 'SEQUENTIAL'; // 会签类型（仅会签节点）
+      members: Array<FDNodeProgressMember>;
+    }
+  }
+}
+// 节点成员进度列表项
+export declare type FDNodeProgressMember = {
+  id: string; // 用户ID
+  name: string; // 用户姓名（后端组装）
+  done?: boolean; // 是否已完成（历史任务办理人）
+  active?: boolean; // 当前轮到的办理人（进行中任务 / 顺序会签）
 }
 ```
 #### FDPatternItem
@@ -289,11 +306,13 @@ export declare type FDFormItemType = {
 } 
 ```
 ### 事件
-| 事件名 | 说明 | 回调参数 |
-| --- | --- | --- |
-| on-init | 初始化事件 | (lf: any) => void |
-| on-render | 渲染事件 | (lf: any) => void |
-| on-save | 控制面板保存事件 | (graphData: any) => void |
+| 事件名 | 说明 | 回调参数 | 版本 |
+| --- | --- | --- | --- |
+| on-init | 初始化事件 | (lf: any) => void | - |
+| on-render | 渲染事件 | (lf: any) => void | - |
+| on-save | 控制面板保存事件 | (graphData: any) => void | - |
+| node-click | 节点点击事件（两种模式统一暴露，与 nodeClick prop 回调并存） | ({ data, patternItem, lf }) => void | 3.0.0+ |
+| edge-click | 边点击事件（两种模式统一暴露，与 edgeClick prop 回调并存） | ({ data, patternItem, lf }) => void | 3.0.0+ |
 
 ## 钉钉模式（v3.0.0+）
 
@@ -344,6 +363,34 @@ export declare type FDFormItemType = {
 ### dndPanel 合并策略
 
 业务方自定义的 `dndPanel`（含 `nodeClick` 等配置）会与钉钉模式默认项（审批节点 / 自定义节点 / 子流程）合并，业务方同名 type 优先。
+
+### 会签角标与成员进度回显（v3.0.3+）
+
+- **会签角标**：会签节点（fork/join 或带 countersign 属性）在 NodeCard 右上角渲染角标，区分并行/顺序会签
+- **成员进度回显**：`highLight.nodeProgress` 按节点 id 传入办理人列表，NodeCard 渲染成员列表（✓已完成 / ▶当前轮到 / ·未处理），适用于 viewer 只读模式展示审批进度
+
+### 空流程默认初始化（v3.0.3+）
+
+编辑模式下传入空的流程数据（无 nodes）时，自动初始化默认三节点（开始 → 审批人 → 结束），对齐 jeeflow-spec 发起申请约定；仅首次初始化，不会覆盖已有数据。
+
+## 钉钉精简包（v3.1.0+）
+
+包名 `mldong-flow-designer-dingtalk`，与双模式包**同一源码、同一版本号联动发布**，仅含钉钉风格树形设计器，**不含 LogicFlow 画布**，零 `@logicflow/*` 依赖，适合纯审批流场景极简引入。
+
+```shell
+npm install mldong-flow-designer-dingtalk --registry=https://registry.npmmirror.com
+```
+
+```html
+<template>
+  <MldongFlowDesignerPlus v-model:value="graphData" @on-save="handleSave" />
+</template>
+```
+
+- 组件注册名、props/events 契约与双模式包的钉钉模式完全一致，两包可无缝切换
+- `@on-init` / `@on-render` 回调参数为 `FDDesignerAPI`（命名与 LogicFlow 实例对齐）
+- 需要 canvas 画布、存量画布流程兼容或双模式切换时，请使用双模式包 `mldong-flow-designer-plus`
+- 本地构建精简产物：`npm run build:lib:lite`（输出 `lib-lite/`）
 
 ## 课程章节
 * 第一章·基础篇

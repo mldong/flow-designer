@@ -59,11 +59,11 @@
         </button>
       </span>
     </div>
-    <DingTooltip :title="node.name || '未命名节点'">
+    <FDTooltip :title="node.name || '未命名节点'">
       <div class="ding-node-card__body">
         {{ node.name || '未命名节点' }}
       </div>
-    </DingTooltip>
+    </FDTooltip>
     <!-- 成员列表：highLight.nodeProgress 存在时回显（已处理打勾 / 当前轮到高亮 / 未到灰色） -->
     <div v-if="nodeProgressMembers.length" class="ding-node-card__members">
       <div
@@ -84,7 +84,7 @@
 import { computed } from 'vue'
 import type { DingNode } from '../types'
 import type { FDHighLightType, FDThemeConfig } from '../../types'
-import DingTooltip from './DingTooltip.vue'
+import { FDTooltip } from '../../ui/fd'
 
 const props = withDefaults(defineProps<{
   node: DingNode

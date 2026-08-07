@@ -1,16 +1,17 @@
 <template>
-  <div class="ding-tooltip" @mouseenter="show" @mouseleave="hide" @focusin="show" @focusout="hide">
+  <div class="fd-tooltip" @mouseenter="show" @mouseleave="hide" @focusin="show" @focusout="hide">
     <slot />
     <Teleport to="body">
-      <transition name="ding-tooltip-fade">
+      <transition name="fd-tooltip-fade">
         <div
           v-if="visible"
-          class="ding-tooltip__popup"
+          class="fd-tooltip__popup"
           :style="popupStyle"
           ref="popupRef"
         >
-          <div class="ding-tooltip__arrow"></div>
-          <div class="ding-tooltip__inner">{{ title }}</div>
+          <div class="fd-tooltip__inner">
+            <slot name="content">{{ title }}</slot>
+          </div>
         </div>
       </transition>
     </Teleport>
@@ -18,13 +19,18 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * FDTooltip —— 自研文字提示（由 DingTooltip 提升为通用组件）
+ * 内容支持 title prop 或 #content 插槽（抽屉表单 helpMessage 用插槽渲染多行）
+ */
 import { ref, computed, nextTick } from 'vue'
 
 const props = withDefaults(defineProps<{
-  title: string
+  title?: string
   placement?: 'top' | 'bottom' | 'left' | 'right'
   offset?: number
 }>(), {
+  title: '',
   placement: 'top',
   offset: 8
 })
@@ -83,19 +89,19 @@ const popupStyle = computed(() => ({
 </script>
 
 <style scoped>
-.ding-tooltip {
+.fd-tooltip {
   display: inline-block;
   max-width: 100%;
 }
 
-.ding-tooltip__popup {
+.fd-tooltip__popup {
   position: fixed;
   z-index: 9999;
   max-width: 280px;
   pointer-events: none;
 }
 
-.ding-tooltip__inner {
+.fd-tooltip__inner {
   padding: 6px 12px;
   font-size: 13px;
   line-height: 1.5;
@@ -106,17 +112,13 @@ const popupStyle = computed(() => ({
   white-space: normal;
 }
 
-.ding-tooltip__arrow {
-  display: none;
-}
-
 /* fade transition */
-.ding-tooltip-fade-enter-active,
-.ding-tooltip-fade-leave-active {
+.fd-tooltip-fade-enter-active,
+.fd-tooltip-fade-leave-active {
   transition: opacity 0.15s ease;
 }
-.ding-tooltip-fade-enter-from,
-.ding-tooltip-fade-leave-to {
+.fd-tooltip-fade-enter-from,
+.fd-tooltip-fade-leave-to {
   opacity: 0;
 }
 </style>

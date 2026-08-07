@@ -1,30 +1,30 @@
 <template>
   <Teleport to="body">
-    <transition name="ding-modal-fade">
-      <div v-if="visible" class="ding-modal-root" @click.self="handleOverlayClick">
-        <transition name="ding-modal-zoom">
+    <transition name="fd-modal-fade">
+      <div v-if="visible" class="fd-modal-root" @click.self="handleOverlayClick">
+        <transition name="fd-modal-zoom">
           <div
             v-if="visible"
-            class="ding-modal"
+            class="fd-modal"
             :style="{ width: width }"
             ref="modalRef"
           >
             <!-- header -->
-            <div class="ding-modal__header">
-              <span class="ding-modal__title">{{ title }}</span>
-              <button class="ding-modal__close" @click="handleCancel">&times;</button>
+            <div class="fd-modal__header">
+              <span class="fd-modal__title">{{ title }}</span>
+              <button class="fd-modal__close" @click="handleCancel">&times;</button>
             </div>
 
             <!-- body -->
-            <div class="ding-modal__body">
+            <div class="fd-modal__body">
               <slot />
             </div>
 
             <!-- footer -->
-            <div v-if="$slots.footer || showFooter" class="ding-modal__footer">
+            <div v-if="$slots.footer || showFooter" class="fd-modal__footer">
               <slot name="footer">
-                <button class="ding-btn ding-btn--default" @click="handleCancel">{{ cancelText }}</button>
-                <button class="ding-btn ding-btn--primary" @click="handleOk" :disabled="okDisabled">{{ okText }}</button>
+                <button class="fd-btn fd-btn--default" @click="handleCancel">{{ cancelText }}</button>
+                <button class="fd-btn fd-btn--primary" @click="handleOk" :disabled="okDisabled">{{ okText }}</button>
               </slot>
             </div>
           </div>
@@ -35,6 +35,9 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * FDModal —— 自研弹窗（由 DingModal 提升为通用组件，canvas/dingtalk 双模式共用）
+ */
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -107,7 +110,7 @@ watch(() => props.visible, (v) => {
 
 <style scoped>
 /* ── overlay ── */
-.ding-modal-root {
+.fd-modal-root {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -118,7 +121,7 @@ watch(() => props.visible, (v) => {
 }
 
 /* ── modal box ── */
-.ding-modal {
+.fd-modal {
   position: relative;
   max-height: calc(100vh - 80px);
   background: #fff;
@@ -130,7 +133,7 @@ watch(() => props.visible, (v) => {
 }
 
 /* ── header ── */
-.ding-modal__header {
+.fd-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,13 +141,13 @@ watch(() => props.visible, (v) => {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.ding-modal__title {
+.fd-modal__title {
   font-size: 16px;
   font-weight: 600;
   color: #1f1f1f;
 }
 
-.ding-modal__close {
+.fd-modal__close {
   width: 32px;
   height: 32px;
   display: flex;
@@ -159,20 +162,20 @@ watch(() => props.visible, (v) => {
   padding: 0;
 }
 
-.ding-modal__close:hover {
+.fd-modal__close:hover {
   background: #f5f5f5;
   color: #333;
 }
 
 /* ── body ── */
-.ding-modal__body {
+.fd-modal__body {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
 }
 
 /* ── footer ── */
-.ding-modal__footer {
+.fd-modal__footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -182,7 +185,7 @@ watch(() => props.visible, (v) => {
 }
 
 /* ── buttons ── */
-.ding-btn {
+.fd-btn {
   height: 32px;
   padding: 0 16px;
   border-radius: 6px;
@@ -195,54 +198,54 @@ watch(() => props.visible, (v) => {
   justify-content: center;
 }
 
-.ding-btn--default {
+.fd-btn--default {
   background: #fff;
   border-color: #d9d9d9;
   color: #333;
 }
 
-.ding-btn--default:hover {
+.fd-btn--default:hover {
   color: #1677ff;
   border-color: #1677ff;
 }
 
-.ding-btn--primary {
+.fd-btn--primary {
   background: #1677ff;
   color: #fff;
 }
 
-.ding-btn--primary:hover {
+.fd-btn--primary:hover {
   background: #4096ff;
 }
 
-.ding-btn--primary:disabled {
+.fd-btn--primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.ding-btn--primary:disabled:hover {
+.fd-btn--primary:disabled:hover {
   background: #1677ff;
 }
 
 /* ── transitions ── */
-.ding-modal-fade-enter-active,
-.ding-modal-fade-leave-active {
+.fd-modal-fade-enter-active,
+.fd-modal-fade-leave-active {
   transition: opacity 0.2s ease;
 }
-.ding-modal-fade-enter-from,
-.ding-modal-fade-leave-to {
+.fd-modal-fade-enter-from,
+.fd-modal-fade-leave-to {
   opacity: 0;
 }
 
-.ding-modal-zoom-enter-active,
-.ding-modal-zoom-leave-active {
+.fd-modal-zoom-enter-active,
+.fd-modal-zoom-leave-active {
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.ding-modal-zoom-enter-from {
+.fd-modal-zoom-enter-from {
   transform: scale(0.95);
   opacity: 0;
 }
-.ding-modal-zoom-leave-to {
+.fd-modal-zoom-leave-to {
   transform: scale(0.95);
   opacity: 0;
 }
