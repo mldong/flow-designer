@@ -17,7 +17,7 @@
 ## npm 包
 [mldong-flow-designer-plus](https://www.npmjs.com/package/mldong-flow-designer-plus)（双模式包：canvas 拖拽画布 + 钉钉风格树形设计器，mode prop 切换）
 
-[mldong-flow-designer-dingtalk](https://www.npmjs.com/package/mldong-flow-designer-dingtalk)（钉钉精简包：仅钉钉风格设计器，零 LogicFlow 依赖，3.1.0 起与双模式包同版本联动发布）
+[mldong-flow-designer-dingtalk](https://www.npmjs.com/package/mldong-flow-designer-dingtalk)（钉钉精简包：仅钉钉风格设计器，零 LogicFlow 依赖，4.0.0 起与双模式包同版本联动发布）
 
 国内用户可走 [淘宝镜像](https://registry.npmmirror.com/mldong-flow-designer-plus) 加速安装。
 
@@ -53,6 +53,11 @@ app.use(FlowDesigner)
 > **不再依赖 ant-design-vue / element-plus / vue-json-pretty**，
 > 旧版 `uiLibrary` 安装参数不再生效（传入也不报错）。
 > 集成方宿主项目自身的 UI 库不受影响。
+>
+> 4.0.0 三件大事：
+> 1. **砍掉第三方 UI 框架**：内置 UI 全部自研 FD 组件族，dependencies 仅 `@logicflow/*` + `vue`；
+> 2. **补全内置工作流属性**：流程级 +8（字段权限/关联业务表/持久化模式/发起时选人/选人接口/抄送人/申请理由/附件）、任务级 +6（候选用户/候选用户组/候选用户处理类/会签类型/会签完成条件/操作按钮），对齐 vben5-wf 二开版，双模式内置表单均可配置；
+> 3. **钉钉设计器视觉优化**：节点卡片紧凑化、层次强化、分支标题间距优化。
 ### 使用样例
 #### 编辑模式
 ```html
@@ -373,7 +378,7 @@ export declare type FDFormItemType = {
 
 编辑模式下传入空的流程数据（无 nodes）时，自动初始化默认三节点（开始 → 审批人 → 结束），对齐 jeeflow-spec 发起申请约定；仅首次初始化，不会覆盖已有数据。
 
-## 钉钉精简包（v3.1.0+）
+## 钉钉精简包（v4.0.0+）
 
 包名 `mldong-flow-designer-dingtalk`，与双模式包**同一源码、同一版本号联动发布**，仅含钉钉风格树形设计器，**不含 LogicFlow 画布**，零 `@logicflow/*` 依赖，适合纯审批流场景极简引入。
 
