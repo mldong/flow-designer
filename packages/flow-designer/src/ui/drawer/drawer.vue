@@ -1,40 +1,22 @@
 <template>
   <FDDrawer :visible="visible" :title="mTitle" :width="widthStr" :show-footer="false" @cancel="visible=false">
-    <FDForm v-if="form.formItems?.length" :label-width="form.labelWidth || '100px'">
-      <FDFormItem
-        v-for="item in form.formItems"
-        :key="item.name"
-        :label="item.helpMessage && item.helpMessage.length ? undefined : item.label"
-      >
-        <template v-if="item.helpMessage && item.helpMessage.length" #label>
-          {{ item.label }}
-          <FDTooltip>
-            <template #content>
-              <template v-if="Array.isArray(item.helpMessage)">
-                <div v-for="(msg, i) in item.helpMessage" :key="i">{{ msg }}</div>
-              </template>
-              <template v-else>
-                {{ item.helpMessage }}
-              </template>
-            </template>
-            <img :src="QuestionSvg" />
-          </FDTooltip>
-        </template>
-        <FDInput v-if="item.component == 'Input'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></FDInput>
-        <FDSelect v-else-if="item.component == 'Select'" v-model="formState[item.name]" v-bind="{...item.componentProps}"></FDSelect>
-        <template v-else-if="item.slot">
-          <slot :name="item.slot" v-bind="currentData"></slot>
-        </template>
-        <component v-else :is="item.render ? item.render(currentData) : undefined" v-model="formState[item.name]" v-model:value="formState[item.name]" v-model:checked="formState[item.name]" />
-      </FDFormItem>
-    </FDForm>
+    <FDSchemaForm
+      :form-items="form.formItems"
+      :model="formState"
+      :label-width="form.labelWidth || '100px'"
+      :render-context="currentData"
+    >
+      <!-- 业务方 slot 透传（item.slot 场景） -->
+      <template v-for="(_, name) in $slots" :key="name" #[name]="scope">
+        <slot :name="name" v-bind="scope" />
+      </template>
+    </FDSchemaForm>
   </FDDrawer>
 </template>
 <script setup lang="ts">
 import { computed, PropType, reactive, ref, watch } from 'vue';
-import { FDDrawer, FDForm, FDFormItem, FDInput, FDSelect, FDTooltip } from '../fd';
+import { FDDrawer, FDSchemaForm } from '../fd';
 import { FDFormType } from '../../types';
-import QuestionSvg from '../../assets/question.svg'
 
 const visible = ref(false)
 const props = defineProps({

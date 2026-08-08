@@ -57,33 +57,7 @@
       :show-footer="false"
       @cancel="cancelEditPanel"
     >
-      <div class="ding-form-item" v-for="field in editFormFields" :key="field.name">
-        <label class="ding-form-item__label">
-          {{ field.label }}
-          <FDTooltip v-if="field.helpMessage" class="ding-form-item__help">
-            <template #content>
-              <template v-if="Array.isArray(field.helpMessage)">
-                <div v-for="(msg, i) in field.helpMessage" :key="i">{{ msg }}</div>
-              </template>
-              <template v-else>{{ field.helpMessage }}</template>
-            </template>
-            <img :src="QuestionSvg" />
-          </FDTooltip>
-        </label>
-        <template v-if="field.component === 'Select'">
-          <FDSelect
-            v-model="editFormData[field.name]"
-            :options="field.componentProps?.options || []"
-            :placeholder="field.componentProps?.placeholder || '请选择'"
-          />
-        </template>
-        <template v-else>
-          <FDInput
-            v-model="editFormData[field.name]"
-            :placeholder="field.componentProps?.placeholder || ''"
-          />
-        </template>
-      </div>
+      <FDSchemaForm :form-items="editFormFields" :model="editFormData" label-width="100px" />
     </FDDrawer>
     <!-- 查看数据弹窗 -->
     <FDModal
@@ -117,31 +91,7 @@
       @ok="closeProcessDrawer"
       @cancel="closeProcessDrawer"
     >
-      <div class="ding-form-item" v-for="field in processFormFields" :key="field.name">
-        <label class="ding-form-item__label">
-          {{ field.label || field.name }}
-          <FDTooltip v-if="field.helpMessage" class="ding-form-item__help">
-            <template #content>
-              <template v-if="Array.isArray(field.helpMessage)">
-                <div v-for="(msg, i) in field.helpMessage" :key="i">{{ msg }}</div>
-              </template>
-              <template v-else>{{ field.helpMessage }}</template>
-            </template>
-            <img :src="QuestionSvg" />
-          </FDTooltip>
-        </label>
-        <FDInput
-          v-if="!field.component || field.component === 'Input'"
-          v-model="processFormData[field.name]"
-          :placeholder="field.componentProps?.placeholder || `请输入${field.label || field.name}`"
-        />
-        <FDSelect
-          v-else-if="field.component === 'Select'"
-          v-model="processFormData[field.name]"
-          :options="field.componentProps?.options || []"
-          :placeholder="field.componentProps?.placeholder || '请选择'"
-        />
-      </div>
+      <FDSchemaForm :form-items="processFormFields" :model="processFormData" label-width="130px" />
     </FDModal>
     </div>
   </template>
@@ -157,8 +107,7 @@ import { graphToTree, treeToGraph } from '../utils/converter'
 import { DEFAULT_FLOW_NODES, DEFAULT_FLOW_EDGES } from '../data/default-flow'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
-import { FDModal, FDDrawer, FDInput, FDSelect, FDTextarea, FDTooltip } from '../../ui/fd'
-import QuestionSvg from '../../assets/question.svg'
+import { FDModal, FDDrawer, FDTextarea, FDSchemaForm } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
 import '../styles/dingtalk.scss'
 
