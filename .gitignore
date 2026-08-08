@@ -23,6 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 lib
+lib-lite
+dist-publish
 .hermes/
 AGENTS.md
 .playwright-mcp/

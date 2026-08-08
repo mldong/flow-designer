@@ -5,7 +5,7 @@ import { FDFormType } from "../types";
  * 
  */
 export const start:FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -35,7 +35,7 @@ export const start:FDFormType = {
  * 
  */
 export const end:FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -66,7 +66,7 @@ export const end:FDFormType = {
  */
 
 export const task:FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -118,6 +118,29 @@ export const task:FDFormType = {
       placeholder: '请输入参与人处理类'
     }
   }, {
+    name: "candidateUsers",
+    label: "候选用户",
+    component: 'Input',
+    helpMessage: '多个用户用英文逗号分隔',
+    componentProps: {
+      placeholder: '请输入候选用户（多个用逗号分隔）'
+    }
+  }, {
+    name: "candidateGroups",
+    label: "候选用户组",
+    component: 'Input',
+    helpMessage: '多个用户组用英文逗号分隔',
+    componentProps: {
+      placeholder: '请输入候选用户组（多个用逗号分隔）'
+    }
+  }, {
+    name: "candidateHandler",
+    label: "候选用户处理类",
+    component: 'Input',
+    componentProps: {
+      placeholder: '请输入候选用户处理类'
+    }
+  }, {
     name: "taskType",
     label: "任务类型",
     component: 'Select',
@@ -150,6 +173,44 @@ export const task:FDFormType = {
           value: 'ALL'
         }
       ]
+    }
+  }, {
+    name: "countersignType",
+    label: "会签类型",
+    component: 'Select',
+    defaultValue: 'PARALLEL',
+    helpMessage: '参与类型为会签参与时生效',
+    componentProps: {
+      placeholder: '请选择会签类型',
+      options: [
+        {
+          label: '并行会签',
+          value: 'PARALLEL'
+        },
+        {
+          label: '顺序会签',
+          value: 'SEQUENTIAL'
+        }
+      ]
+    }
+  }, {
+    name: "countersignCompletionCondition",
+    label: "会签完成条件",
+    component: 'Input',
+    helpMessage: '参与类型为会签参与时生效，如：nrOfCompletedInstances/nrOfInstances >= 0.6',
+    componentProps: {
+      placeholder: '请输入会签完成条件'
+    }
+  }, {
+    name: "actionBtns",
+    label: "操作按钮",
+    component: 'Input',
+    helpMessage: [
+      '多个按钮用英文逗号分隔，普通参与可选：AGREE(同意)/REJECT(拒绝)/ROLLBACK(退回上一步)/ROLLBACK_TO_OPERATOR(退回发起人)/JUMP(跳转)',
+      '会签参与可选：AGREE(同意)/COUNTERSIGN_DISAGREE(会签不同意)/ADD_CANDIDATE(加签)'
+    ],
+    componentProps: {
+      placeholder: '如 AGREE,REJECT,ROLLBACK'
     }
   }, {
     name: "reminderTime",
@@ -236,10 +297,30 @@ export const process: FDFormType = {
     }
   },{
     name: "instanceUrl",
-    label: "实例启动Ur",
+    label: "实例启动表单",
     component: 'Input',
+    helpMessage: '如果为元数据表单，数据模型的表名称和流程唯一编码要保持一致',
     componentProps: {
-      placeholder: '请输入实例启动Ur'
+      placeholder: '请输入实例启动表单'
+    }
+  },{
+    name: "enableFieldPerm",
+    label: "启用字段权限",
+    component: 'Select',
+    defaultValue: 0,
+    helpMessage: '开启后，可在任务节点配置字段只读/可编辑/不可见',
+    componentProps: {
+      placeholder: '请选择是否启用字段权限',
+      options: [
+        {
+          label: '否',
+          value: 0
+        },
+        {
+          label: '是',
+          value: 1
+        }
+      ]
     }
   },{
     name: "instanceNoClass",
@@ -261,6 +342,113 @@ export const process: FDFormType = {
     component: 'Input',
     componentProps: {
       placeholder: '请输入后置拦截器'
+    }
+  }, {
+    name: "relTableName",
+    label: "关联业务表",
+    component: 'Input',
+    helpMessage: '流程结束后业务数据落库的目标表；为空时使用流程唯一编码',
+    componentProps: {
+      placeholder: '如 biz_leave'
+    }
+  }, {
+    name: "persistMode",
+    label: "持久化模式",
+    component: 'Select',
+    defaultValue: 'ARCHIVE',
+    helpMessage: 'ARCHIVE=结束归档（默认）；SYNC=同步演进（发起写入、节点更新、结束定稿）。需配合后置拦截器 PersistPostInterceptor 使用',
+    componentProps: {
+      placeholder: '请选择持久化模式',
+      options: [
+        {
+          label: '归档',
+          value: 'ARCHIVE'
+        },
+        {
+          label: '同步',
+          value: 'SYNC'
+        }
+      ]
+    }
+  }, {
+    name: "selectUserOnInitiate",
+    label: "是否发起时选人",
+    component: 'Select',
+    defaultValue: 0,
+    componentProps: {
+      placeholder: '请选择是否发起时选人',
+      options: [
+        {
+          label: '否',
+          value: 0
+        },
+        {
+          label: '是',
+          value: 1
+        }
+      ]
+    }
+  }, {
+    name: "selectUserApi",
+    label: "选人接口地址",
+    component: 'Input',
+    helpMessage: '发起时选人为"是"时生效；目前仅支持POST请求，和通用下拉接口规范一致',
+    componentProps: {
+      placeholder: '请输入选人接口地址'
+    }
+  }, {
+    name: "enableCcActors",
+    label: "启用抄送人",
+    component: 'Select',
+    defaultValue: 0,
+    componentProps: {
+      placeholder: '请选择是否启用抄送人',
+      options: [
+        {
+          label: '否',
+          value: 0
+        },
+        {
+          label: '是',
+          value: 1
+        }
+      ]
+    }
+  }, {
+    name: "enableApplyReason",
+    label: "启用申请理由",
+    component: 'Select',
+    defaultValue: 0,
+    componentProps: {
+      placeholder: '请选择是否启用申请理由',
+      options: [
+        {
+          label: '否',
+          value: 0
+        },
+        {
+          label: '是',
+          value: 1
+        }
+      ]
+    }
+  }, {
+    name: "enableAttachment",
+    label: "启用附件",
+    component: 'Select',
+    defaultValue: 0,
+    componentProps: {
+      placeholder: '请选择是否启用附件',
+      options: [
+        {
+          label: '否',
+          value: 0
+        },
+        {
+          label: '是',
+          value: 1
+        }
+      ]
     }
   }]
 }
@@ -297,7 +485,7 @@ export const subProcess: FDFormType = {
   },]
 }
 export const decision: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -357,7 +545,7 @@ export const decision: FDFormType = {
   }]
 }
 export const fork: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -368,7 +556,7 @@ export const fork: FDFormType = {
   }]
 }
 export const join: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -379,7 +567,7 @@ export const join: FDFormType = {
   }]
 }
 export const custom: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -433,7 +621,7 @@ export const custom: FDFormType = {
 }
 
 export const edge: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",

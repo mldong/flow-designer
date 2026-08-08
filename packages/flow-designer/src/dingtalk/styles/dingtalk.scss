@@ -128,7 +128,7 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 3px;
     border-radius: var(--ding-card-radius) 0 0 var(--ding-card-radius);
     background-color: var(--ding-primary-color);
   }
@@ -137,10 +137,10 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 12px 6px 16px;
+    padding: 8px 12px 2px 14px;
     font-size: 12px;
     color: var(--ding-text-secondary);
-    min-height: 28px;
+    min-height: 26px;
   }
 
   &__icon {
@@ -193,9 +193,9 @@
   }
 
   &__body {
-    padding: 4px 12px 12px 16px;
+    padding: 4px 12px 10px 14px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--ding-text-color);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -229,7 +229,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 0 12px 10px 16px;
+    padding: 0 12px 10px 14px;
   }
 
   &__member {
@@ -598,7 +598,7 @@
     background: var(--ding-card-bg);
     border-radius: 6px;
     border: 1px solid var(--ding-border-color);
-    margin-bottom: 0;
+    margin-bottom: 6px;
     width: var(--ding-card-width);
     box-sizing: border-box;
     text-align: center;
@@ -881,60 +881,6 @@
   }
 }
 
-// 表单项
-.ding-form-item {
-  margin-bottom: 16px;
-
-  &__label {
-    display: block;
-    font-size: 13px;
-    color: var(--ding-text-color);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-
-  &__input {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--ding-border-color);
-    border-radius: 4px;
-    font-size: 14px;
-    color: var(--ding-text-color);
-    background: var(--ding-card-bg);
-    outline: none;
-    transition: border-color 0.2s;
-    box-sizing: border-box;
-
-    &:focus {
-      border-color: var(--ding-primary-color);
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
-    }
-
-    &::placeholder {
-      color: var(--ding-text-secondary);
-    }
-  }
-
-  &__select {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--ding-border-color);
-    border-radius: 4px;
-    font-size: 14px;
-    color: var(--ding-text-color);
-    background: var(--ding-card-bg);
-    outline: none;
-    transition: border-color 0.2s;
-    box-sizing: border-box;
-    cursor: pointer;
-
-    &:focus {
-      border-color: var(--ding-primary-color);
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
-    }
-  }
-}
-
 // 控制面板
 .ding-control-panel {
   position: absolute;
@@ -1109,6 +1055,12 @@
   color: #cf1322;
   font-size: 13px;
   line-height: 1.5;
+}
+
+// 查看数据弹窗：FDJsonViewer 滚动容器（与画布模式 modal.vue 同款高度约束）
+.ding-modal__json {
+  max-height: 480px;
+  overflow-y: auto;
 }
 
 

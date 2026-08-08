@@ -1,6 +1,13 @@
-import type { GraphConfigData } from "@logicflow/core";
-import { de } from "element-plus/es/locales.mjs";
 import type { VNode, PropType } from "vue";
+/**
+ * 图数据结构（自包含，与 @logicflow/core 的 GraphConfigData 结构等价）
+ * 不直接引用 @logicflow/core，使钉钉精简包（mldong-flow-designer-dingtalk）
+ * 的类型链可在无 LogicFlow 依赖环境下解析
+ */
+export declare type FDGraphConfigData = {
+  nodes?: Array<Record<string, any>>;
+  edges?: Array<Record<string, any>>;
+}
 /**
  * 流程设计器配置数据
  */
@@ -12,7 +19,7 @@ export declare type FDConfigData = {
   expireTime?: string; // 期待完成时间变量key
   instanceNoClass?: string; // xx.DefaultNoGenerator	实例编号生成器实现类
   mode?: 'canvas' | 'dingtalk'; // 渲染模式
-} & GraphConfigData
+} & FDGraphConfigData
 /**
  * 主题颜色配置
  */
