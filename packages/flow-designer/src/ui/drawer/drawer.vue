@@ -3,7 +3,7 @@
     <FDSchemaForm
       :form-items="form.formItems"
       :model="formState"
-      :label-width="form.labelWidth || '100px'"
+      :label-width="form.labelWidth || '120px'"
       :render-context="currentData"
     >
       <!-- 业务方 slot 透传（item.slot 场景） -->

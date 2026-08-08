@@ -20,7 +20,7 @@ defineProps<{
   label?: string
 }>()
 
-const injectedWidth = inject<ComputedRef<string>>('fdFormLabelWidth', computed(() => '100px'))
+const injectedWidth = inject<ComputedRef<string>>('fdFormLabelWidth', computed(() => '120px'))
 const labelWidth = computed(() => injectedWidth.value)
 </script>
 
@@ -44,6 +44,8 @@ const labelWidth = computed(() => injectedWidth.value)
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
+  /* 带 helpMessage 问号图标时 label 不换行（宽度由 FDForm label-width 控制，双模式统一 120px） */
+  white-space: nowrap;
 }
 
 .fd-form-item__content {

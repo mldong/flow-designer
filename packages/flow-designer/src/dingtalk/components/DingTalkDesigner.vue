@@ -54,10 +54,11 @@
     <FDDrawer
       :visible="showEditPanel"
       :title="editPanelTitle"
+      width="600px"
       :show-footer="false"
       @cancel="cancelEditPanel"
     >
-      <FDSchemaForm :form-items="editFormFields" :model="editFormData" label-width="100px" />
+      <FDSchemaForm :form-items="editFormFields" :model="editFormData" label-width="120px" />
     </FDDrawer>
     <!-- 查看数据弹窗 -->
     <FDModal
@@ -90,6 +91,7 @@
     <FDDrawer
       :visible="showProcessDrawer"
       title="流程属性"
+      width="600px"
       :show-footer="false"
       @cancel="closeProcessDrawer"
     >

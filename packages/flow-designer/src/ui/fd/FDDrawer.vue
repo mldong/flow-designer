@@ -169,6 +169,8 @@ onBeforeUnmount(() => {
   top: 0;
   right: 0;
   bottom: 0;
+  /* 窄视口下不溢出（钉钉模式移动端预览 375px 场景） */
+  max-width: 100%;
   background: #fff;
   box-shadow: -4px 0 16px rgba(0, 0, 0, 0.12);
   display: flex;

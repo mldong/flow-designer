@@ -5,7 +5,7 @@ import { FDFormType } from "../types";
  * 
  */
 export const start:FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -35,7 +35,7 @@ export const start:FDFormType = {
  * 
  */
 export const end:FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -66,7 +66,7 @@ export const end:FDFormType = {
  */
 
 export const task:FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -485,7 +485,7 @@ export const subProcess: FDFormType = {
   },]
 }
 export const decision: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -545,7 +545,7 @@ export const decision: FDFormType = {
   }]
 }
 export const fork: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -556,7 +556,7 @@ export const fork: FDFormType = {
   }]
 }
 export const join: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -567,7 +567,7 @@ export const join: FDFormType = {
   }]
 }
 export const custom: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",
@@ -621,7 +621,7 @@ export const custom: FDFormType = {
 }
 
 export const edge: FDFormType = {
-  labelWidth: '100px',
+  labelWidth: '120px',
   formItems: [{
     name: "name",
     label: "唯一编码",

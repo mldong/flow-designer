@@ -48,6 +48,6 @@ withDefaults(defineProps<{
   labelWidth?: string
   renderContext?: any
 }>(), {
-  labelWidth: '100px'
+  labelWidth: '120px'
 })
 </script>
