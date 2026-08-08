@@ -69,7 +69,9 @@
       @cancel="showDataModal = false"
       width="600px"
     >
-      <FDTextarea class="ding-modal__textarea" readonly :model-value="viewDataJson"></FDTextarea>
+      <div class="ding-modal__json">
+        <FDJsonViewer :showLineNumber="true" :data="viewDataObj" />
+      </div>
     </FDModal>
 
     <!-- 导入数据弹窗 -->
@@ -84,15 +86,15 @@
       <div v-if="importError" class="ding-modal__error">{{ importError }}</div>
     </FDModal>
 
-    <!-- 流程属性弹窗（processForm fallback） -->
-    <FDModal
-      v-model:visible="showProcessDrawer"
+    <!-- 流程属性抽屉（与画布模式一致：无确认/取消，修改即生效，关闭时提交 emit） -->
+    <FDDrawer
+      :visible="showProcessDrawer"
       title="流程属性"
-      @ok="closeProcessDrawer"
+      :show-footer="false"
       @cancel="closeProcessDrawer"
     >
       <FDSchemaForm :form-items="processFormFields" :model="processFormData" label-width="130px" />
-    </FDModal>
+    </FDDrawer>
     </div>
   </template>
 
@@ -107,7 +109,7 @@ import { graphToTree, treeToGraph } from '../utils/converter'
 import { DEFAULT_FLOW_NODES, DEFAULT_FLOW_EDGES } from '../data/default-flow'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
-import { FDModal, FDDrawer, FDTextarea, FDSchemaForm } from '../../ui/fd'
+import { FDModal, FDDrawer, FDTextarea, FDSchemaForm, FDJsonViewer, FDMessage } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
 import '../styles/dingtalk.scss'
 
@@ -1007,28 +1009,15 @@ function handleEditNode(node: DingNode) {
   // 优先级3: 打开内置编辑面板
   editingBranch.value = null
   editingNode.value = node
+  // 记住 dndPanel 自定义表单（优先于内置 schema，与画布模式 patternItem.form 一致）
+  editingPatternForm.value = matchedPatternItem?.form
   editFormData.name = node.properties?.name || node.id
   editFormData.displayName = node.name || ''
-  editFormData.assignee = node.properties?.assignee || ''
-  editFormData.assignmentHandler = node.properties?.assignmentHandler || ''
-  editFormData.candidateUsers = node.properties?.candidateUsers || ''
-  editFormData.candidateGroups = node.properties?.candidateGroups || ''
-  editFormData.candidateHandler = node.properties?.candidateHandler || ''
-  editFormData.taskType = node.properties?.taskType || ''
-  editFormData.performType = node.properties?.performType || ''
-  editFormData.countersignType = node.properties?.countersignType || 'PARALLEL'
-  editFormData.countersignCompletionCondition = node.properties?.countersignCompletionCondition || ''
-  editFormData.actionBtns = node.properties?.actionBtns || ''
-  editFormData.callback = node.properties?.callback || ''
-  editFormData.clazz = node.properties?.clazz || ''
-  editFormData.methodName = node.properties?.methodName || ''
-  editFormData.args = node.properties?.args || ''
-  editFormData.form = node.properties?.form || ''
-  editFormData.version = node.properties?.version || ''
-  editFormData.preInterceptors = node.properties?.preInterceptors || ''
-  editFormData.postInterceptors = node.properties?.postInterceptors || ''
-  editFormData.expr = node.properties?.expr || ''
-  editFormData.handleClass = node.properties?.handleClass || ''
+  // 通用初始化：遍历当前表单字段从 properties 回填（含 schema defaultValue）
+  for (const f of editFormFields.value) {
+    if (f.name === 'name' || f.name === 'displayName') continue
+    editFormData[f.name] = node.properties?.[f.name] ?? f.defaultValue ?? ''
+  }
 
   // emit 与画布模式 lf.eventCenter.on('node:click') 拿到的签名一致，
   // 业务方在钉钉/画布模式下都能用 @node-click="(p) => {...}" 监听
@@ -1476,6 +1465,10 @@ const editFormData = reactive<Record<string, string>>({
   countersignCompletionCondition: '',
   actionBtns: '',
   callback: '',
+  reminderTime: '',
+  reminderRepeat: '',
+  expireTime: '',
+  autoExecute: '',
   clazz: '',
   methodName: '',
   args: '',
@@ -1503,6 +1496,19 @@ const editPanelTitle = computed(() => {
   }
 })
 
+// 内置表单元数据单一事实源：与画布模式共用 plugins/schema.ts，
+// 字段集/label/helpMessage/defaultValue/Select options 双模式完全一致
+const schemaByType: Record<string, FDFormType> = {
+  task: schema.task,
+  condition: schema.decision,
+  custom: schema.custom,
+  subProcess: schema.subProcess,
+  start: schema.start,
+  end: schema.end,
+}
+// 当前编辑节点来自 dndPanel 的自定义表单（优先于内置 schema）
+const editingPatternForm = ref<FDFormType | undefined>(undefined)
+
 const editFormFields = computed<FDFormItemType[]>(() => {
   if (editingBranch.value) {
     const fields: FDFormItemType[] = [
@@ -1520,61 +1526,16 @@ const editFormFields = computed<FDFormItemType[]>(() => {
     { name: 'name', label: '唯一编码', component: 'Input', componentProps: { placeholder: '请输入唯一编码' } },
     { name: 'displayName', label: '显示名称', component: 'Input', componentProps: { placeholder: '请输入显示名称' } },
   ]
-  switch (baseType) {
-    case 'condition':
-      // 条件分支容器（decision 节点）：决策表达式 / 处理类 / 决策类 / 方法名 / 参数 / 拦截器
-      return [
-        ...common,
-        { name: 'expr', label: '决策表达式', component: 'Input', componentProps: { placeholder: '请输入决策表达式' } },
-        { name: 'handleClass', label: '处理类', component: 'Input', componentProps: { placeholder: '请输入处理类' } },
-        { name: 'clazz', label: '决策类路径', component: 'Input', componentProps: { placeholder: '请输入决策类路径' } },
-        { name: 'methodName', label: '方法名', component: 'Input', componentProps: { placeholder: '请输入方法名' } },
-        { name: 'args', label: '参数变量', component: 'Input', componentProps: { placeholder: '请输入参数变量' } },
-        { name: 'preInterceptors', label: '前置拦截器', component: 'Input', componentProps: { placeholder: '请输入前置拦截器' } },
-        { name: 'postInterceptors', label: '后置拦截器', component: 'Input', componentProps: { placeholder: '请输入后置拦截器' } },
-      ]
-    case 'task':
-      return [
-        ...common,
-        { name: 'assignee', label: '参与人', component: 'Input', componentProps: { placeholder: '请输入参与人' } },
-        { name: 'assignmentHandler', label: '参与人处理类', component: 'Input', componentProps: { placeholder: '请输入参与人处理类' } },
-        { name: 'candidateUsers', label: '候选用户', component: 'Input', componentProps: { placeholder: '请输入候选用户（多个用逗号分隔）' } },
-        { name: 'candidateGroups', label: '候选用户组', component: 'Input', componentProps: { placeholder: '请输入候选用户组（多个用逗号分隔）' } },
-        { name: 'candidateHandler', label: '候选用户处理类', component: 'Input', componentProps: { placeholder: '请输入候选用户处理类' } },
-        { name: 'taskType', label: '任务类型', component: 'Select', componentProps: { placeholder: '请选择任务类型', options: [{ label: '主办', value: 'Major' }, { label: '协办', value: 'Aidant' }] } },
-        { name: 'performType', label: '参与类型', component: 'Select', componentProps: { placeholder: '请选择参与类型', options: [{ label: '普通参与', value: 'ANY' }, { label: '会签参与', value: 'ALL' }] } },
-        { name: 'countersignType', label: '会签类型', component: 'Select', componentProps: { placeholder: '请选择会签类型', options: [{ label: '并行会签', value: 'PARALLEL' }, { label: '顺序会签', value: 'SEQUENTIAL' }] } },
-        { name: 'countersignCompletionCondition', label: '会签完成条件', component: 'Input', componentProps: { placeholder: '请输入会签完成条件' } },
-        { name: 'actionBtns', label: '操作按钮', component: 'Input', componentProps: { placeholder: '如 AGREE,REJECT,ROLLBACK' } },
-        { name: 'form', label: '表单', component: 'Input', componentProps: { placeholder: '请输入表单' } },
-        { name: 'preInterceptors', label: '前置拦截器', component: 'Input', componentProps: { placeholder: '请输入前置拦截器' } },
-        { name: 'postInterceptors', label: '后置拦截器', component: 'Input', componentProps: { placeholder: '请输入后置拦截器' } },
-      ]
-    case 'custom':
-      return [
-        ...common,
-        { name: 'clazz', label: '类路径', component: 'Input', componentProps: { placeholder: '请输入类路径' } },
-        { name: 'methodName', label: '方法名', component: 'Input', componentProps: { placeholder: '请输入方法名' } },
-        { name: 'args', label: '参数变量', component: 'Input', componentProps: { placeholder: '请输入参数变量' } },
-        { name: 'preInterceptors', label: '前置拦截器', component: 'Input', componentProps: { placeholder: '请输入前置拦截器' } },
-        { name: 'postInterceptors', label: '后置拦截器', component: 'Input', componentProps: { placeholder: '请输入后置拦截器' } },
-      ]
-    case 'subProcess':
-      return [
-        ...common,
-        { name: 'form', label: '表单', component: 'Input', componentProps: { placeholder: '请输入表单' } },
-        { name: 'version', label: '版本号', component: 'Input', componentProps: { placeholder: '请输入版本号' } },
-      ]
-    case 'start':
-    case 'end':
-      return [
-        { name: 'name', label: '唯一编码', component: 'Input', componentProps: { placeholder: '请输入唯一编码' } },
-        { name: 'preInterceptors', label: '前置拦截器', component: 'Input', componentProps: { placeholder: '请输入前置拦截器' } },
-        { name: 'postInterceptors', label: '后置拦截器', component: 'Input', componentProps: { placeholder: '请输入后置拦截器' } },
-      ]
-    default:
-      return common
+  const formConfig = editingPatternForm.value || schemaByType[baseType]
+  if (!formConfig?.formItems) return common
+  let fields = formConfig.formItems.filter(f => f.name !== '__schema__')
+  // schema.decision 未含 displayName；可改名节点类型补插到 name 之后（start/end 不支持改名）
+  if (!fields.some(f => f.name === 'displayName') && baseType !== 'start' && baseType !== 'end') {
+    const idx = fields.findIndex(f => f.name === 'name')
+    const dn: FDFormItemType = { name: 'displayName', label: '显示名称', component: 'Input', componentProps: { placeholder: '请输入显示名称' } }
+    fields = [...fields.slice(0, idx + 1), dn, ...fields.slice(idx + 1)]
   }
+  return fields
 })
 
 function cancelEditPanel() {
@@ -1598,49 +1559,20 @@ function applyEditFormToTarget() {
     return
   }
   if (editingNode.value) {
-    // 节点编辑：displayName -> node.name, name 写入 properties.name
-    editingNode.value.name = editFormData.displayName
-    const baseType = editingNode.value.type.replace(props.typePrefix, '')
-    // 保留原 properties 全部字段（避免 assignmentHandler / autoExecute 等丢失）
+    // 节点编辑：字段集由 editFormFields（schema.ts 单一事实源）驱动，
+    // 新增字段无需改回写逻辑；保留原 properties 全部字段避免丢失
+    const fields = editFormFields.value
+    if (fields.some(f => f.name === 'displayName')) {
+      // start/end 无 displayName 字段，不覆盖节点名称
+      editingNode.value.name = editFormData.displayName
+    }
     const nextProps: Record<string, any> = {
       ...editingNode.value.properties,
       name: editFormData.name,
     }
-    if (baseType === 'task') {
-      nextProps.assignee = editFormData.assignee
-      nextProps.assignmentHandler = editFormData.assignmentHandler
-      nextProps.candidateUsers = editFormData.candidateUsers
-      nextProps.candidateGroups = editFormData.candidateGroups
-      nextProps.candidateHandler = editFormData.candidateHandler
-      nextProps.taskType = editFormData.taskType
-      nextProps.performType = editFormData.performType
-      nextProps.countersignType = editFormData.countersignType
-      nextProps.countersignCompletionCondition = editFormData.countersignCompletionCondition
-      nextProps.actionBtns = editFormData.actionBtns
-      nextProps.form = editFormData.form
-      nextProps.preInterceptors = editFormData.preInterceptors
-      nextProps.postInterceptors = editFormData.postInterceptors
-    } else if (baseType === 'condition') {
-      // 条件分支容器（decision 节点）属性：决策表达式 / 处理类 / 决策类 / 方法名 / 参数 / 拦截器
-      nextProps.expr = editFormData.expr
-      nextProps.handleClass = editFormData.handleClass
-      nextProps.clazz = editFormData.clazz
-      nextProps.methodName = editFormData.methodName
-      nextProps.args = editFormData.args
-      nextProps.preInterceptors = editFormData.preInterceptors
-      nextProps.postInterceptors = editFormData.postInterceptors
-    } else if (baseType === 'custom') {
-      nextProps.clazz = editFormData.clazz
-      nextProps.methodName = editFormData.methodName
-      nextProps.args = editFormData.args
-      nextProps.preInterceptors = editFormData.preInterceptors
-      nextProps.postInterceptors = editFormData.postInterceptors
-    } else if (baseType === 'subProcess') {
-      nextProps.form = editFormData.form
-      nextProps.version = editFormData.version
-    } else if (baseType === 'start' || baseType === 'end') {
-      nextProps.preInterceptors = editFormData.preInterceptors
-      nextProps.postInterceptors = editFormData.postInterceptors
+    for (const f of fields) {
+      if (f.name === 'name' || f.name === 'displayName') continue
+      nextProps[f.name] = editFormData[f.name]
     }
     editingNode.value.properties = nextProps
   }
@@ -1698,6 +1630,10 @@ function handleContextmenu(_e: MouseEvent) {
 
 const showDataModal = ref(false)
 const viewDataJson = ref('')
+// FDJsonViewer 需要对象数据（与画布模式 modal.vue 同款展示：行号/折叠/语法着色）
+const viewDataObj = computed(() => {
+  try { return JSON.parse(viewDataJson.value || '{}') } catch { return {} }
+})
 const showImportModal = ref(false)
 const importDataJson = ref('')
 const importError = ref('')
@@ -1851,8 +1787,21 @@ function doImport() {
 }
 
 function copyData() {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(viewDataJson.value)
+  try {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      navigator.clipboard.writeText(viewDataJson.value)
+    } else {
+      // 非安全上下文兼容方案（与画布模式 modal.vue 一致）
+      const textarea = document.createElement('textarea')
+      textarea.value = viewDataJson.value
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
+    FDMessage.success('复制成功')
+  } catch (err) {
+    FDMessage.error(`复制失败: ${err instanceof Error ? err.message : String(err)}`)
   }
 }
 

@@ -1057,6 +1057,12 @@
   line-height: 1.5;
 }
 
+// 查看数据弹窗：FDJsonViewer 滚动容器（与画布模式 modal.vue 同款高度约束）
+.ding-modal__json {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
 
 // ─── 移动端响应式（< 768px）─────────────────────────────────────────────
 // 钉钉模式 220px 节点卡片在 375px 手机视口下会严重溢出，
