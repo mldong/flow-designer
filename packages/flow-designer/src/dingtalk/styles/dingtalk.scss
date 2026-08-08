@@ -886,11 +886,28 @@
   margin-bottom: 16px;
 
   &__label {
-    display: block;
+    display: flex;
+    align-items: center;
     font-size: 13px;
     color: var(--ding-text-color);
     margin-bottom: 6px;
     font-weight: 500;
+  }
+
+  &__help {
+    margin-left: 4px;
+    line-height: 0;
+
+    img {
+      width: 14px;
+      height: 14px;
+      opacity: 0.45;
+      cursor: help;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
   }
 
   &__input {

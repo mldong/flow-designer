@@ -1,5 +1,5 @@
 <template>
-  <div class="fd-tooltip" @mouseenter="show" @mouseleave="hide" @focusin="show" @focusout="hide">
+  <div class="fd-tooltip" ref="triggerRef" @mouseenter="show" @mouseleave="hide" @focusin="show" @focusout="hide">
     <slot />
     <Teleport to="body">
       <transition name="fd-tooltip-fade">
@@ -36,15 +36,16 @@ const props = withDefaults(defineProps<{
 })
 
 const visible = ref(false)
+const triggerRef = ref<HTMLElement | null>(null)
 const popupRef = ref<HTMLElement | null>(null)
 const popupPos = ref({ x: 0, y: 0 })
 
-function show(e: MouseEvent | FocusEvent) {
+function show(_e: MouseEvent | FocusEvent) {
   visible.value = true
   nextTick(() => {
-    if (!popupRef.value) return
-    const target = (e.currentTarget as HTMLElement)
-    const rect = target.getBoundingClientRect()
+    if (!popupRef.value || !triggerRef.value) return
+    // 用根元素 ref 定位触发器：e.currentTarget 在事件分发结束后会被置 null，不能在 nextTick 里读
+    const rect = triggerRef.value.getBoundingClientRect()
     const popup = popupRef.value.getBoundingClientRect()
     const vw = window.innerWidth
     const vh = window.innerHeight

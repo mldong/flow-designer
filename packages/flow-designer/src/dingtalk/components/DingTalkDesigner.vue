@@ -58,7 +58,18 @@
       @cancel="cancelEditPanel"
     >
       <div class="ding-form-item" v-for="field in editFormFields" :key="field.name">
-        <label class="ding-form-item__label">{{ field.label }}</label>
+        <label class="ding-form-item__label">
+          {{ field.label }}
+          <FDTooltip v-if="field.helpMessage" class="ding-form-item__help">
+            <template #content>
+              <template v-if="Array.isArray(field.helpMessage)">
+                <div v-for="(msg, i) in field.helpMessage" :key="i">{{ msg }}</div>
+              </template>
+              <template v-else>{{ field.helpMessage }}</template>
+            </template>
+            <img :src="QuestionSvg" />
+          </FDTooltip>
+        </label>
         <template v-if="field.component === 'Select'">
           <FDSelect
             v-model="editFormData[field.name]"
@@ -107,7 +118,18 @@
       @cancel="closeProcessDrawer"
     >
       <div class="ding-form-item" v-for="field in processFormFields" :key="field.name">
-        <label class="ding-form-item__label">{{ field.label || field.name }}</label>
+        <label class="ding-form-item__label">
+          {{ field.label || field.name }}
+          <FDTooltip v-if="field.helpMessage" class="ding-form-item__help">
+            <template #content>
+              <template v-if="Array.isArray(field.helpMessage)">
+                <div v-for="(msg, i) in field.helpMessage" :key="i">{{ msg }}</div>
+              </template>
+              <template v-else>{{ field.helpMessage }}</template>
+            </template>
+            <img :src="QuestionSvg" />
+          </FDTooltip>
+        </label>
         <FDInput
           v-if="!field.component || field.component === 'Input'"
           v-model="processFormData[field.name]"
@@ -135,7 +157,9 @@ import { graphToTree, treeToGraph } from '../utils/converter'
 import { DEFAULT_FLOW_NODES, DEFAULT_FLOW_EDGES } from '../data/default-flow'
 import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
-import { FDModal, FDDrawer, FDInput, FDSelect, FDTextarea } from '../../ui/fd'
+import { FDModal, FDDrawer, FDInput, FDSelect, FDTextarea, FDTooltip } from '../../ui/fd'
+import QuestionSvg from '../../assets/question.svg'
+import * as schema from '../../plugins/schema'
 import '../styles/dingtalk.scss'
 
 const props = defineProps({
@@ -1037,8 +1061,15 @@ function handleEditNode(node: DingNode) {
   editFormData.name = node.properties?.name || node.id
   editFormData.displayName = node.name || ''
   editFormData.assignee = node.properties?.assignee || ''
+  editFormData.assignmentHandler = node.properties?.assignmentHandler || ''
+  editFormData.candidateUsers = node.properties?.candidateUsers || ''
+  editFormData.candidateGroups = node.properties?.candidateGroups || ''
+  editFormData.candidateHandler = node.properties?.candidateHandler || ''
   editFormData.taskType = node.properties?.taskType || ''
   editFormData.performType = node.properties?.performType || ''
+  editFormData.countersignType = node.properties?.countersignType || 'PARALLEL'
+  editFormData.countersignCompletionCondition = node.properties?.countersignCompletionCondition || ''
+  editFormData.actionBtns = node.properties?.actionBtns || ''
   editFormData.callback = node.properties?.callback || ''
   editFormData.clazz = node.properties?.clazz || ''
   editFormData.methodName = node.properties?.methodName || ''
@@ -1486,8 +1517,15 @@ const editFormData = reactive<Record<string, string>>({
   name: '',
   displayName: '',
   assignee: '',
+  assignmentHandler: '',
+  candidateUsers: '',
+  candidateGroups: '',
+  candidateHandler: '',
   taskType: '',
   performType: '',
+  countersignType: '',
+  countersignCompletionCondition: '',
+  actionBtns: '',
   callback: '',
   clazz: '',
   methodName: '',
@@ -1550,8 +1588,15 @@ const editFormFields = computed<FDFormItemType[]>(() => {
       return [
         ...common,
         { name: 'assignee', label: '参与人', component: 'Input', componentProps: { placeholder: '请输入参与人' } },
+        { name: 'assignmentHandler', label: '参与人处理类', component: 'Input', componentProps: { placeholder: '请输入参与人处理类' } },
+        { name: 'candidateUsers', label: '候选用户', component: 'Input', componentProps: { placeholder: '请输入候选用户（多个用逗号分隔）' } },
+        { name: 'candidateGroups', label: '候选用户组', component: 'Input', componentProps: { placeholder: '请输入候选用户组（多个用逗号分隔）' } },
+        { name: 'candidateHandler', label: '候选用户处理类', component: 'Input', componentProps: { placeholder: '请输入候选用户处理类' } },
         { name: 'taskType', label: '任务类型', component: 'Select', componentProps: { placeholder: '请选择任务类型', options: [{ label: '主办', value: 'Major' }, { label: '协办', value: 'Aidant' }] } },
         { name: 'performType', label: '参与类型', component: 'Select', componentProps: { placeholder: '请选择参与类型', options: [{ label: '普通参与', value: 'ANY' }, { label: '会签参与', value: 'ALL' }] } },
+        { name: 'countersignType', label: '会签类型', component: 'Select', componentProps: { placeholder: '请选择会签类型', options: [{ label: '并行会签', value: 'PARALLEL' }, { label: '顺序会签', value: 'SEQUENTIAL' }] } },
+        { name: 'countersignCompletionCondition', label: '会签完成条件', component: 'Input', componentProps: { placeholder: '请输入会签完成条件' } },
+        { name: 'actionBtns', label: '操作按钮', component: 'Input', componentProps: { placeholder: '如 AGREE,REJECT,ROLLBACK' } },
         { name: 'form', label: '表单', component: 'Input', componentProps: { placeholder: '请输入表单' } },
         { name: 'preInterceptors', label: '前置拦截器', component: 'Input', componentProps: { placeholder: '请输入前置拦截器' } },
         { name: 'postInterceptors', label: '后置拦截器', component: 'Input', componentProps: { placeholder: '请输入后置拦截器' } },
@@ -1614,8 +1659,15 @@ function applyEditFormToTarget() {
     }
     if (baseType === 'task') {
       nextProps.assignee = editFormData.assignee
+      nextProps.assignmentHandler = editFormData.assignmentHandler
+      nextProps.candidateUsers = editFormData.candidateUsers
+      nextProps.candidateGroups = editFormData.candidateGroups
+      nextProps.candidateHandler = editFormData.candidateHandler
       nextProps.taskType = editFormData.taskType
       nextProps.performType = editFormData.performType
+      nextProps.countersignType = editFormData.countersignType
+      nextProps.countersignCompletionCondition = editFormData.countersignCompletionCondition
+      nextProps.actionBtns = editFormData.actionBtns
       nextProps.form = editFormData.form
       nextProps.preInterceptors = editFormData.preInterceptors
       nextProps.postInterceptors = editFormData.postInterceptors
@@ -1663,10 +1715,11 @@ watch(
 function handleContextmenu(_e: MouseEvent) {
   if (props.viewer) return
 
-  // 获取当前流程属性
+  // 获取当前流程属性（未传 processForm 时 fallback 内置 schema.process，与画布模式一致）
+  const processFormConfig: FDFormType = props.processForm || schema.process
   const processProperties: Record<string, any> = {}
-  if (props.processForm?.formItems) {
-    for (const item of props.processForm.formItems) {
+  if (processFormConfig?.formItems) {
+    for (const item of processFormConfig.formItems) {
       if (props.value && Object.prototype.hasOwnProperty.call(props.value, item.name)) {
         processProperties[item.name] = (props.value as any)[item.name]
       }
@@ -1678,7 +1731,7 @@ function handleContextmenu(_e: MouseEvent) {
       type: 'process',
       properties: processProperties
     },
-    patternItem: { form: props.processForm },
+    patternItem: { form: processFormConfig },
     lf: designerApi,
   }
 
@@ -1704,8 +1757,10 @@ const importError = ref('')
 const showProcessDrawer = ref(false)
 const processFormData = reactive<Record<string, any>>({})
 const processFormFields = computed<FDFormItemType[]>(() => {
-  if (!props.processForm?.formItems) return []
-  return props.processForm.formItems.filter(f => f.name !== '__schema__')
+  // 未传 processForm 时 fallback 内置 schema.process，与画布模式行为对齐
+  const formItems = (props.processForm || schema.process)?.formItems
+  if (!formItems) return []
+  return formItems.filter(f => f.name !== '__schema__')
 })
 
 function openProcessDrawer() {
