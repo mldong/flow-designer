@@ -128,7 +128,7 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 3px;
     border-radius: var(--ding-card-radius) 0 0 var(--ding-card-radius);
     background-color: var(--ding-primary-color);
   }
@@ -137,10 +137,10 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 12px 6px 16px;
+    padding: 8px 12px 2px 14px;
     font-size: 12px;
     color: var(--ding-text-secondary);
-    min-height: 28px;
+    min-height: 26px;
   }
 
   &__icon {
@@ -193,9 +193,9 @@
   }
 
   &__body {
-    padding: 4px 12px 12px 16px;
+    padding: 4px 12px 10px 14px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--ding-text-color);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -229,7 +229,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 0 12px 10px 16px;
+    padding: 0 12px 10px 14px;
   }
 
   &__member {
@@ -598,7 +598,7 @@
     background: var(--ding-card-bg);
     border-radius: 6px;
     border: 1px solid var(--ding-border-color);
-    margin-bottom: 0;
+    margin-bottom: 6px;
     width: var(--ding-card-width);
     box-sizing: border-box;
     text-align: center;
