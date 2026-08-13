@@ -878,7 +878,8 @@ function handleAddNode(nodeType: string, afterNode: DingNode | null) {
 /**
  * 节点是否可删除检查器（用于控制 × 按钮显示）
  * - protectedIds（受保护节点）→ false
- * - willEmptyBranch（2 条分支时删 task 让分支变空）→ false
+ * - willEmptyBranch（并行分支 2 条时删 task 让分支变空）→ false
+ * - 条件分支允许空分支（直通路径），不拦截
  */
 function canDeleteNode(node: DingNode): boolean {
   if (!treeData.value) return true
@@ -894,7 +895,8 @@ function canDeleteNode(node: DingNode): boolean {
  * - 并行容器：调用 removeForkContainerById 把 joinChildren 接续到所在位置
  *
  * 额外保护：
- * - 条件/fork 容器只有 2 条分支时，禁止删除会让分支变空的 task（避免"孤儿边"）
+ * - 条件分支：允许空分支（直通路径），不拦截删除
+ * - 并行分支（fork）只有 2 条分支时，禁止删除会让分支变空的 task（避免空并行）
  */
 function handleDeleteNode(node: DingNode) {
   if (!treeData.value) return
@@ -906,10 +908,10 @@ function handleDeleteNode(node: DingNode) {
     return
   }
   if (baseType === 'start' || baseType === 'end') return
-  // 仅 2 条分支时禁止删 task（避免出现孤儿边）
+  // 并行分支仅 2 条时禁止删 task（避免出现空并行）；条件分支允许空分支
   if (willEmptyBranch(treeData.value, node.id)) {
     // eslint-disable-next-line no-console
-    console.warn('[DingTalkDesigner] 分支只有 2 条，不允许删除会让分支变空的任务：', node.id)
+    console.warn('[DingTalkDesigner] 并行分支只有 2 条，不允许删除会让分支变空的任务：', node.id)
     return
   }
   if (isConditionNode(node)) {
@@ -925,28 +927,22 @@ function handleDeleteNode(node: DingNode) {
 }
 
 /**
- * 检查删除 target 后是否会让某个 2 条分支的条件/fork 容器出现"孤儿边"
+ * 检查删除 target 后是否会让某个 2 条分支的并行（fork）容器出现空分支
  * 即 target 是某 branch.children 的首节点且没有 children（删了就变空）
+ *
+ * 条件分支（condition）允许空分支（直通路径），不在此拦截；
+ * 仅并行分支（fork）保留此约束，避免空并行路径。
  */
 function willEmptyBranch(root: DingNode, targetId: string): boolean {
   function check(node: DingNode): boolean {
+    // 条件分支：允许空分支（直通路径），仅递归检查嵌套
     if (isConditionNode(node)) {
       const cond = node as DingConditionNode
-      if (cond.branches.length === 2) {
-        for (const branch of cond.branches) {
-          if (
-            branch.children &&
-            branch.children.id === targetId &&
-            !branch.children.children
-          ) {
-            return true
-          }
-        }
-      }
       for (const b of cond.branches) {
         if (b.children && check(b.children)) return true
       }
     }
+    // 并行分支：保留原有约束（2 条时禁止删空）
     if (isForkNode(node)) {
       const fork = node as DingForkNode
       if (fork.branches.length === 2) {
@@ -1248,7 +1244,7 @@ function removeNode(root: DingNode, targetId: string): boolean {
 
 /**
  * 清理空的 branch（条件/fork 容器的分支）
- * 规则：分支数 > 2 时空 branch 自动删除；= 2 时保留以保护最少 2 条边约束
+ * 规则：分支数 > 2 时空 branch 自动删除；= 2 时保留（条件分支保留空分支作为直通路径，并行分支保留以防误删）
  */
 function cleanupEmptyBranches(root: DingNode | undefined) {
   if (!root) return
