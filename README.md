@@ -252,6 +252,9 @@ t('fd.dnd.task.label')                              // 取单条文案，支持 
   `options[].value`、`defaultValue` 等会写进图数据或流程定义 JSON，任何语种下都保持原值——
   切语言不会改写已保存的流程，新建节点也按创建时的语种取 `label`。
 - 缺 key 时回落 zh-CN 并打印一次告警；zh-CN 也没有则原样返回 key。
+- 切换语种的生效范围：表单、卡片、抽屉标题、钉钉模式控制条等 computed 渲染处即时更新；
+  canvas 模式的 LogicFlow 拖拽面板与右键菜单在插件初始化时求值，需要重挂载设计器组件
+  （宿主按整页刷新处理语种切换的场景无需额外处理）。
 - 表单标签列宽随语种变化（英文更长且标签不换行），值放在词条 `fd.labelWidth.*` 里；
   自定义 `processForm` 时如需对齐，一并传 `labelWidth`。
 - 内置词条表 `FD_MESSAGES_ZH` / `FD_MESSAGES_EN` 已导出，宿主可直接并入自己的语言包。

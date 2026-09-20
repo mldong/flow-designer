@@ -124,7 +124,8 @@ onBeforeUnmount(() => {
   mobilePreviewObserver = null
 })
 
-const defaultControl: FDControlItem[] = [
+// 放在 computed 依赖里求值，切语种后无需重挂载即可更新按钮文案
+const defaultControl = computed<FDControlItem[]>(() => [
   {
     key: 'save',
     iconClass: 'ding-icon-save',
@@ -160,12 +161,12 @@ const defaultControl: FDControlItem[] = [
     text: t('fd.control.fullscreen.text'),
     sort: 100,
   },
-]
+])
 
 const mergedItems = computed<FDControlItem[]>(() => {
   if (!props.initControl) return props.control || []
 
-  let items = [...defaultControl]
+  let items = [...defaultControl.value]
 
   // 合并外部 control 配置
   if (props.control && props.control.length > 0) {
