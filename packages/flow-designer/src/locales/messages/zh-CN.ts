@@ -126,6 +126,10 @@ const zhCN: FDMessages = {
   'fd.control.fullscreen.exit': '退出全屏',
   'fd.menu.delete': '删除',
 
+  // LogicFlow 连线校验提示（画布上会弹给操作者）
+  'fd.rule.startTarget': '开始节点不能是边的目标节点',
+  'fd.rule.endSource': '结束节点不能是边的开始节点',
+
   // FD 基础组件内置文案
   'fd.select.placeholder': '请选择',
   'fd.select.empty': '暂无选项',
@@ -173,7 +177,6 @@ const zhCN: FDMessages = {
   'fd.ding.node.approval': '审批节点',
   'fd.ding.node.custom': '自定义节点',
   'fd.ding.node.task': '任务',
-  'fd.ding.node.new': '新节点',
   'fd.ding.node.unknown': '未知',
   'fd.ding.node.merge': '合并节点',
   'fd.ding.node.mergePoint': '合并点',

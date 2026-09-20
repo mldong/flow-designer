@@ -66,6 +66,13 @@ const enUS: FDMessages = {
   'fd.help.candidateGroups': 'Separate groups with commas',
   'fd.help.countersignType': 'Applies when perform type is countersign',
   'fd.help.relTableName': 'Table the business data is written to when the process ends; defaults to the process code when empty',
+  'fd.help.countersignCompletionCondition': 'Applies when perform type is countersign, e.g. {nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
+  'fd.help.actionBtns.1': 'Separate buttons with commas. Normal participation accepts {AGREE} / {REJECT} / {ROLLBACK} (back one step) / {ROLLBACK_TO_OPERATOR} (back to initiator) / {JUMP}',
+  'fd.help.actionBtns.2': 'Countersign participation accepts {AGREE} / {COUNTERSIGN_DISAGREE} / {ADD_CANDIDATE}',
+  'fd.help.instanceUrl': 'For a metadata form, the data model table name must match the process code',
+  'fd.help.enableFieldPerm': 'When enabled, task nodes can mark fields as read-only, editable or hidden',
+  'fd.help.persistMode': '{ARCHIVE} = write once when the process ends (default); {SYNC} = write on start, update per node, finalize on end. Requires the {PersistPostInterceptor} post-interceptor',
+  'fd.help.selectUserApi': 'Applies when "pick assignees on start" is "{yes}". POST only, following the common dropdown API convention',
 
   'fd.opt.major': 'Primary',
   'fd.opt.aidant': 'Assistant',
@@ -115,6 +122,9 @@ const enUS: FDMessages = {
   'fd.control.fullscreen.exit': 'Exit',
   'fd.menu.delete': 'Delete',
 
+  'fd.rule.startTarget': 'A start node cannot be the target of an edge',
+  'fd.rule.endSource': 'An end node cannot be the source of an edge',
+
   'fd.select.placeholder': 'Select',
   'fd.select.empty': 'No options',
   'fd.ui.cancel': 'Cancel',
@@ -158,7 +168,6 @@ const enUS: FDMessages = {
   'fd.ding.node.approval': 'Approval',
   'fd.ding.node.custom': 'Custom node',
   'fd.ding.node.task': 'Task',
-  'fd.ding.node.new': 'New node',
   'fd.ding.node.unknown': 'Unknown',
   'fd.ding.node.merge': 'Merge node',
   'fd.ding.node.mergePoint': 'Merge point',
