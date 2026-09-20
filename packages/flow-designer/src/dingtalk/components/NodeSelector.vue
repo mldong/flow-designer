@@ -10,21 +10,21 @@
         <span :class="['ding-node-selector__item__icon', getIconClass(item)]">
           {{ getIconText(item) }}
         </span>
-        <span>{{ item.label || item.text || getDefaultLabel(item) }}</span>
+        <span>{{ resolveText(item.label) || resolveText(item.text) || getDefaultLabel(item) }}</span>
       </div>
       <!-- 条件分支选项 -->
       <div class="ding-node-selector__item" @click="handleSelectCondition">
         <span class="ding-node-selector__item__icon ding-node-selector__item__icon--condition">
           &#x2726;
         </span>
-        <span>条件分支</span>
+        <span>{{ t('fd.ding.branch.condition') }}</span>
       </div>
       <!-- 并行分支选项 -->
       <div class="ding-node-selector__item" @click="handleSelectParallel">
         <span class="ding-node-selector__item__icon ding-node-selector__item__icon--parallel">
           &#x2263;
         </span>
-        <span>并行分支</span>
+        <span>{{ t('fd.ding.branch.parallel') }}</span>
       </div>
     </div>
   </div>
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import type { FDPatternItem } from '../../types'
+import { resolveText, t } from '../../locales'
 
 const props = defineProps<{
   visible: boolean
@@ -80,14 +81,14 @@ function getIconText(item: FDPatternItem) {
   }
 }
 
-/** 兜底中文标签（type → 名称映射，兼容 canvas 模式 dndPanel 无 label 的写法） */
+/** 兜底显示标签（type → 名称映射，兼容 canvas 模式 dndPanel 无 label 的写法） */
 function getDefaultLabel(item: FDPatternItem) {
-  if (!item.type) return '未知'
+  if (!item.type) return t('fd.ding.node.unknown')
   const baseType = item.type.replace(props.typePrefix, '')
   switch (baseType) {
-    case 'task': return '审批节点'
-    case 'custom': return '自定义节点'
-    case 'subProcess': return '子流程'
+    case 'task': return t('fd.ding.node.approval')
+    case 'custom': return t('fd.ding.node.custom')
+    case 'subProcess': return t('fd.dnd.subProcess.label')
     default: return item.type
   }
 }

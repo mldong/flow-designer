@@ -4,7 +4,7 @@
     <button
       v-if="isMobile"
       class="ding-control-panel__mobile-toggle"
-      :title="mobileOpen ? '收起操作' : '展开操作'"
+      :title="mobileOpen ? t('fd.control.mobile.collapse') : t('fd.control.mobile.expand')"
       @click.stop="toggleMobile"
     >
       <svg v-if="!mobileOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, PropType } from 'vue'
 import type { FDControlItem } from '../../types'
+import { t } from '../../locales'
 
 const props = defineProps({
   initControl: {
@@ -123,48 +124,49 @@ onBeforeUnmount(() => {
   mobilePreviewObserver = null
 })
 
-const defaultControl: FDControlItem[] = [
+// 放在 computed 依赖里求值，切语种后无需重挂载即可更新按钮文案
+const defaultControl = computed<FDControlItem[]>(() => [
   {
     key: 'save',
     iconClass: 'ding-icon-save',
-    title: '保存',
-    text: '保存',
+    title: t('fd.control.save.text'),
+    text: t('fd.control.save.text'),
     sort: 90,
   },
   {
     key: 'clear',
     iconClass: 'ding-icon-clear',
-    title: '清空',
-    text: '清空',
+    title: t('fd.control.clear.text'),
+    text: t('fd.control.clear.text'),
     sort: 60,
   },
   {
     key: 'see',
     iconClass: 'ding-icon-see',
-    title: '查看数据',
-    text: '查看数据',
+    title: t('fd.control.seeData.text'),
+    text: t('fd.control.seeData.text'),
     sort: 70,
   },
   {
     key: 'import',
     iconClass: 'ding-icon-import',
-    title: '导入',
-    text: '导入',
+    title: t('fd.control.import.text'),
+    text: t('fd.control.import.text'),
     sort: 80,
   },
   {
     key: 'fullscreen',
     iconClass: 'ding-icon-fullscreen',
-    title: '全屏',
-    text: '全屏',
+    title: t('fd.control.fullscreen.text'),
+    text: t('fd.control.fullscreen.text'),
     sort: 100,
   },
-]
+])
 
 const mergedItems = computed<FDControlItem[]>(() => {
   if (!props.initControl) return props.control || []
 
-  let items = [...defaultControl]
+  let items = [...defaultControl.value]
 
   // 合并外部 control 配置
   if (props.control && props.control.length > 0) {

@@ -32,8 +32,8 @@
       :key="'canvas'"
       style="display: flex; flex-direction: column; width: 100%; height: 100%"
     >
-      <MDrawer ref="drawerRef" title="我是抽屉" :width="drawerWidth"></MDrawer>
-      <MModal ref="modalRef" title="我是弹窗" :width="modalWidth"></MModal>
+      <MDrawer ref="drawerRef" :title="t('fd.drawer.title.attr')" :width="drawerWidth"></MDrawer>
+      <MModal ref="modalRef" :title="t('fd.control.see.title')" :width="modalWidth"></MModal>
       <div ref="container" style="flex: 1; min-height: 0"></div>
     </div>
   </div>
@@ -49,6 +49,7 @@ import Flow from './plugins/Flow';
 import './plugins/flow.css'
 import type {  FDHighLightType } from './types';
 import { MldongFlowDesignerProps } from './types/props'
+import { bindFDLocaleProps, t } from './locales'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
@@ -58,6 +59,7 @@ const isFullscreen = ref(false);
 const drawerRef = ref()
 const modalRef = ref()
 const props = defineProps(MldongFlowDesignerProps)
+bindFDLocaleProps(props)
 
 // 计算当前渲染模式
 const currentMode = computed(() => {
@@ -80,7 +82,7 @@ const updateFullscreenControl = () => {
       // 只修改全屏按钮的文本
       const textElement = parentItem.querySelector('.lf-control-text');
       if (textElement) {
-        textElement.textContent = isFullscreen.value ? '退出全屏' : '全屏';
+        textElement.textContent = isFullscreen.value ? t('fd.control.fullscreen.exit') : t('fd.control.fullscreen.enter');
       }
       
       // 更新图标类名

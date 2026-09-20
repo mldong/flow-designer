@@ -13,6 +13,7 @@ import SubProcessSvg from './../assets/subProcess.svg'
 import { FDControlItem, FDFormItemType, FDPatternItem } from '../types';
 import * as schema from './schema'
 import { NodeTypeEnum } from '../types/enums';
+import { t } from '../locales'
 LogicFlow.use(DndPanel)
 LogicFlow.use(Control)
 LogicFlow.use(Menu)
@@ -27,53 +28,54 @@ class Flow {
   dndPanel:Array<FDPatternItem> = []
   static pluginName = 'flow'
   static defaultEdgeType = 'snaker:transition'
+  // label 是面板显示名（lf-dnd-text，可译）；text 是拖出节点时写入图数据的默认名（不译）
   defaultDndPanel: Array<FDPatternItem>= [
     {
       type: 'start',
       text: '开始',
-      label: '开始节点',
+      label: t('fd.dnd.start.label'),
       icon: StartSvg,
     },
     {
       type: 'task',
-      label: '用户任务',
+      label: t('fd.dnd.task.label'),
       text: '用户任务',
       icon: UserTaskSvg
     },
     {
       type: 'custom',
-      label: '自定义任务',
+      label: t('fd.dnd.custom.label'),
       text: '自定义任务',
       icon: CustomSvg
     },
     {
       type: 'decision',
-      label: '条件判断',
+      label: t('fd.dnd.decision.label'),
       text: '条件判断',
       icon: DecisionSvg
     },
     {
       type: 'fork',
-      label: '分支',
+      label: t('fd.dnd.fork.label'),
       text: '分支',
       icon: ForkSvg
     },
     {
       type: 'join',
-      label: '合并',
+      label: t('fd.dnd.join.label'),
       text: '合并',
       icon: JoinSvg
     },
     {
       type: 'subProcess',
-      label: '子流程',
+      label: t('fd.dnd.subProcess.label'),
       text: '子流程',
       icon: SubProcessSvg
     },
     {
       type: 'end',
       text: '结束',
-      label: '结束节点',
+      label: t('fd.dnd.end.label'),
       icon: EndSvg,
     }
   ]
@@ -82,8 +84,8 @@ class Flow {
     {
       key: 'zoom-out',
       iconClass: 'lf-control-zoomOut',
-      title: '缩小流程图',
-      text: '缩小',
+      title: t('fd.control.zoomOut.title'),
+      text: t('fd.control.zoomOut.text'),
       sort: 10,
       onClick: () => {
         this.lf.zoom(false);
@@ -92,9 +94,9 @@ class Flow {
     {
       key: 'zoom-in',
       iconClass: 'lf-control-zoomIn',
-      title: '放大流程图',
+      title: t('fd.control.zoomIn.title'),
       sort: 20,
-      text: '放大',
+      text: t('fd.control.zoomIn.text'),
       onClick: () => {
         this.lf.zoom(true);
       },
@@ -102,8 +104,8 @@ class Flow {
     {
       key: 'reset',
       iconClass: 'lf-control-fit',
-      title: '恢复流程原有尺寸',
-      text: '适应',
+      title: t('fd.control.fit.title'),
+      text: t('fd.control.fit.text'),
       sort: 30,
       onClick: () => {
         this.lf.resetZoom();
@@ -112,8 +114,8 @@ class Flow {
     {
       key: 'auto-layout',
       iconClass: 'lf-control-auto-layout', // 需要添加对应的CSS类
-      title: '自动布局',
-      text: '自动布局',
+      title: t('fd.control.autoLayout.title'),
+      text: t('fd.control.autoLayout.text'),
       sort: 35, // 放在适应(30)之后，上一步(40)之前
       onClick: () => {
         // 先应用布局
@@ -123,8 +125,8 @@ class Flow {
     {
       key: 'undo',
       iconClass: 'lf-control-undo',
-      title: '回到上一步',
-      text: '上一步',
+      title: t('fd.control.undo.title'),
+      text: t('fd.control.undo.text'),
       sort: 40,
       onClick: () => {
         this.lf.undo();
@@ -133,9 +135,9 @@ class Flow {
     {
       key: 'redo',
       iconClass: 'lf-control-redo',
-      title: '移到下一步',
+      title: t('fd.control.redo.title'),
       sort: 50,
-      text: '下一步',
+      text: t('fd.control.redo.text'),
       onClick: () => {
         this.lf.redo();
       },
@@ -143,9 +145,9 @@ class Flow {
     {
       key: 'clear',
       iconClass: 'lf-control-clear',
-      title: '清空画布',
+      title: t('fd.control.clear.title'),
       sort: 60,
-      text: '清空',
+      text: t('fd.control.clear.text'),
       onClick: () => {
         this.lf.clearData();
         (this.props.processForm || schema.process)?.formItems?.forEach((item: FDFormItemType)=>{
@@ -156,9 +158,9 @@ class Flow {
     {
       key: 'see',
       iconClass: 'lf-control-see',
-      title: '查看流程数据',
+      title: t('fd.control.see.title'),
       sort: 70,
-      text: '查看',
+      text: t('fd.control.see.text'),
       onClick: () => {
         // 弹窗
         this.props.modalRef.value?.show({
@@ -171,9 +173,9 @@ class Flow {
     {
       key: 'import',
       iconClass: 'lf-control-import',
-      title: '导入流程数据',
+      title: t('fd.control.import.title'),
       sort: 80,
-      text: '导入',
+      text: t('fd.control.import.text'),
       onClick: () => {
         // 弹窗
         this.props.modalRef.value?.show({
@@ -185,9 +187,9 @@ class Flow {
     {
       key: 'highlight',
       iconClass: 'lf-control-highlight',
-      title: '设置高亮数据',
+      title: t('fd.control.highlight.title'),
       sort: 80,
-      text: '设置高亮',
+      text: t('fd.control.highlight.text'),
       onClick: () => {
         // 弹窗
         this.props.modalRef.value?.show({
@@ -199,9 +201,9 @@ class Flow {
     {
       key: 'save',
       iconClass: 'lf-control-save',
-      title: '保存流程数据',
+      title: t('fd.control.save.title'),
       sort: 90,
-      text: '保存',
+      text: t('fd.control.save.text'),
       onClick: () => {
         const { eventCenter } = this.lf.graphModel;
         eventCenter.emit("custom:save", this.lf.getGraphData());
@@ -210,8 +212,8 @@ class Flow {
     {
       key: 'fullscreen',
       iconClass: 'lf-control-fullscreen',
-      text: '全屏',
-      title: '全屏/退出全屏',
+      text: t('fd.control.fullscreen.text'),
+      title: t('fd.control.fullscreen.title'),
       sort: 100,
       onClick: () => {
         // 调用父组件的 toggleFullscreen 方法
@@ -253,7 +255,7 @@ class Flow {
       this.lf.extension.menu.setMenuConfig({
         nodeMenu: [
           {
-            text: '删除',
+            text: t('fd.menu.delete'),
             callback: (node: any) => {
               // node为该节点数据
               this.lf.deleteNode(node.id)

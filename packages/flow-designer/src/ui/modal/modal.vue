@@ -10,16 +10,17 @@
     </div>
     <template #footer>
       <div v-if="['import', 'highlight'].includes(type)">
-        <FDButton @click="visible=false">取消</FDButton>
-        <FDButton type="primary" @click="handleSumit">确定</FDButton>
+        <FDButton @click="visible=false">{{ t('fd.ui.cancel') }}</FDButton>
+        <FDButton type="primary" @click="handleSumit">{{ t('fd.ui.confirm') }}</FDButton>
       </div>
-      <FDButton v-else type="primary" @click="handleCopy">复制</FDButton>
+      <FDButton v-else type="primary" @click="handleCopy">{{ t('fd.ui.copy') }}</FDButton>
     </template>
   </FDModal>
 </template>
 <script setup lang="ts">
 import { ref, PropType, watch } from 'vue';
 import { FDModal, FDTextarea, FDButton, FDJsonViewer, FDMessage } from '../fd';
+import { t } from '../../locales'
 const visible = ref(false)
 const props = defineProps({
   title: { // 标题
@@ -47,9 +48,9 @@ const handleCopy = async () => {
       document.execCommand('copy')
       document.body.removeChild(textarea)
     }
-    FDMessage.success('复制成功')
+    FDMessage.success(t('fd.ui.copied'))
   } catch (err) {
-    FDMessage.error(`复制失败: ${err instanceof Error ? err.message : String(err)}`)
+    FDMessage.error(`${t('fd.ui.copyFailed')}: ${err instanceof Error ? err.message : String(err)}`)
   }
 }
 const handleSumit = () =>{
@@ -60,14 +61,14 @@ const handleSumit = () =>{
     // 触发自定义的update:graphData
     if(type.value == 'import') {
       eventCenter.emit("update:graphData", jsonObj);
-      FDMessage.success('导入成功')
+      FDMessage.success(t('fd.modal.imported'))
     } else if(type.value == 'highlight') {
       eventCenter.emit("update:highlight", jsonObj);
-      FDMessage.success('设置高亮成功')
+      FDMessage.success(t('fd.modal.highlighted'))
     }
     visible.value = false
   } catch(err) {
-    FDMessage.error('数据格式错误')
+    FDMessage.error(t('fd.modal.badJson'))
     return
   }
   
@@ -77,11 +78,11 @@ defineExpose({
     type.value = e.type
     lf.value = e.lf
     if(e.type == 'import') {
-      mTitle.value = "导入流程数据"
+      mTitle.value = t('fd.control.import.title')
     } else if (e.type == 'highlight') {
-      mTitle.value = "设置高亮数据"
+      mTitle.value = t('fd.control.highlight.title')
     } else {
-      mTitle.value = "查看流程数据"
+      mTitle.value = t('fd.control.see.title')
     }
     graphData.value = e.graphData
     visible.value = true

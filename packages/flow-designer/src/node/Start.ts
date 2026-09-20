@@ -1,5 +1,6 @@
 // Start.ts
 import { ColorEnum, NodeStateEnum } from "../types/enums";
+import { t } from "../locales";
 import { CircleNode, CircleNodeModel } from "@logicflow/core";
 class StartModel extends CircleNodeModel {
   setAttributes(): void {
@@ -16,7 +17,7 @@ class StartModel extends CircleNodeModel {
   getConnectedTargetRules(): any[] {
     const rules = super.getConnectedTargetRules();
     rules.push({
-      message: "开始节点不能是边的目标节点",
+      message: t('fd.rule.startTarget'),
       validate: () => false
     });
     return rules;

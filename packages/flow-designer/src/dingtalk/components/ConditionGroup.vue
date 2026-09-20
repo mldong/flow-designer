@@ -5,20 +5,20 @@
       <span
         class="ding-condition-group__title"
         :class="{ 'ding-condition-group__title--clickable': !viewer }"
-        :title="!viewer ? '点击编辑决策配置' : ''"
+        :title="!viewer ? t('fd.ding.condition.editHint') : ''"
         @click="!viewer && $emit('edit', node)"
-      >条件分支</span>
+      >{{ t('fd.ding.branch.condition') }}</span>
       <span
         v-if="!viewer"
         class="ding-condition-group__add-branch"
         @click="$emit('add-branch', node)"
       >
-        + 添加条件
+        {{ t('fd.ding.branch.addCondition') }}
       </span>
       <button
         v-if="!viewer && !protectedIdsComputed.has(node.id)"
         class="ding-condition-group__delete"
-        title="删除整个条件分支组"
+        :title="t('fd.ding.branch.deleteGroup')"
         @click="$emit('delete', node)"
       >&times;</button>
     </div>
@@ -55,6 +55,7 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import type { DingConditionNode, DingNode, DingBranch } from '../types'
 import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import BranchColumn from './BranchColumn.vue'
+import { t } from '../../locales'
 
 const props = withDefaults(defineProps<{
   node: DingConditionNode

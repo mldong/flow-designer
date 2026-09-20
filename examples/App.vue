@@ -5,6 +5,7 @@ import VbenProcessCase from './cases/VbenProcessCase.vue'
 import NodeApiCase from './cases/NodeApiCase.vue'
 import ViewerCase from './cases/ViewerCase.vue'
 import CountersignCase from './cases/CountersignCase.vue'
+import { setLocale } from '../packages/index'
 
 interface CaseItem {
   key: string
@@ -38,6 +39,16 @@ const toggleMobilePreview = () => {
 watch(isMobilePreview, (v) => {
   document.documentElement.classList.toggle('is-mobile-preview', v)
 }, { immediate: true })
+
+/**
+ * 语种开关：验证内置文案随 locale 切换。
+ * 画布模式的 LogicFlow 拖拽面板/控制条在插件构造时求值，切语种靠 :key 重挂载生效。
+ */
+const locale = ref<'zh-CN' | 'en-US'>('zh-CN')
+const toggleLocale = () => {
+  locale.value = locale.value === 'zh-CN' ? 'en-US' : 'zh-CN'
+  setLocale(locale.value)
+}
 
 // 监听 hash 变化支持直接访问指定案例
 const syncFromHash = () => {
@@ -84,6 +95,13 @@ syncFromHash()
           <span class="mobile-icon">{{ isMobilePreview ? '📱' : '📱' }}</span>
           {{ isMobilePreview ? '移动端（开）' : '移动端' }}
         </button>
+        <button
+          class="case-tab"
+          :title="locale === 'zh-CN' ? '切换到 English（重挂载设计器）' : 'Switch to 中文（remount designer）'"
+          @click="toggleLocale"
+        >
+          {{ locale === 'zh-CN' ? '中文' : 'English' }}
+        </button>
       </div>
       <a
         class="source-link"
@@ -98,7 +116,7 @@ syncFromHash()
     </nav>
     <main :class="['app-main', { 'app-main--mobile': isMobilePreview }]">
       <div class="app-main__viewport">
-        <component :is="activeCase" />
+        <component :is="activeCase" :key="`${activeKey}-${locale}`" />
       </div>
     </main>
   </div>

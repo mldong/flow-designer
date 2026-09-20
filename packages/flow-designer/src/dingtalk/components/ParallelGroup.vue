@@ -2,18 +2,18 @@
   <div class="ding-condition-group ding-parallel-group">
     <!-- 分组头部 -->
     <div class="ding-condition-group__header">
-      <span class="ding-condition-group__title">并行分支</span>
+      <span class="ding-condition-group__title">{{ t('fd.ding.branch.parallel') }}</span>
       <span
         v-if="!viewer"
         class="ding-condition-group__add-branch"
         @click="$emit('add-branch', node)"
       >
-        + 添加分支
+        {{ t('fd.ding.branch.add') }}
       </span>
       <button
         v-if="!viewer && !protectedIdsComputed.has(node.id)"
         class="ding-condition-group__delete"
-        title="删除整个并行分支组"
+        :title="t('fd.ding.branch.deleteParallelGroup')"
         @click="$emit('delete', node)"
       >&times;</button>
     </div>
@@ -29,7 +29,7 @@
         <div class="ding-branch-col__line-top"></div>
         <!-- 分支编号（并行分支无需命名，仅做位置标识，避免与条件分支的'未命名'混淆） -->
         <div class="ding-branch-col__head ding-branch-col__head--static" v-if="!viewer">
-          <span class="ding-branch-col__head-text">分支 {{ index + 1 }}</span>
+          <span class="ding-branch-col__head-text">{{ t('fd.ding.branch.item', { index: index + 1 }) }}</span>
         </div>
         <!-- 分支内容区（节点链 / 空分支占位） -->
         <div class="ding-branch-col__content">
@@ -52,7 +52,7 @@
           <template v-else>
             <!-- 空分支：显示 + 按钮 + 提示文字，发 add-to-branch 让父组件把任务写入 branch.children -->
             <div class="ding-branch-col__empty" v-if="!viewer">
-              <div class="ding-branch-col__empty-hint">点击 + 添加任务节点</div>
+              <div class="ding-branch-col__empty-hint">{{ t('fd.ding.branch.empty') }}</div>
               <AddButton
                 :viewer="viewer"
                 :type-prefix="typePrefix"
@@ -93,6 +93,7 @@ import type { DingNode, DingForkNode, DingBranch } from '../types'
 import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import NodeChain from './NodeChain.vue'
 import AddButton from './AddButton.vue'
+import { t } from '../../locales'
 
 const props = withDefaults(defineProps<{
   node: DingForkNode

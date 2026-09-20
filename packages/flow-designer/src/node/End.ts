@@ -1,5 +1,6 @@
 // End.ts
 import { ColorEnum, NodeStateEnum } from "../types/enums";
+import { t } from "../locales";
 import { CircleNode, CircleNodeModel, h } from "@logicflow/core";
 import endQSvgStr from '../assets/end-q.svg?raw'
 import { parseSvg } from '../tool'
@@ -23,7 +24,7 @@ class EndModel extends CircleNodeModel {
   getConnectedSourceRules(): any[] {
     const rules = super.getConnectedSourceRules();
     rules.push({
-      message: "结束节点不能是边的开始节点",
+      message: t('fd.rule.endSource'),
       validate: () => false
     });
     return rules;

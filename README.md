@@ -225,6 +225,41 @@ const graphData = ref({
 | viewer | boolean | false | 是否查看模式 | - |
 | dagreOptions | Object | - | [自动布局配置](https://site.logic-flow.cn/tutorial/extension/layout#%E5%B8%83%E5%B1%80%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9) | 2.0.8+ |
 | mode | `'canvas'` \| `'dingtalk'` | `'canvas'` | 渲染模式：canvas 为拖拽画布，dingtalk 为钉钉风格树形设计器 | 3.0.0+ |
+| locale | `'zh-CN'` \| `'en-US'` \| string | 不传则沿用 `setLocale` 的全局值 | 内置文案语种 | 3.2.0+ |
+| messages | `Record<FDLocale, FDMessages>` | - | 按语种覆盖/追加内置词条，如 `{ 'zh-CN': { 'fd.field.assignee': '办理人' } }` | 3.2.0+ |
+
+### 国际化（v3.2.0+）
+
+内置 zh-CN / en-US 双语，零额外依赖（peerDependencies 仍只有 vue）。语种 API 从包入口导出：
+
+```typescript
+import Designer, { setLocale, getLocale, t, extendMessages, FD_MESSAGES_ZH } from 'mldong-flow-designer-plus'
+
+setLocale('en-US')                                  // 命令式切换
+extendMessages('zh-CN', { 'fd.field.assignee': '办理人' })  // 改术语，已渲染的表单会同步更新
+t('fd.dnd.task.label')                              // 取单条文案，支持 {name} 插值
+```
+
+宿主已有 i18n 时，把宿主当前语种透传到 `locale` prop 即可，无需引入第二套翻译体系：
+
+```vue
+<Designer :locale="preferences.app.locale" />
+```
+
+约定与边界：
+
+- **只有界面文案参与翻译**。节点显示名（`dndPanel.text`、`条件1`/`分支1`、默认流程里的 `text.value`）、
+  `options[].value`、`defaultValue` 等会写进图数据或流程定义 JSON，任何语种下都保持原值——
+  切语言不会改写已保存的流程，新建节点也按创建时的语种取 `label`。
+- 缺 key 时回落 zh-CN 并打印一次告警；zh-CN 也没有则原样返回 key。
+- 切换语种的生效范围：表单、卡片、抽屉标题、钉钉模式控制条等 computed 渲染处即时更新；
+  canvas 模式的 LogicFlow 拖拽面板与右键菜单在插件初始化时求值，需要重挂载设计器组件
+  （宿主按整页刷新处理语种切换的场景无需额外处理）。
+- 表单标签列宽随语种变化（英文更长且标签不换行），值放在词条 `fd.labelWidth.*` 里；
+  自定义 `processForm` 时如需对齐，一并传 `labelWidth`。
+- 内置词条表 `FD_MESSAGES_ZH` / `FD_MESSAGES_EN` 已导出，宿主可直接并入自己的语言包。
+- 包同时提供 `lib/`（ESM/UMD）与随包发布的 `packages/` 源码，两者共用同一个语种单例
+  （挂在 `globalThis`），但请固定一种引入方式，避免两份构建产物各自打进入口。
 #### FDThemeConfig
 ```typescript
 export declare type FDThemeConfig = {

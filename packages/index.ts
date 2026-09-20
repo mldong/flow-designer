@@ -18,3 +18,18 @@ export const LogicFlowExtension = LogicFlowExt
 
 // 钉钉模式扩展 API 类型（与画布模式 lf 实例兼容命名）
 export type { FDDesignerAPI, FDEventCenter, FDEventName, FDNodeData } from './flow-designer/src/dingtalk/types/api'
+
+// 内置文案语种 API（命令式；组件上也有同名 locale / messages prop）
+export {
+  setLocale,
+  getLocale,
+  t,
+  extendMessages,
+  getMessages,
+  useFDLocale,
+  fdLabelWidth,
+  FD_MESSAGES_ZH,
+  FD_MESSAGES_EN,
+  FD_DEFAULT_LOCALE,
+} from './flow-designer/src/locales'
+export type { FDLocale, FDMessages, FDTranslateParams } from './flow-designer/src/locales'
