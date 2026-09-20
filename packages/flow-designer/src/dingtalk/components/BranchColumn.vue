@@ -3,9 +3,9 @@
     <!-- 分支顶部竖线 -->
     <div class="ding-branch-col__line-top"></div>
     <!-- 分支名称 -->
-    <div class="ding-branch-col__head" v-if="branch.name || !viewer" :title="branch.name || '点击编辑'" @click="handleEditBranch">
-      <span class="ding-branch-col__head-text">{{ branch.name || '未命名' }}</span>
-      <span class="ding-branch-col__head-edit" v-if="!viewer" title="编辑分支">
+    <div class="ding-branch-col__head" v-if="branch.name || !viewer" :title="branch.name || t('fd.ding.branch.edit')" @click="handleEditBranch">
+      <span class="ding-branch-col__head-text">{{ branch.name || t('fd.ding.branch.unnamed') }}</span>
+      <span class="ding-branch-col__head-edit" v-if="!viewer" :title="t('fd.ding.branch.editAction')">
         &#x270E;
       </span>
     </div>
@@ -47,6 +47,7 @@ import type { DingBranch, DingNode } from '../types'
 import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import AddButton from './AddButton.vue'
 import NodeChain from './NodeChain.vue'
+import { t } from '../../locales'
 
 const props = defineProps<{
   branch: DingBranch

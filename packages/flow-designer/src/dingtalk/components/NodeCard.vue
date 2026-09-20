@@ -5,7 +5,7 @@
     :class="['ding-node-pill', 'ding-node-pill--start', highlightClass, { 'is-clickable': !viewer }]"
     @click="!viewer && $emit('edit', node)"
   >
-    开始
+    {{ t('fd.ding.node.start') }}
   </div>
 
   <!-- 结束节点 -->
@@ -14,7 +14,7 @@
     :class="['ding-node-pill', 'ding-node-pill--end', highlightClass, { 'is-clickable': !viewer }]"
     @click="!viewer && $emit('edit', node)"
   >
-    结束
+    {{ t('fd.ding.node.end') }}
   </div>
 
   <!-- 合并节点（join）：与并行分支容器对称的虚线框容器 -->
@@ -24,11 +24,11 @@
     @click="!viewer && $emit('edit', node)"
   >
     <div class="ding-condition-group__header">
-      <span class="ding-condition-group__title">合并节点</span>
+      <span class="ding-condition-group__title">{{ t('fd.ding.node.merge') }}</span>
     </div>
     <div class="ding-join-marker__inner">
       <span class="ding-join-marker__dot"></span>
-      <span class="ding-join-marker__name">{{ node.name || '合并点' }}</span>
+      <span class="ding-join-marker__name">{{ node.name || t('fd.ding.node.mergePoint') }}</span>
     </div>
   </div>
 
@@ -53,15 +53,15 @@
           v-if="canDelete"
           class="ding-node-card__action-btn ding-node-card__action-btn--delete"
           @click.stop="$emit('delete', node)"
-          title="删除"
+          :title="t('fd.menu.delete')"
         >
           &times;
         </button>
       </span>
     </div>
-    <FDTooltip :title="node.name || '未命名节点'">
+    <FDTooltip :title="node.name || t('fd.ding.node.unnamed')">
       <div class="ding-node-card__body">
-        {{ node.name || '未命名节点' }}
+        {{ node.name || t('fd.ding.node.unnamed') }}
       </div>
     </FDTooltip>
     <!-- 成员列表：highLight.nodeProgress 存在时回显（已处理打勾 / 当前轮到高亮 / 未到灰色） -->
@@ -85,6 +85,7 @@ import { computed } from 'vue'
 import type { DingNode } from '../types'
 import type { FDHighLightType, FDThemeConfig } from '../../types'
 import { FDTooltip } from '../../ui/fd'
+import { t } from '../../locales'
 
 const props = withDefaults(defineProps<{
   node: DingNode
@@ -112,10 +113,10 @@ const baseType = computed(() => {
 
 const typeLabel = computed(() => {
   switch (baseType.value) {
-    case 'task': return props.depth === 1 ? '申请人' : '审批人'
-    case 'custom': return '自定义节点'
-    case 'subProcess': return '子流程'
-    default: return '任务'
+    case 'task': return props.depth === 1 ? t('fd.ding.node.applicant') : t('fd.ding.node.approver')
+    case 'custom': return t('fd.ding.node.custom')
+    case 'subProcess': return t('fd.dnd.subProcess.label')
+    default: return t('fd.ding.node.task')
   }
 })
 
@@ -157,8 +158,8 @@ const countersignType = computed<'PARALLEL' | 'SEQUENTIAL' | ''>(() => {
 })
 
 const countersignBadge = computed(() => {
-  if (countersignType.value === 'SEQUENTIAL') return '顺序会签'
-  if (countersignType.value === 'PARALLEL') return '并行会签'
+  if (countersignType.value === 'SEQUENTIAL') return t('fd.opt.csSequential')
+  if (countersignType.value === 'PARALLEL') return t('fd.opt.csParallel')
   return ''
 })
 

@@ -46,7 +46,7 @@
         />
         <!-- viewer 空状态：仅提示 -->
         <div v-else class="ding-empty">
-          <div class="ding-empty__title">暂无流程数据</div>
+          <div class="ding-empty__title">{{ t('fd.ding.empty.title') }}</div>
         </div>
       </div>
     </div>
@@ -63,9 +63,9 @@
     <!-- 查看数据弹窗 -->
     <FDModal
       v-model:visible="showDataModal"
-      title="流程数据"
-      cancel-text="关闭"
-      ok-text="复制"
+      :title="t('fd.ding.modal.dataTitle')"
+      :cancel-text="t('fd.ding.modal.close')"
+      :ok-text="t('fd.ding.modal.copy')"
       @ok="copyData"
       @cancel="showDataModal = false"
       width="600px"
@@ -78,19 +78,19 @@
     <!-- 导入数据弹窗 -->
     <FDModal
       v-model:visible="showImportModal"
-      title="导入流程数据"
+      :title="t('fd.control.import.title')"
       @ok="doImport"
       @cancel="showImportModal = false"
       width="600px"
     >
-      <FDTextarea class="ding-modal__textarea" v-model="importDataJson" placeholder="请粘贴 JSON 数据"></FDTextarea>
+      <FDTextarea class="ding-modal__textarea" v-model="importDataJson" :placeholder="t('fd.ding.modal.importPlaceholder')"></FDTextarea>
       <div v-if="importError" class="ding-modal__error">{{ importError }}</div>
     </FDModal>
 
     <!-- 流程属性抽屉（与画布模式一致：无确认/取消，修改即生效，关闭时提交 emit） -->
     <FDDrawer
       :visible="showProcessDrawer"
-      title="流程属性"
+      :title="t('fd.ding.process.title')"
       width="600px"
       :show-footer="false"
       @cancel="closeProcessDrawer"
@@ -113,7 +113,7 @@ import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
 import { FDModal, FDDrawer, FDTextarea, FDSchemaForm, FDJsonViewer, FDMessage } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
-import { fdLabelWidth } from '../../locales'
+import { fdLabelWidth, t } from '../../locales'
 import '../styles/dingtalk.scss'
 
 const props = defineProps({
@@ -188,10 +188,11 @@ const emit = defineEmits<{
 }>()
 
 // ─── 默认面板项 ─────────────────────────────────────────────────────────
+// text 是新增节点时写入图数据的默认名（不译），label 是选择器显示名（可译）
 const defaultDndPanelItems: FDPatternItem[] = [
-  { type: 'task', text: '审批人', label: '审批人' },
-  { type: 'custom', text: '自定义节点', label: '自定义节点' },
-  { type: 'subProcess', text: '子流程', label: '子流程' },
+  { type: 'task', text: '审批人', label: t('fd.ding.node.approver') },
+  { type: 'custom', text: '自定义节点', label: t('fd.ding.node.custom') },
+  { type: 'subProcess', text: '子流程', label: t('fd.dnd.subProcess.label') },
 ]
 
 const computedDndPanel = computed<FDPatternItem[]>(() => {
@@ -295,9 +296,9 @@ const computedControlItems = computed<Array<{ key: string; iconClass: string; ti
   const ext = (props.control || []) as any[]
   // 缩放/适应按钮对编辑/查看场景都有用，editor + viewer 都默认带
   const zoomItems: any[] = [
-    { key: 'ding-zoom-out', iconClass: 'ding-icon-zoom-out', title: '缩小流程图', text: '缩小', sort: 10, onClick: zoomOut },
-    { key: 'ding-zoom-in',  iconClass: 'ding-icon-zoom-in',  title: '放大流程图', text: '放大', sort: 20, onClick: zoomIn  },
-    { key: 'ding-fit',      iconClass: 'ding-icon-fit',      title: '恢复初始位置和尺寸', text: '适应', sort: 30, onClick: resetView },
+    { key: 'ding-zoom-out', iconClass: 'ding-icon-zoom-out', title: t('fd.control.zoomOut.title'), text: t('fd.control.zoomOut.text'), sort: 10, onClick: zoomOut },
+    { key: 'ding-zoom-in',  iconClass: 'ding-icon-zoom-in',  title: t('fd.control.zoomIn.title'),  text: t('fd.control.zoomIn.text'),  sort: 20, onClick: zoomIn  },
+    { key: 'ding-fit',      iconClass: 'ding-icon-fit',      title: t('fd.control.fit.dingTitle'), text: t('fd.control.fit.text'),    sort: 30, onClick: resetView },
   ]
   const merged = [...zoomItems]
   for (const e of ext) {
@@ -1433,7 +1434,7 @@ function insertForkJoinPair(afterNode: DingNode | null) {
 }
 
 /**
- * 获取节点默认名称
+ * 获取节点默认名称（写入图数据，按创建时的语种定名，不参与翻译）
  */
 function getDefaultName(nodeType: string): string {
   const baseType = nodeType.replace(props.typePrefix, '')
@@ -1480,18 +1481,18 @@ const editFormData = reactive<Record<string, string>>({
 })
 
 const editPanelTitle = computed(() => {
-  if (editingBranch.value) return '编辑分支条件'
+  if (editingBranch.value) return t('fd.ding.drawer.branch')
   if (!editingNode.value) return ''
   const baseType = editingNode.value.type.replace(props.typePrefix, '')
   switch (baseType) {
-    case 'start': return '编辑开始节点'
-    case 'end': return '编辑结束节点'
-    case 'task': return '编辑审批节点'
-    case 'custom': return '编辑自定义节点'
-    case 'subProcess': return '编辑子流程'
-    case 'condition': return '编辑条件分支（决策配置）'
-    case 'fork': return '编辑并行分支'
-    default: return '编辑节点'
+    case 'start': return t('fd.ding.drawer.start')
+    case 'end': return t('fd.ding.drawer.end')
+    case 'task': return t('fd.ding.drawer.task')
+    case 'custom': return t('fd.ding.drawer.custom')
+    case 'subProcess': return t('fd.ding.drawer.subProcess')
+    case 'condition': return t('fd.ding.drawer.condition')
+    case 'fork': return t('fd.ding.drawer.fork')
+    default: return t('fd.ding.drawer.node')
   }
 })
 
@@ -1511,19 +1512,19 @@ const editingPatternForm = ref<FDFormType | undefined>(undefined)
 const editFormFields = computed<FDFormItemType[]>(() => {
   if (editingBranch.value) {
     const fields: FDFormItemType[] = [
-      { name: 'displayName', label: '分支名称', component: 'Input', componentProps: { placeholder: '请输入分支名称' } },
+      { name: 'displayName', label: 'fd.field.branchName', component: 'Input' },
     ]
     // 只有条件分支（condition）才显示条件表达式，并行分支（parallel）不显示
     if (editingBranchType.value === 'condition') {
-      fields.push({ name: 'expr', label: '条件表达式', component: 'Input', componentProps: { placeholder: '请输入条件表达式' } })
+      fields.push({ name: 'expr', label: 'fd.field.branchExpr', component: 'Input' })
     }
     return fields
   }
   if (!editingNode.value) return []
   const baseType = editingNode.value.type.replace(props.typePrefix, '')
   const common: FDFormItemType[] = [
-    { name: 'name', label: '唯一编码', component: 'Input', componentProps: { placeholder: '请输入唯一编码' } },
-    { name: 'displayName', label: '显示名称', component: 'Input', componentProps: { placeholder: '请输入显示名称' } },
+    { name: 'name', label: 'fd.field.code', component: 'Input' },
+    { name: 'displayName', label: 'fd.field.displayName', component: 'Input' },
   ]
   const formConfig = editingPatternForm.value || schemaByType[baseType]
   if (!formConfig?.formItems) return common
@@ -1531,7 +1532,7 @@ const editFormFields = computed<FDFormItemType[]>(() => {
   // schema.decision 未含 displayName；可改名节点类型补插到 name 之后（start/end 不支持改名）
   if (!fields.some(f => f.name === 'displayName') && baseType !== 'start' && baseType !== 'end') {
     const idx = fields.findIndex(f => f.name === 'name')
-    const dn: FDFormItemType = { name: 'displayName', label: '显示名称', component: 'Input', componentProps: { placeholder: '请输入显示名称' } }
+    const dn: FDFormItemType = { name: 'displayName', label: 'fd.field.displayName', component: 'Input' }
     fields = [...fields.slice(0, idx + 1), dn, ...fields.slice(idx + 1)]
   }
   return fields
@@ -1739,16 +1740,16 @@ function doImport() {
   try {
     const data = JSON.parse(importDataJson.value)
     if (!data || typeof data !== 'object') {
-      importError.value = '导入失败：数据格式不正确'
+      importError.value = t('fd.ding.importError.format')
       return
     }
     if (!Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
-      importError.value = '导入失败：缺少 nodes 或 edges 数组'
+      importError.value = t('fd.ding.importError.shape')
       return
     }
     for (const n of data.nodes) {
       if (!n || typeof n.id !== 'string' || typeof n.type !== 'string') {
-        importError.value = '导入失败：节点缺少 id 或 type 字段'
+        importError.value = t('fd.ding.importError.nodeField')
         return
       }
     }
@@ -1759,7 +1760,7 @@ function doImport() {
         typeof e.sourceNodeId !== 'string' ||
         typeof e.targetNodeId !== 'string'
       ) {
-        importError.value = '导入失败：边缺少 id / sourceNodeId / targetNodeId 字段'
+        importError.value = t('fd.ding.importError.edgeField')
         return
       }
     }
@@ -1775,7 +1776,7 @@ function doImport() {
     treeData.value = graphToTree((newValue.nodes || []) as GraphNode[], (newValue.edges || []) as GraphEdge[], props.typePrefix)
     showImportModal.value = false
   } catch (err) {
-    importError.value = '导入失败：JSON 格式不正确'
+    importError.value = t('fd.ding.importError.json')
     // 恢复 treeData 避免脏数据
     try {
       treeData.value = JSON.parse(snapshot)
@@ -1798,9 +1799,9 @@ function copyData() {
       document.execCommand('copy')
       document.body.removeChild(textarea)
     }
-    FDMessage.success('复制成功')
+    FDMessage.success(t('fd.ding.copied'))
   } catch (err) {
-    FDMessage.error(`复制失败: ${err instanceof Error ? err.message : String(err)}`)
+    FDMessage.error(`${t('fd.ding.copyFailed')}: ${err instanceof Error ? err.message : String(err)}`)
   }
 }
 
