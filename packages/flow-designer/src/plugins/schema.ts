@@ -1,32 +1,24 @@
 import { FDFormType } from "../types";
 
 /**
- * 开始节点表单元数据
- * 
+ * 表单元数据。label / helpMessage / options[].label 写 `fd.` 词条 key，由 FDSchemaForm
+ * 渲染时解引用；name / value / defaultValue 属流程定义数据，一律保持原值不参与翻译。
+ * placeholder 仅在与「请输入/请选择 + 标签」不同构时显式给 key，否则由渲染器派生。
  */
 export const start:FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   },{
     name: "preInterceptors",
-    label: "前置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入前置拦截器'
-    }
+    label: "fd.field.preInterceptors",
+    component: 'Input'
   }, {
     name: "postInterceptors",
-    label: "后置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入后置拦截器'
-    }
+    label: "fd.field.postInterceptors",
+    component: 'Input'
   }]
 }
 
@@ -35,28 +27,19 @@ export const start:FDFormType = {
  * 
  */
 export const end:FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }, {
     name: "preInterceptors",
-    label: "前置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入前置拦截器'
-    }
+    label: "fd.field.preInterceptors",
+    component: 'Input'
   }, {
     name: "postInterceptors",
-    label: "后置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入后置拦截器'
-    }
+    label: "fd.field.postInterceptors",
+    component: 'Input'
   }]
 }
 
@@ -66,197 +49,154 @@ export const end:FDFormType = {
  */
 
 export const task:FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }, {
     name: "displayName",
-    label: "显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入显示名称'
-    }
+    label: "fd.field.displayName",
+    component: 'Input'
   }, {
     name: "preInterceptors",
-    label: "前置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入前置拦截器'
-    }
+    label: "fd.field.preInterceptors",
+    component: 'Input'
   }, {
     name: "postInterceptors",
-    label: "后置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入后置拦截器'
-    }
+    label: "fd.field.postInterceptors",
+    component: 'Input'
   }, {
     name: "form",
-    label: "表单",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入表单'
-    }
+    label: "fd.field.form",
+    component: 'Input'
   }, 
   {
     name: "assignee",
-    label: "参与人",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入参与人'
-    }
+    label: "fd.field.assignee",
+    component: 'Input'
   }, {
     name: "assignmentHandler",
-    label: "参与人处理类",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入参与人处理类'
-    }
+    label: "fd.field.assignmentHandler",
+    component: 'Input'
   }, {
     name: "candidateUsers",
-    label: "候选用户",
+    label: "fd.field.candidateUsers",
     component: 'Input',
-    helpMessage: '多个用户用英文逗号分隔',
+    helpMessage: 'fd.help.candidateUsers',
     componentProps: {
-      placeholder: '请输入候选用户（多个用逗号分隔）'
+      placeholder: 'fd.field.candidateUsers.ph'
     }
   }, {
     name: "candidateGroups",
-    label: "候选用户组",
+    label: "fd.field.candidateGroups",
     component: 'Input',
-    helpMessage: '多个用户组用英文逗号分隔',
+    helpMessage: 'fd.help.candidateGroups',
     componentProps: {
-      placeholder: '请输入候选用户组（多个用逗号分隔）'
+      placeholder: 'fd.field.candidateGroups.ph'
     }
   }, {
     name: "candidateHandler",
-    label: "候选用户处理类",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入候选用户处理类'
-    }
+    label: "fd.field.candidateHandler",
+    component: 'Input'
   }, {
     name: "taskType",
-    label: "任务类型",
+    label: "fd.field.taskType",
     component: 'Select',
     componentProps: {
-      placeholder: '请选择任务类型',
       options: [
         {
-          label: '主办',
+          label: 'fd.opt.major',
           value: 'Major'
         },
         {
-          label: '协办',
+          label: 'fd.opt.aidant',
           value: 'Aidant'
         }
       ]
     }
   }, {
     name: "performType",
-    label: "参与类型",
+    label: "fd.field.performType",
     component: 'Select',
     componentProps: {
-      placeholder: '请选择参与类型',
       options: [
         {
-          label: '普通参与',
+          label: 'fd.opt.performAny',
           value: 'ANY'
         },
         {
-          label: '会签参与',
+          label: 'fd.opt.performAll',
           value: 'ALL'
         }
       ]
     }
   }, {
     name: "countersignType",
-    label: "会签类型",
+    label: "fd.field.countersignType",
     component: 'Select',
     defaultValue: 'PARALLEL',
-    helpMessage: '参与类型为会签参与时生效',
+    helpMessage: 'fd.help.countersignType',
     componentProps: {
-      placeholder: '请选择会签类型',
       options: [
         {
-          label: '并行会签',
+          label: 'fd.opt.csParallel',
           value: 'PARALLEL'
         },
         {
-          label: '顺序会签',
+          label: 'fd.opt.csSequential',
           value: 'SEQUENTIAL'
         }
       ]
     }
   }, {
     name: "countersignCompletionCondition",
-    label: "会签完成条件",
+    label: "fd.field.countersignCompletionCondition",
     component: 'Input',
-    helpMessage: '参与类型为会签参与时生效，如：nrOfCompletedInstances/nrOfInstances >= 0.6',
-    componentProps: {
-      placeholder: '请输入会签完成条件'
-    }
+    helpMessage: 'fd.help.countersignCompletionCondition'
   }, {
     name: "actionBtns",
-    label: "操作按钮",
+    label: "fd.field.actionBtns",
     component: 'Input',
     helpMessage: [
-      '多个按钮用英文逗号分隔，普通参与可选：AGREE(同意)/REJECT(拒绝)/ROLLBACK(退回上一步)/ROLLBACK_TO_OPERATOR(退回发起人)/JUMP(跳转)',
-      '会签参与可选：AGREE(同意)/COUNTERSIGN_DISAGREE(会签不同意)/ADD_CANDIDATE(加签)'
+      'fd.help.actionBtns.1',
+      'fd.help.actionBtns.2'
     ],
     componentProps: {
-      placeholder: '如 AGREE,REJECT,ROLLBACK'
+      placeholder: 'fd.field.actionBtns.ph'
     }
   }, {
     name: "reminderTime",
-    label: "提醒时间",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入提醒时间'
-    }
+    label: "fd.field.reminderTime",
+    component: 'Input'
   }, {
     name: "reminderRepeat",
-    label: "重复提醒间隔",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入重复提醒间隔'
-    }
+    label: "fd.field.reminderRepeat",
+    component: 'Input'
   }, {
     name: "expireTime",
-    label: "期待完成时间",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入期待完成时间'
-    }
+    label: "fd.field.expireTime",
+    component: 'Input'
   }, {
     name: "autoExecute",
-    label: "是否自动完成",
+    label: "fd.field.autoExecute",
     component: 'Select',
     componentProps: {
-      placeholder: '请选择是否自动完成',
       options: [
         {
-          label: '是',
+          label: 'fd.opt.yes',
           value: 'Y'
         },
         {
-          label: '否',
+          label: 'fd.opt.no',
           value: 'N'
         }
       ]
     }
   }, {
     name: "callback",
-    label: "回调处理",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入回调处理'
-    }
+    label: "fd.field.callback",
+    component: 'Input'
   }]
 }
 /**
@@ -273,179 +213,153 @@ export const task:FDFormType = {
 "4",
  */
 export const process: FDFormType = {
-  labelWidth: '130px',
+  labelWidth: 'fd.labelWidth.wide',
   formItems: [{
     name: "name",
-    label: "流程定义唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入流程定义唯一编码'
-    }
+    label: "fd.field.processCode",
+    component: 'Input'
   }, {
     name: "displayName",
-    label: "流程定义显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入流程定义显示名称'
-    }
+    label: "fd.field.processDisplayName",
+    component: 'Input'
   },{
     name: "expireTime",
-    label: "期望完成时间",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入期望完成时间'
-    }
+    label: "fd.field.expireTimeExpected",
+    component: 'Input'
   },{
     name: "instanceUrl",
-    label: "实例启动表单",
+    label: "fd.field.instanceUrl",
     component: 'Input',
-    helpMessage: '如果为元数据表单，数据模型的表名称和流程唯一编码要保持一致',
-    componentProps: {
-      placeholder: '请输入实例启动表单'
-    }
+    helpMessage: 'fd.help.instanceUrl'
   },{
     name: "enableFieldPerm",
-    label: "启用字段权限",
+    label: "fd.field.enableFieldPerm",
     component: 'Select',
     defaultValue: 0,
-    helpMessage: '开启后，可在任务节点配置字段只读/可编辑/不可见',
+    helpMessage: 'fd.help.enableFieldPerm',
     componentProps: {
-      placeholder: '请选择是否启用字段权限',
+      placeholder: 'fd.field.enableFieldPerm.ph',
       options: [
         {
-          label: '否',
+          label: 'fd.opt.no',
           value: 0
         },
         {
-          label: '是',
+          label: 'fd.opt.yes',
           value: 1
         }
       ]
     }
   },{
     name: "instanceNoClass",
-    label: "实例编号生成类",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入实例编号生成类'
-    }
+    label: "fd.field.instanceNoClass",
+    component: 'Input'
   },{
     name: "preInterceptors",
-    label: "前置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入前置拦截器'
-    }
+    label: "fd.field.preInterceptors",
+    component: 'Input'
   }, {
     name: "postInterceptors",
-    label: "后置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入后置拦截器'
-    }
+    label: "fd.field.postInterceptors",
+    component: 'Input'
   }, {
     name: "relTableName",
-    label: "关联业务表",
+    label: "fd.field.relTableName",
     component: 'Input',
-    helpMessage: '流程结束后业务数据落库的目标表；为空时使用流程唯一编码',
+    helpMessage: 'fd.help.relTableName',
     componentProps: {
-      placeholder: '如 biz_leave'
+      placeholder: 'fd.field.relTableName.ph'
     }
   }, {
     name: "persistMode",
-    label: "持久化模式",
+    label: "fd.field.persistMode",
     component: 'Select',
     defaultValue: 'ARCHIVE',
-    helpMessage: 'ARCHIVE=结束归档（默认）；SYNC=同步演进（发起写入、节点更新、结束定稿）。需配合后置拦截器 PersistPostInterceptor 使用',
+    helpMessage: 'fd.help.persistMode',
     componentProps: {
-      placeholder: '请选择持久化模式',
       options: [
         {
-          label: '归档',
+          label: 'fd.opt.persistArchive',
           value: 'ARCHIVE'
         },
         {
-          label: '同步',
+          label: 'fd.opt.persistSync',
           value: 'SYNC'
         }
       ]
     }
   }, {
     name: "selectUserOnInitiate",
-    label: "是否发起时选人",
+    label: "fd.field.selectUserOnInitiate",
     component: 'Select',
     defaultValue: 0,
     componentProps: {
-      placeholder: '请选择是否发起时选人',
       options: [
         {
-          label: '否',
+          label: 'fd.opt.no',
           value: 0
         },
         {
-          label: '是',
+          label: 'fd.opt.yes',
           value: 1
         }
       ]
     }
   }, {
     name: "selectUserApi",
-    label: "选人接口地址",
+    label: "fd.field.selectUserApi",
     component: 'Input',
-    helpMessage: '发起时选人为"是"时生效；目前仅支持POST请求，和通用下拉接口规范一致',
-    componentProps: {
-      placeholder: '请输入选人接口地址'
-    }
+    helpMessage: 'fd.help.selectUserApi'
   }, {
     name: "enableCcActors",
-    label: "启用抄送人",
+    label: "fd.field.enableCcActors",
     component: 'Select',
     defaultValue: 0,
     componentProps: {
-      placeholder: '请选择是否启用抄送人',
+      placeholder: 'fd.field.enableCcActors.ph',
       options: [
         {
-          label: '否',
+          label: 'fd.opt.no',
           value: 0
         },
         {
-          label: '是',
+          label: 'fd.opt.yes',
           value: 1
         }
       ]
     }
   }, {
     name: "enableApplyReason",
-    label: "启用申请理由",
+    label: "fd.field.enableApplyReason",
     component: 'Select',
     defaultValue: 0,
     componentProps: {
-      placeholder: '请选择是否启用申请理由',
+      placeholder: 'fd.field.enableApplyReason.ph',
       options: [
         {
-          label: '否',
+          label: 'fd.opt.no',
           value: 0
         },
         {
-          label: '是',
+          label: 'fd.opt.yes',
           value: 1
         }
       ]
     }
   }, {
     name: "enableAttachment",
-    label: "启用附件",
+    label: "fd.field.enableAttachment",
     component: 'Select',
     defaultValue: 0,
     componentProps: {
-      placeholder: '请选择是否启用附件',
+      placeholder: 'fd.field.enableAttachment.ph',
       options: [
         {
-          label: '否',
+          label: 'fd.opt.no',
           value: 0
         },
         {
-          label: '是',
+          label: 'fd.opt.yes',
           value: 1
         }
       ]
@@ -453,197 +367,125 @@ export const process: FDFormType = {
   }]
 }
 export const subProcess: FDFormType = {
-  labelWidth: '130px',
+  labelWidth: 'fd.labelWidth.wide',
   formItems: [{
     name: "name",
-    label: "流程定义唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入流程定义唯一编码'
-    }
+    label: "fd.field.processCode",
+    component: 'Input'
   }, {
     name: "displayName",
-    label: "流程定义显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入流程定义显示名称'
-    }
+    label: "fd.field.processDisplayName",
+    component: 'Input'
   },{
     name: "form",
-    label: "表单",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入表单'
-    }
+    label: "fd.field.form",
+    component: 'Input'
   },{
     name: "version",
-    label: "版本号",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入版本号'
-    }
+    label: "fd.field.version",
+    component: 'Input'
   },]
 }
 export const decision: FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }, {
     name: "expr",
-    label: "决策表达式",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入决策表达式'
-    }
+    label: "fd.field.expr",
+    component: 'Input'
   },{
     name: "handleClass",
-    label: "处理类",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入处理类'
-    }
+    label: "fd.field.handleClass",
+    component: 'Input'
   },  {
     name: "clazz",
-    label: "类路径",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入类路径'
-    }
+    label: "fd.field.clazz",
+    component: 'Input'
   },{
     name: "methodName",
-    label: "方法名",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入方法名'
-    }
+    label: "fd.field.methodName",
+    component: 'Input'
   },{
     name: "args",
-    label: "参数变量",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入参数变量'
-    }
+    label: "fd.field.args",
+    component: 'Input'
   },{
     name: "preInterceptors",
-    label: "前置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入前置拦截器'
-    }
+    label: "fd.field.preInterceptors",
+    component: 'Input'
   }, {
     name: "postInterceptors",
-    label: "后置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入后置拦截器'
-    }
+    label: "fd.field.postInterceptors",
+    component: 'Input'
   }]
 }
 export const fork: FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }]
 }
 export const join: FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }]
 }
 export const custom: FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }, {
     name: "displayName",
-    label: "显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入显示名称'
-    }
+    label: "fd.field.displayName",
+    component: 'Input'
   }, {
     name: "clazz",
-    label: "类路径",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入类路径'
-    }
+    label: "fd.field.clazz",
+    component: 'Input'
   },{
     name: "methodName",
-    label: "方法名",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入方法名'
-    }
+    label: "fd.field.methodName",
+    component: 'Input'
   },{
     name: "args",
-    label: "参数变量",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入参数变量'
-    }
+    label: "fd.field.args",
+    component: 'Input'
   },{
     name: "preInterceptors",
-    label: "前置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入前置拦截器'
-    }
+    label: "fd.field.preInterceptors",
+    component: 'Input'
   }, {
     name: "postInterceptors",
-    label: "后置拦截器",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入后置拦截器'
-    }
+    label: "fd.field.postInterceptors",
+    component: 'Input'
   }]
 }
 
 export const edge: FDFormType = {
-  labelWidth: '120px',
+  labelWidth: 'fd.labelWidth.narrow',
   formItems: [{
     name: "name",
-    label: "唯一编码",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入唯一编码'
-    }
+    label: "fd.field.code",
+    component: 'Input'
   }, {
     name: "displayName",
-    label: "显示名称",
-    component: 'Input',
-    componentProps: {
-      placeholder: '请输入显示名称'
-    }
+    label: "fd.field.displayName",
+    component: 'Input'
     },
     {
       name: "expr",
-      label: "表达式",
-      component: 'Input',
-      componentProps: {
-        placeholder: '请输入表达式'
-      }
+      label: "fd.field.expression",
+      component: 'Input'
     },
   ]
 }

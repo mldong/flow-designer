@@ -38,9 +38,11 @@
  */
 import { ref } from 'vue';
 import { MldongFlowDesignerProps } from './types/props'
+import { bindFDLocaleProps } from './locales'
 import DingTalkDesigner from './dingtalk/components/DingTalkDesigner.vue';
 
-defineProps(MldongFlowDesignerProps)
+const props = defineProps(MldongFlowDesignerProps)
+bindFDLocaleProps(props)
 const emits = defineEmits(['update:value', 'on-init', 'on-render', 'on-save', 'node-click', 'edge-click'])
 
 const dingtalkDesignerRef = ref()

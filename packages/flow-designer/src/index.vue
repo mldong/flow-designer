@@ -49,6 +49,7 @@ import Flow from './plugins/Flow';
 import './plugins/flow.css'
 import type {  FDHighLightType } from './types';
 import { MldongFlowDesignerProps } from './types/props'
+import { bindFDLocaleProps } from './locales'
 import { NodeStateEnum } from './types/enums';
 import MDrawer from './ui/drawer';
 import MModal from './ui/modal';
@@ -58,6 +59,7 @@ const isFullscreen = ref(false);
 const drawerRef = ref()
 const modalRef = ref()
 const props = defineProps(MldongFlowDesignerProps)
+bindFDLocaleProps(props)
 
 // 计算当前渲染模式
 const currentMode = computed(() => {

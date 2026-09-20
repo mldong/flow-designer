@@ -58,7 +58,7 @@
       :show-footer="false"
       @cancel="cancelEditPanel"
     >
-      <FDSchemaForm :form-items="editFormFields" :model="editFormData" label-width="120px" />
+      <FDSchemaForm :form-items="editFormFields" :model="editFormData" :label-width="fdLabelWidth('narrow')" />
     </FDDrawer>
     <!-- 查看数据弹窗 -->
     <FDModal
@@ -95,7 +95,7 @@
       :show-footer="false"
       @cancel="closeProcessDrawer"
     >
-      <FDSchemaForm :form-items="processFormFields" :model="processFormData" label-width="130px" />
+      <FDSchemaForm :form-items="processFormFields" :model="processFormData" :label-width="fdLabelWidth('wide')" />
     </FDDrawer>
     </div>
   </template>
@@ -113,6 +113,7 @@ import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
 import { FDModal, FDDrawer, FDTextarea, FDSchemaForm, FDJsonViewer, FDMessage } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
+import { fdLabelWidth } from '../../locales'
 import '../styles/dingtalk.scss'
 
 const props = defineProps({

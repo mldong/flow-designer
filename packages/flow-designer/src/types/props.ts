@@ -1,5 +1,6 @@
 import type { PropType } from "vue"
 import type { FDConfigData, FDThemeConfig, FDHighLightType, FDPatternItem, FDControlItem, FDFormType } from "."
+import type { FDLocale, FDMessages } from "../locales"
 
 
 /**
@@ -92,5 +93,13 @@ export const  MldongFlowDesignerProps = {
       isDefaultAnchor: true,      // 自动优化连线路径
       edgesep: 15,
     })
+  },
+  locale: { // 内置文案语种；不传则沿用 setLocale 设过的全局值
+    type: String as PropType<FDLocale>,
+    default: undefined
+  },
+  messages: { // 按语种覆盖/追加内置词条，如 { 'zh-CN': { 'fd.field.assignee': '办理人' } }
+    type: Object as PropType<Record<string, FDMessages>>,
+    default: undefined
   },
 }

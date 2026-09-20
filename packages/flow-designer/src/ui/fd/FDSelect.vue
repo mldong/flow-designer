@@ -2,7 +2,7 @@
   <div class="fd-select" :class="{ 'fd-select--open': open, 'fd-select--disabled': disabled }" ref="triggerRef">
     <div class="fd-select__trigger" @click="toggle">
       <span v-if="selectedLabel !== null && selectedLabel !== undefined && selectedLabel !== ''" class="fd-select__value">{{ selectedLabel }}</span>
-      <span v-else class="fd-select__placeholder">{{ placeholder }}</span>
+      <span v-else class="fd-select__placeholder">{{ placeholder || t('fd.select.placeholder') }}</span>
       <span class="fd-select__arrow" :class="{ 'fd-select__arrow--up': open }">
         <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
@@ -10,7 +10,7 @@
     <Teleport to="body">
       <transition name="fd-select-drop">
         <div v-if="open" class="fd-select__dropdown" :style="dropdownStyle">
-          <div class="fd-select__empty" v-if="!options?.length">暂无选项</div>
+          <div class="fd-select__empty" v-if="!options?.length">{{ t('fd.select.empty') }}</div>
           <div
             v-for="opt in options"
             :key="String(opt.value)"
@@ -31,6 +31,7 @@
  * 弹层 Teleport 到 body 并用 fixed 定位，避免被抽屉/弹窗的 overflow 裁剪
  */
 import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { t } from '../../locales'
 
 interface FDSelectOption {
   label: string
@@ -44,7 +45,7 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
 }>(), {
   options: () => [],
-  placeholder: '请选择',
+  placeholder: '',
   disabled: false
 })
 
