@@ -3,7 +3,7 @@
     <FDSchemaForm
       :form-items="form.formItems"
       :model="formState"
-      :label-width="form.labelWidth || '120px'"
+      :label-width="form.labelWidth || fdLabelWidth('narrow')"
       :render-context="currentData"
     >
       <!-- 业务方 slot 透传（item.slot 场景） -->
@@ -17,6 +17,7 @@
 import { computed, PropType, reactive, ref, watch } from 'vue';
 import { FDDrawer, FDSchemaForm } from '../fd';
 import { FDFormType } from '../../types';
+import { fdLabelWidth, resolveText, t } from '../../locales'
 
 const visible = ref(false)
 const props = defineProps({
@@ -103,12 +104,12 @@ defineExpose({
     })
     
     if(e.data.type == 'process') {
-      mTitle.value = '设置流程属性'
+      mTitle.value = t('fd.drawer.title.process')
       Object.keys(e.data.properties || {}).forEach(key=>{
         formState[key] = e.data.properties[key]
       })
     } else if(e.data.type == `${typePrefix}transition`) {
-      mTitle.value = '设置边属性'
+      mTitle.value = t('fd.drawer.title.edge')
       // 赋值唯一编码
       formState.name = e.data.id
       // 赋值显示名称
@@ -120,12 +121,11 @@ defineExpose({
     } else {
       if(e.patternItem?.drawerTitle) {
         mTitle.value = e.patternItem?.drawerTitle
+      } else if(e.patternItem?.text) {
+        // 原文案靠 text.replace('节点','') 去掉后缀再补回，跨语种不成立，改为整体带参
+        mTitle.value = t('fd.drawer.title.node', { name: resolveText(e.patternItem.label) || e.patternItem.text })
       } else {
-        if(e.patternItem?.text) {
-          mTitle.value = `设置【${e.patternItem?.text.replace('节点','')}】节点属性`
-        } else {
-          mTitle.value = '设置属性'
-        }
+        mTitle.value = t('fd.drawer.title.attr')
       }
       // 赋值唯一编码
       formState.name = e.data.id

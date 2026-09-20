@@ -10,7 +10,7 @@
         </template>
         <span class="fd-json-bracket">{{ openBracket }}</span>
         <template v-if="!expanded">
-          <span class="fd-json-ellipsis">… {{ count }} 项 </span>
+          <span class="fd-json-ellipsis">{{ t('fd.json.more', { count }) }} </span>
           <span class="fd-json-bracket">{{ closeBracket }}</span>
           <span v-if="!isLast" class="fd-json-comma">,</span>
         </template>
@@ -51,6 +51,7 @@
  */
 import { ref, computed } from 'vue'
 import FDJsonNode from './FDJsonNode.vue'
+import { t } from '../../locales'
 
 const props = withDefaults(defineProps<{
   name?: string | null

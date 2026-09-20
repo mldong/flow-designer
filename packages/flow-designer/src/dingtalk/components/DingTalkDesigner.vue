@@ -65,7 +65,7 @@
       v-model:visible="showDataModal"
       :title="t('fd.ding.modal.dataTitle')"
       :cancel-text="t('fd.ding.modal.close')"
-      :ok-text="t('fd.ding.modal.copy')"
+      :ok-text="t('fd.ui.copy')"
       @ok="copyData"
       @cancel="showDataModal = false"
       width="600px"
@@ -1799,9 +1799,9 @@ function copyData() {
       document.execCommand('copy')
       document.body.removeChild(textarea)
     }
-    FDMessage.success(t('fd.ding.copied'))
+    FDMessage.success(t('fd.ui.copied'))
   } catch (err) {
-    FDMessage.error(`${t('fd.ding.copyFailed')}: ${err instanceof Error ? err.message : String(err)}`)
+    FDMessage.error(`${t('fd.ui.copyFailed')}: ${err instanceof Error ? err.message : String(err)}`)
   }
 }
 

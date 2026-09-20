@@ -23,8 +23,8 @@
             <!-- footer -->
             <div v-if="$slots.footer || showFooter" class="fd-modal__footer">
               <slot name="footer">
-                <button class="fd-btn fd-btn--default" @click="handleCancel">{{ cancelText }}</button>
-                <button class="fd-btn fd-btn--primary" @click="handleOk" :disabled="okDisabled">{{ okText }}</button>
+                <button class="fd-btn fd-btn--default" @click="handleCancel">{{ cancelText || t('fd.ui.cancel') }}</button>
+                <button class="fd-btn fd-btn--primary" @click="handleOk" :disabled="okDisabled">{{ okText || t('fd.ui.confirm') }}</button>
               </slot>
             </div>
           </div>
@@ -39,6 +39,7 @@
  * FDModal —— 自研弹窗（由 DingModal 提升为通用组件，canvas/dingtalk 双模式共用）
  */
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { t } from '../../locales'
 
 const props = withDefaults(defineProps<{
   visible: boolean
@@ -53,8 +54,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   title: '',
   width: '520px',
-  cancelText: '取消',
-  okText: '确定',
+  cancelText: '',
+  okText: '',
   okDisabled: false,
   showFooter: true,
   maskClosable: true,

@@ -16,8 +16,8 @@
         </div>
         <div v-if="$slots.footer || showFooter" class="fd-drawer__footer">
           <slot name="footer">
-            <button class="fd-btn fd-btn--default" @click="internalClose">{{ cancelText }}</button>
-            <button class="fd-btn fd-btn--primary" @click="handleOk" :disabled="okDisabled">{{ okText }}</button>
+            <button class="fd-btn fd-btn--default" @click="internalClose">{{ cancelText || t('fd.ui.cancel') }}</button>
+            <button class="fd-btn fd-btn--primary" @click="handleOk" :disabled="okDisabled">{{ okText || t('fd.ui.confirm') }}</button>
           </slot>
         </div>
       </div>
@@ -31,6 +31,7 @@
  * 相比 DingDrawer 的增强：visible 支持双向驱动（父组件置 false 时静默关闭，不重复 emit cancel）
  */
 import { watch, ref, onMounted, onBeforeUnmount } from 'vue'
+import { t } from '../../locales'
 
 const props = withDefaults(defineProps<{
   visible: boolean
@@ -45,8 +46,9 @@ const props = withDefaults(defineProps<{
 }>(), {
   title: '',
   width: '420px',
-  cancelText: '取消',
-  okText: '确定',
+  // 默认按钮文案留空，由模板按当前语种取词条（withDefaults 的字面量在模块初始化时求值，切语种不会更新）
+  cancelText: '',
+  okText: '',
   okDisabled: false,
   showFooter: true,
   maskClosable: true,
