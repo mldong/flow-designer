@@ -50,6 +50,10 @@ const toggleLocale = () => {
   setLocale(locale.value)
 }
 
+// dev-only 验证钩子：直接切语种且不触发 :key 重挂载，
+// 用于验证 computed 渲染处（钉钉控制条/加号面板默认项）热更新；走查完即删
+;(window as any).__fdSetLocale = (l: 'zh-CN' | 'en-US') => setLocale(l)
+
 // 监听 hash 变化支持直接访问指定案例
 const syncFromHash = () => {
   const hash = window.location.hash.replace('#/', '').replace('#', '')
