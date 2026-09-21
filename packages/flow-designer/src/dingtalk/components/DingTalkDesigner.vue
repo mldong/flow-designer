@@ -189,16 +189,17 @@ const emit = defineEmits<{
 
 // ─── 默认面板项 ─────────────────────────────────────────────────────────
 // text 是新增节点时写入图数据的默认名（不译），label 是选择器显示名（可译）
-const defaultDndPanelItems: FDPatternItem[] = [
+// 放在 computed 依赖里求值，切语种后无需重挂载即可更新面板默认项文案
+const defaultDndPanelItems = computed<FDPatternItem[]>(() => [
   { type: 'task', text: '审批人', label: t('fd.ding.node.approver') },
   { type: 'custom', text: '自定义节点', label: t('fd.ding.node.custom') },
   { type: 'subProcess', text: '子流程', label: t('fd.dnd.subProcess.label') },
-]
+])
 
 const computedDndPanel = computed<FDPatternItem[]>(() => {
   // 合并业务方自定义项 + 默认项，业务方同名 type 优先（保留 nodeClick 等自定义配置）
   const custom = props.dndPanel || []
-  const merged = [...defaultDndPanelItems]
+  const merged = [...defaultDndPanelItems.value]
   for (const item of custom) {
     const idx = merged.findIndex(m => m.type === item.type || m.type === item.type?.replace(props.typePrefix, ''))
     if (idx >= 0) {
