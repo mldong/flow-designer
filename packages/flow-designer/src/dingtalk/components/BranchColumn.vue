@@ -2,9 +2,9 @@
   <div class="ding-branch-col">
     <!-- 分支顶部竖线 -->
     <div class="ding-branch-col__line-top"></div>
-    <!-- 分支名称 -->
-    <div class="ding-branch-col__head" v-if="branch.name || !viewer" :title="branch.name || t('fd.ding.branch.edit')" @click="handleEditBranch">
-      <span class="ding-branch-col__head-text">{{ branch.name || t('fd.ding.branch.unnamed') }}</span>
+    <!-- 分支名称（没起显示名时回落到条件表达式，避免"只填表达式就整列显示未命名"；纯显示层，不回写 name/text） -->
+    <div class="ding-branch-col__head" v-if="displayLabel || !viewer" :title="displayLabel || t('fd.ding.branch.edit')" @click="handleEditBranch">
+      <span class="ding-branch-col__head-text">{{ displayLabel || t('fd.ding.branch.unnamed') }}</span>
       <span class="ding-branch-col__head-edit" v-if="!viewer" :title="t('fd.ding.branch.editAction')">
         &#x270E;
       </span>
@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { DingBranch, DingNode } from '../types'
 import type { FDHighLightType, FDThemeConfig, FDPatternItem } from '../../types'
 import AddButton from './AddButton.vue'
@@ -68,6 +69,20 @@ const emit = defineEmits<{
   (e: 'edit-branch', branch: DingBranch): void
   (e: 'add-to-branch', nodeType: string, branch: DingBranch): void
 }>()
+
+/**
+ * 分支标题的显示值：显示名优先，缺省回落到条件表达式。
+ *
+ * 只作用于显示层——**不回写 `branch.name`**：反向导出（converter `addEdge`）是
+ * `if (name) edge.text = { value: name }`，一旦把 expr 塞进 name，表达式就会被固化进
+ * 流程 JSON 的 edge.text（画布那条线凭空多出文字标签，且随流程定义一起存库）。
+ */
+const displayLabel = computed(() => {
+  const name = (props.branch.name || '').trim()
+  if (name) return name
+  const expr = props.branch.properties?.expr
+  return typeof expr === 'string' ? expr.trim() : ''
+})
 
 function handleEditBranch() {
   if (props.viewer) return
