@@ -19,6 +19,7 @@
           :high-light="highLight"
           :theme="theme"
           :dnd-panel="dndPanel"
+          :depth="depth + 1"
           :can-delete-checker="canDeleteChecker"
           @edit="(n) => $emit('edit', n)"
           @delete="(n) => $emit('delete', n)"
@@ -50,16 +51,20 @@ import AddButton from './AddButton.vue'
 import NodeChain from './NodeChain.vue'
 import { t } from '../../locales'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   branch: DingBranch
   typePrefix: string
   viewer: boolean
   highLight?: FDHighLightType
   theme?: FDThemeConfig
   dndPanel?: FDPatternItem[]
+  /** 所在分支组节点（条件/并行）的深度；分支内首节点从 depth + 1 起算 */
+  depth?: number
   /** 节点是否可删除检查器（false 时隐藏 × 按钮；默认全部可删除） */
   canDeleteChecker?: (node: DingNode) => boolean
-}>()
+}>(), {
+  depth: 0
+})
 
 const emit = defineEmits<{
   (e: 'edit', node: DingNode): void

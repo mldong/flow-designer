@@ -36,6 +36,7 @@
         :high-light="highLight"
         :theme="theme"
         :dnd-panel="dndPanel"
+        :depth="depth"
         :can-delete-checker="canDeleteChecker"
         @edit="(n) => $emit('edit', n)"
         @delete="(n) => $emit('delete', n)"
@@ -68,8 +69,11 @@ const props = withDefaults(defineProps<{
   protectedIds?: Set<string>
   /** 节点是否可删除检查器（false 时隐藏 × 按钮；默认全部可删除） */
   canDeleteChecker?: (node: DingNode) => boolean
+  /** 条件节点深度（透传给分支列，分支内节点据此继续递增） */
+  depth?: number
 }>(), {
-  protectedIds: () => new Set<string>()
+  protectedIds: () => new Set<string>(),
+  depth: 0
 })
 
 // 兜底：props 是只读的，统一通过 protectedIdsComputed 访问，避免 undefined 调用 .has
