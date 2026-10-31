@@ -15,9 +15,10 @@
 </template>
 <script setup lang="ts">
 import { computed, PropType, reactive, ref, watch } from 'vue';
-import { FDDrawer, FDSchemaForm } from '../fd';
+import { FDDrawer, FDSchemaForm, FDMessage } from '../fd';
 import { FDFormType } from '../../types';
 import { fdLabelWidth, resolveText, t } from '../../locales'
+import { normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
 
 const visible = ref(false)
 const props = defineProps({
@@ -135,6 +136,15 @@ defineExpose({
       Object.keys(e.data.properties || {}).forEach(key=>{
         formState[key] = e.data.properties[key]
       })
+      // reapplyMode 缺省/空值后端一律按 NORMAL 处理，回填时同口径归一，避免把历史空串写回
+      if (form.value?.formItems?.some(item=>item.name === 'reapplyMode')) {
+        if (isInvalidReapplyMode(formState.reapplyMode)) {
+          // 非法配置保留原值并提示，绝不归一成 NORMAL 写回流程定义
+          FDMessage.error(`节点属性 reapplyMode 值无效：${formState.reapplyMode}，请改为 NORMAL 或 RETURN_TO_SOURCE`)
+        } else {
+          formState.reapplyMode = normalizeReapplyMode(formState.reapplyMode)
+        }
+      }
     }
     visible.value = true
   }

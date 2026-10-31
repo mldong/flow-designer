@@ -1,4 +1,5 @@
-import { FDFormType } from "../types";
+import type { FDFormType } from "../types";
+import { ReapplyModeEnum } from "../types/enums";
 
 /**
  * 表单元数据。label / helpMessage / options[].label 写 `fd.` 词条 key，由 FDSchemaForm
@@ -49,7 +50,7 @@ export const end:FDFormType = {
  */
 
 export const task:FDFormType = {
-  labelWidth: 'fd.labelWidth.narrow',
+  labelWidth: 'fd.labelWidth.task',
   formItems: [{
     name: "name",
     label: "fd.field.code",
@@ -154,6 +155,24 @@ export const task:FDFormType = {
     label: "fd.field.countersignCompletionCondition",
     component: 'Input',
     helpMessage: 'fd.help.countersignCompletionCondition'
+  }, {
+    name: "reapplyMode",
+    label: "fd.field.reapplyMode",
+    component: 'Select',
+    defaultValue: ReapplyModeEnum.normal,
+    helpMessage: 'fd.help.reapplyMode',
+    componentProps: {
+      options: [
+        {
+          label: 'fd.opt.reapplyNormal',
+          value: ReapplyModeEnum.normal
+        },
+        {
+          label: 'fd.opt.reapplyReturnToSource',
+          value: ReapplyModeEnum.returnToSource
+        }
+      ]
+    }
   }, {
     name: "actionBtns",
     label: "fd.field.actionBtns",

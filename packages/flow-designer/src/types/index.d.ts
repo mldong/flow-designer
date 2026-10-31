@@ -98,6 +98,24 @@ export declare type FDFormItemType = {
   defaultValue?: any;
 } 
 /**
+ * 「退回发起人后的重提方式」取值（任务节点 properties.reapplyMode）
+ * NORMAL = 按流程重新审批（缺省/空值同此）；RETURN_TO_SOURCE = 直接返回本节点
+ */
+export declare type FDReapplyMode = 'NORMAL' | 'RETURN_TO_SOURCE';
+/**
+ * 审批任务节点 properties：业务字段与 performType / countersignType 同级扁平存放，
+ * 不在 properties.ext 内；reapplyMode 缺省时引擎按 NORMAL 处理。
+ */
+export declare type FDTaskNodeProperties = {
+  name?: string; // 唯一编码
+  displayName?: string; // 显示名称
+  assignee?: string; // 参与人
+  performType?: 'ANY' | 'ALL'; // 参与类型
+  countersignType?: 'PARALLEL' | 'SEQUENTIAL'; // 会签类型
+  reapplyMode?: FDReapplyMode; // 退回发起人后的重提方式
+  [key: string]: any; // 其余引擎属性原样透传
+};
+/**
  * 控制面板数据类型
  */
 export declare type FDControlItem = {

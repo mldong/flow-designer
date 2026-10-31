@@ -5,6 +5,8 @@ const zhCN: FDMessages = {
   // 标签列宽：英文串更长且 FDFormItem 是 nowrap，宽度必须随语种变
   'fd.labelWidth.narrow': '120px',
   'fd.labelWidth.wide': '130px',
+  // 任务节点属性名较长（「退回发起人后的重提方式」），列宽单列
+  'fd.labelWidth.task': '170px',
 
   // 占位符模板：由渲染器按 label 派生，避免 65 条「请输入 X」重复词条
   'fd.ph.input': '请输入{label}',
@@ -34,6 +36,7 @@ const zhCN: FDMessages = {
   'fd.field.performType': '参与类型',
   'fd.field.countersignType': '会签类型',
   'fd.field.countersignCompletionCondition': '会签完成条件',
+  'fd.field.reapplyMode': '退回发起人后的重提方式',
   'fd.field.actionBtns': '操作按钮',
   'fd.field.reminderTime': '提醒时间',
   'fd.field.reminderRepeat': '重复提醒间隔',
@@ -67,6 +70,7 @@ const zhCN: FDMessages = {
   'fd.help.candidateGroups': '多个用户组用英文逗号分隔',
   'fd.help.countersignType': '参与类型为会签参与时生效',
   'fd.help.countersignCompletionCondition': '参与类型为会签参与时生效，如：{nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
+  'fd.help.reapplyMode': '前面已审批的节点不再重复审批；审批人按返回节点规则确定。',
   'fd.help.actionBtns.1': '多个按钮用英文逗号分隔，普通参与可选：{AGREE}(同意)/{REJECT}(拒绝)/{ROLLBACK}(退回上一步)/{ROLLBACK_TO_OPERATOR}(退回发起人)/{JUMP}(跳转)',
   'fd.help.actionBtns.2': '会签参与可选：{AGREE}(同意)/{COUNTERSIGN_DISAGREE}(会签不同意)/{ADD_CANDIDATE}(加签)',
   'fd.help.instanceUrl': '如果为元数据表单，数据模型的表名称和流程唯一编码要保持一致',
@@ -82,6 +86,8 @@ const zhCN: FDMessages = {
   'fd.opt.performAll': '会签参与',
   'fd.opt.csParallel': '并行会签',
   'fd.opt.csSequential': '顺序会签',
+  'fd.opt.reapplyNormal': '按流程重新审批',
+  'fd.opt.reapplyReturnToSource': '直接返回本节点',
   'fd.opt.yes': '是',
   'fd.opt.no': '否',
   'fd.opt.persistArchive': '归档',

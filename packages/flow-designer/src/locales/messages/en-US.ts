@@ -8,6 +8,7 @@ const enUS: FDMessages = {
   // 标签列 nowrap 且右对齐，带帮助图标时最串标签会溢出到抽屉外，英文列需更宽
   'fd.labelWidth.narrow': '190px',
   'fd.labelWidth.wide': '200px',
+  'fd.labelWidth.task': '240px',
 
   'fd.ph.input': 'Enter {label}',
   'fd.ph.select': 'Select {label}',
@@ -35,6 +36,7 @@ const enUS: FDMessages = {
   'fd.field.performType': 'Perform type',
   'fd.field.countersignType': 'Countersign type',
   'fd.field.countersignCompletionCondition': 'Completion condition',
+  'fd.field.reapplyMode': 'Reapply after return to initiator',
   'fd.field.actionBtns': 'Action buttons',
   'fd.field.reminderTime': 'Reminder time',
   'fd.field.reminderRepeat': 'Reminder interval',
@@ -67,6 +69,7 @@ const enUS: FDMessages = {
   'fd.help.countersignType': 'Applies when perform type is countersign',
   'fd.help.relTableName': 'Table the business data is written to when the process ends; defaults to the process code when empty',
   'fd.help.countersignCompletionCondition': 'Applies when perform type is countersign, e.g. {nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
+  'fd.help.reapplyMode': 'Nodes already approved are not approved again; assignees follow the rules of the node that returned it.',
   'fd.help.actionBtns.1': 'Separate buttons with commas. Normal participation accepts {AGREE} / {REJECT} / {ROLLBACK} (back one step) / {ROLLBACK_TO_OPERATOR} (back to initiator) / {JUMP}',
   'fd.help.actionBtns.2': 'Countersign participation accepts {AGREE} / {COUNTERSIGN_DISAGREE} / {ADD_CANDIDATE}',
   'fd.help.instanceUrl': 'For a metadata form, the data model table name must match the process code',
@@ -80,6 +83,8 @@ const enUS: FDMessages = {
   'fd.opt.performAll': 'Countersign',
   'fd.opt.csParallel': 'Parallel',
   'fd.opt.csSequential': 'Sequential',
+  'fd.opt.reapplyNormal': 'Re-approve following the flow',
+  'fd.opt.reapplyReturnToSource': 'Return directly to this node',
   'fd.opt.yes': 'Yes',
   'fd.opt.no': 'No',
   'fd.opt.persistArchive': 'Archive',

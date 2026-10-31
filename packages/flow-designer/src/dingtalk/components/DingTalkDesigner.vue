@@ -58,7 +58,7 @@
       :show-footer="false"
       @cancel="cancelEditPanel"
     >
-      <FDSchemaForm :form-items="editFormFields" :model="editFormData" :label-width="fdLabelWidth('narrow')" />
+      <FDSchemaForm :form-items="editFormFields" :model="editFormData" :label-width="editLabelWidth" />
     </FDDrawer>
     <!-- 查看数据弹窗 -->
     <FDModal
@@ -113,6 +113,7 @@ import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
 import { FDModal, FDDrawer, FDTextarea, FDSchemaForm, FDJsonViewer, FDMessage } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
+import { normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
 import { fdLabelWidth, t } from '../../locales'
 import '../styles/dingtalk.scss'
 
@@ -1019,6 +1020,15 @@ function handleEditNode(node: DingNode) {
     if (f.name === 'name' || f.name === 'displayName') continue
     editFormData[f.name] = node.properties?.[f.name] ?? f.defaultValue ?? ''
   }
+  // reapplyMode 缺省/空值后端一律按 NORMAL 处理，回填时同口径归一，避免把历史空串写回
+  if (editFormFields.value.some(f => f.name === 'reapplyMode')) {
+    if (isInvalidReapplyMode(editFormData.reapplyMode)) {
+      // 非法配置保留原值并提示，绝不归一成 NORMAL 写回流程定义
+      FDMessage.error(`节点属性 reapplyMode 值无效：${editFormData.reapplyMode}，请改为 NORMAL 或 RETURN_TO_SOURCE`)
+    } else {
+      editFormData.reapplyMode = normalizeReapplyMode(editFormData.reapplyMode)
+    }
+  }
 
   // emit 与画布模式 lf.eventCenter.on('node:click') 拿到的签名一致，
   // 业务方在钉钉/画布模式下都能用 @node-click="(p) => {...}" 监听
@@ -1509,6 +1519,15 @@ const schemaByType: Record<string, FDFormType> = {
 }
 // 当前编辑节点来自 dndPanel 的自定义表单（优先于内置 schema）
 const editingPatternForm = ref<FDFormType | undefined>(undefined)
+
+// 标签列宽与画布模式同源：取当前节点表单元数据的 labelWidth（task 列更宽，
+// 保证「退回发起人后的重提方式」这类长标签不被截断），未声明时回落 narrow
+const editLabelWidth = computed(() => {
+  if (editingBranch.value) return fdLabelWidth('narrow')
+  const baseType = (editingNode.value?.type || '').replace(props.typePrefix, '')
+  const formConfig = editingPatternForm.value || schemaByType[baseType]
+  return formConfig?.labelWidth || fdLabelWidth('narrow')
+})
 
 const editFormFields = computed<FDFormItemType[]>(() => {
   if (editingBranch.value) {

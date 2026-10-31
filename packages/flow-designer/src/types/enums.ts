@@ -17,6 +17,15 @@ export enum NodeStateEnum {
   normal = 'normal'
 }
 /**
+ * 退回发起人后的重提方式（任务节点 properties.reapplyMode）
+ * NORMAL = 按流程重新审批（缺省/空值同此）；RETURN_TO_SOURCE = 直接返回本节点
+ * 引擎只认这两个值，其他值属配置错误
+ */
+export enum ReapplyModeEnum {
+  normal = 'NORMAL',
+  returnToSource = 'RETURN_TO_SOURCE'
+}
+/**
  * 节点类型枚举
  */
 export enum NodeTypeEnum {
