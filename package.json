@@ -1,7 +1,7 @@
 {
   "name": "mldong-flow-designer-plus",
   "private": false,
-  "version": "3.2.4",
+  "version": "3.2.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -40,7 +40,8 @@
   },
   "files": [
     "lib",
-    "packages"
+    "packages",
+    "postinstall.mjs"
   ],
   "author": "mldong",
   "license": "Apache License 2.0",
