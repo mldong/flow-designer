@@ -1,0 +1,93 @@
+name: Release
+# 从云效流水线搬过来的一条链：tag `v*.*.*` 一次发出两个包 ＋ 重建演示站。
+# 发布走 npm Trusted Publishing（OIDC），仓里不需要长期 NPM_TOKEN；
+# 前置（npm 网页侧，逐包一次）：包页 Access → Trusted Publisher → GitHub Actions
+#   owner mldong / repository flow-designer / workflow name release.yml / environment 留空
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: Assert tag matches package version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check version
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          if [ "${GITHUB_REF#refs/tags/}" = "$GITHUB_REF" ]; then
+            echo "非 tag 触发（$GITHUB_REF），跳过 tag/版本一致性断言"
+            exit 0
+          fi
+          [ "$GITHUB_REF_NAME" = "v$PKG" ] || { echo "tag $GITHUB_REF_NAME 与 package.json $PKG 不一致"; exit 1; }
+          echo "待发布版本 = $PKG"
+
+  publish-plus:
+    name: Publish mldong-flow-designer-plus
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted Publishing 要求 npm CLI ≥ 11.5.1；node 22 自带 10.9.x
+      - run: npm install -g npm@11
+      - run: npm ci
+      - run: npm run build:lib
+      - name: Verify build artifacts
+        run: |
+          test -f lib/mldong-flow-designer-plus.js
+          test -f lib/mldong-flow-designer-plus.umd.cjs
+          test -f lib/style.css
+          node -e 'const p=require("./package.json");if(!p.files.includes("postinstall.mjs")){console.error("package.json files 缺 postinstall.mjs ⇒ 消费者 npm i 会 ENOENT 退 1");process.exit(1)}'
+      - run: npm publish --access=public
+        env: {}
+
+  publish-lite:
+    name: Publish mldong-flow-designer-dingtalk
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install -g npm@11
+      - run: npm ci
+      # 脚本自己 build:lib:lite → 组装 dist-publish/ → npm publish（版本号取根 package.json，与双模式包同号）
+      - run: node scripts/publish-lite.mjs --registry=https://registry.npmjs.org/
+        env: {}
+
+  deploy-demo:
+    name: Deploy demo site
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      - name: Deploy to flow-designer.mldong.com
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: root
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: dist/
+          target: /java_projects/flow-designer/dist/
+          strip_components: 1
+          overwrite: true
+          rm: true
