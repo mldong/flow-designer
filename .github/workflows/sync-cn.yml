@@ -1,0 +1,55 @@
+name: sync-cn
+
+# 国内镜像同步：把 GitHub 这份 master ＋ 全部 tag 单向推到 Gitee / GitCode。
+# 触发：打 v* tag（与发布同批）或手动 dispatch（首次铺镜像、补漏用）。
+#
+# 前置（一次性）：
+#   1. gitee.com/mldong/flow-designer、gitcode.com/mldong/flow-designer 两个仓存在（2026-11-01 现读：都在，
+#      Gitee 那份停在 5aea5de 的旧历史、GitCode 那份是空仓，本工作流会 --force 覆盖成 GitHub 的 master）
+#   2. 组织级 Actions secrets：GITEE_OWNER / GITEE_USERNAME / GITEE_TOKEN、GITCODE_OWNER / GITCODE_TOKEN
+#      ⚠ 可见范围必须覆盖本仓——本仓是**私有**仓，组织 secrets 若设成 "Public repositories"（仅公开仓可用）就拿不到
+#   详细步骤见 mldong-hub/docs/github-sync-cn.md
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout（master + 全部 tag）
+        uses: actions/checkout@v4
+        with:
+          ref: master          # 显式检出 master：tag 触发时默认 detached HEAD，无 master 分支可 push
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Sync to Gitee
+        env:
+          GITEE_OWNER: ${{ secrets.GITEE_OWNER }}
+          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          # 缺 secrets 时判红而不是 exit 0：静默跳过会让人以为镜像已同步（jeeflow-ui 那份是 exit 0 的软跳过）
+          if [ -z "$GITEE_OWNER" ] || [ -z "$GITEE_TOKEN" ]; then
+            echo "::error::未配置 GITEE_OWNER/GITEE_TOKEN（检查组织 secrets 对本私有仓的可见范围），Gitee 未同步"
+            exit 1
+          fi
+          git push --force --tags \
+            "https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/${GITEE_OWNER}/${{ github.event.repository.name }}.git" \
+            master
+
+      - name: Sync to GitCode
+        env:
+          GITCODE_OWNER: ${{ secrets.GITCODE_OWNER }}
+          GITCODE_TOKEN: ${{ secrets.GITCODE_TOKEN }}
+        run: |
+          if [ -z "$GITCODE_OWNER" ] || [ -z "$GITCODE_TOKEN" ]; then
+            echo "::error::未配置 GITCODE_OWNER/GITCODE_TOKEN（检查组织 secrets 对本私有仓的可见范围），GitCode 未同步"
+            exit 1
+          fi
+          git push --force --tags \
+            "https://oauth2:${GITCODE_TOKEN}@gitcode.com/${GITCODE_OWNER}/${{ github.event.repository.name }}.git" \
+            master
