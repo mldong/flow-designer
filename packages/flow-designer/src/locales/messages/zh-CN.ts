@@ -37,6 +37,8 @@ const zhCN: FDMessages = {
   'fd.field.countersignType': '会签类型',
   'fd.field.countersignCompletionCondition': '会签完成条件',
   'fd.field.reapplyMode': '退回发起人后的重提方式',
+  'fd.field.allowAddSign': '允许后加签',
+  'fd.field.addSignMaxRounds': '后加签轮次上限',
   'fd.field.actionBtns': '操作按钮',
   'fd.field.reminderTime': '提醒时间',
   'fd.field.reminderRepeat': '重复提醒间隔',
@@ -58,6 +60,7 @@ const zhCN: FDMessages = {
   // 与「请输入/请选择 + 标签」不同构的占位符，保持原文案不变
   'fd.field.candidateUsers.ph': '请输入候选用户（多个用逗号分隔）',
   'fd.field.candidateGroups.ph': '请输入候选用户组（多个用逗号分隔）',
+  'fd.field.addSignMaxRounds.ph': '不小于 0 的整数，0＝不限轮次',
   'fd.field.actionBtns.ph': '如 {AGREE},{REJECT},{ROLLBACK}',
   'fd.field.relTableName.ph': '如 {biz_leave}',
   'fd.field.enableFieldPerm.ph': '请选择是否启用字段权限',
@@ -71,6 +74,8 @@ const zhCN: FDMessages = {
   'fd.help.countersignType': '参与类型为会签参与时生效',
   'fd.help.countersignCompletionCondition': '参与类型为会签参与时生效，如：{nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
   'fd.help.reapplyMode': '前面已审批的节点不再重复审批；审批人按返回节点规则确定。',
+  'fd.help.allowAddSign': '开启后办理人提交时可「加签给下一位」，被加签人在本节点续办且可继续加签，直到无人再点才流出本节点。',
+  'fd.help.addSignMaxRounds': '0＝不限轮次；超出上限时加签提交报错，不强制放行。',
   'fd.help.actionBtns.1': '多个按钮用英文逗号分隔，普通参与可选：{AGREE}(同意)/{REJECT}(拒绝)/{ROLLBACK}(退回上一步)/{ROLLBACK_TO_OPERATOR}(退回发起人)/{JUMP}(跳转)',
   'fd.help.actionBtns.2': '会签参与可选：{AGREE}(同意)/{COUNTERSIGN_DISAGREE}(会签不同意)/{ADD_CANDIDATE}(加签)',
   'fd.help.instanceUrl': '如果为元数据表单，数据模型的表名称和流程唯一编码要保持一致',
@@ -78,6 +83,9 @@ const zhCN: FDMessages = {
   'fd.help.relTableName': '流程结束后业务数据落库的目标表；为空时使用流程唯一编码',
   'fd.help.persistMode': '{ARCHIVE}=结束归档（默认）；{SYNC}=同步演进（发起写入、节点更新、结束定稿）。需配合后置拦截器 {PersistPostInterceptor} 使用',
   'fd.help.selectUserApi': '发起时选人为"{yes}"时生效；目前仅支持POST请求，和通用下拉接口规范一致',
+
+  // 表单项校验提示：值非法时只提示，不写回，定义里的原值保持不变
+  'fd.err.addSignMaxRounds': '后加签轮次上限只能填不小于 0 的整数',
 
   // 下拉选项
   'fd.opt.major': '主办',

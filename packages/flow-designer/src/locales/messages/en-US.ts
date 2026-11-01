@@ -37,6 +37,8 @@ const enUS: FDMessages = {
   'fd.field.countersignType': 'Countersign type',
   'fd.field.countersignCompletionCondition': 'Completion condition',
   'fd.field.reapplyMode': 'Reapply after return to initiator',
+  'fd.field.allowAddSign': 'Allow post add-sign',
+  'fd.field.addSignMaxRounds': 'Post add-sign round limit',
   'fd.field.actionBtns': 'Action buttons',
   'fd.field.reminderTime': 'Reminder time',
   'fd.field.reminderRepeat': 'Reminder interval',
@@ -57,6 +59,7 @@ const enUS: FDMessages = {
 
   'fd.field.candidateUsers.ph': 'Enter candidate users (comma separated)',
   'fd.field.candidateGroups.ph': 'Enter candidate groups (comma separated)',
+  'fd.field.addSignMaxRounds.ph': 'Integer of 0 or more; 0 means unlimited',
   'fd.field.actionBtns.ph': 'e.g. {AGREE},{REJECT},{ROLLBACK}',
   'fd.field.relTableName.ph': 'e.g. {biz_leave}',
   'fd.field.enableFieldPerm.ph': 'Select whether to enable field permissions',
@@ -70,12 +73,16 @@ const enUS: FDMessages = {
   'fd.help.relTableName': 'Table the business data is written to when the process ends; defaults to the process code when empty',
   'fd.help.countersignCompletionCondition': 'Applies when perform type is countersign, e.g. {nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
   'fd.help.reapplyMode': 'Nodes already approved are not approved again; assignees follow the rules of the node that returned it.',
+  'fd.help.allowAddSign': 'When enabled, an assignee can add the next approver on submit. The added approver continues on this node and may add again; the token leaves the node only when nobody is added.',
+  'fd.help.addSignMaxRounds': '0 = unlimited; exceeding the limit fails the add-sign request instead of forcing it through.',
   'fd.help.actionBtns.1': 'Separate buttons with commas. Normal participation accepts {AGREE} / {REJECT} / {ROLLBACK} (back one step) / {ROLLBACK_TO_OPERATOR} (back to initiator) / {JUMP}',
   'fd.help.actionBtns.2': 'Countersign participation accepts {AGREE} / {COUNTERSIGN_DISAGREE} / {ADD_CANDIDATE}',
   'fd.help.instanceUrl': 'For a metadata form, the data model table name must match the process code',
   'fd.help.enableFieldPerm': 'When enabled, task nodes can mark fields as read-only, editable or hidden',
   'fd.help.persistMode': '{ARCHIVE} = write once when the process ends (default); {SYNC} = write on start, update per node, finalize on end. Requires the {PersistPostInterceptor} post-interceptor',
   'fd.help.selectUserApi': 'Applies when "pick assignees on start" is "{yes}". POST only, following the common dropdown API convention',
+
+  'fd.err.addSignMaxRounds': 'Post add-sign round limit must be an integer of 0 or more',
 
   'fd.opt.major': 'Primary',
   'fd.opt.aidant': 'Assistant',

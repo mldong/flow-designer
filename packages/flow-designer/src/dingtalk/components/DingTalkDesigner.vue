@@ -113,7 +113,7 @@ import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
 import { FDModal, FDDrawer, FDTextarea, FDSchemaForm, FDJsonViewer, FDMessage } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
-import { normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
+import { decidePropertyWrite, normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
 import { fdLabelWidth, t } from '../../locales'
 import '../styles/dingtalk.scss'
 
@@ -1592,7 +1592,17 @@ function applyEditFormToTarget() {
     }
     for (const f of fields) {
       if (f.name === 'name' || f.name === 'displayName') continue
-      nextProps[f.name] = editFormData[f.name]
+      const decision = decidePropertyWrite(f, editFormData[f.name], editFormData)
+      // skip：非法值不写，nextProps 由原 properties 展开而来，跳过即保持定义里的原值
+      if (decision.kind === 'skip') {
+        if (decision.error) FDMessage.error(t(decision.error))
+        continue
+      }
+      if (decision.kind === 'remove') {
+        delete nextProps[f.name]
+        continue
+      }
+      nextProps[f.name] = decision.value
     }
     editingNode.value.properties = nextProps
   }

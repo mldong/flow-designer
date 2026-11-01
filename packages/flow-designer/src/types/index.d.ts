@@ -96,6 +96,11 @@ export declare type FDFormItemType = {
   formItemProps?: any;
   // 默认值
   defaultValue?: any;
+  // ── 写回规则：画布抽屉与钉钉编辑面板共用同一判据，见 plugins/task-properties.ts ──
+  show?: (model: Record<string, any>) => boolean; // 条件显隐；隐藏的项不留在流程定义里
+  omit?: (value: any, model: Record<string, any>) => boolean; // 命中＝删键，用于「缺省即不写键」的引擎属性
+  validate?: (value: any, model: Record<string, any>) => string | undefined; // 返回错误词条 key＝这次改动不写回
+  cast?: (value: any) => any; // 写回前的类型归一，如文本输入的整数
 } 
 /**
  * 「退回发起人后的重提方式」取值（任务节点 properties.reapplyMode）
@@ -113,6 +118,8 @@ export declare type FDTaskNodeProperties = {
   performType?: 'ANY' | 'ALL'; // 参与类型
   countersignType?: 'PARALLEL' | 'SEQUENTIAL'; // 会签类型
   reapplyMode?: FDReapplyMode; // 退回发起人后的重提方式
+  allowAddSign?: boolean; // 允许后加签（缺省＝不写键＝false）
+  addSignMaxRounds?: number; // 后加签轮次上限，0＝不限（缺省＝不写键＝0）
   [key: string]: any; // 其余引擎属性原样透传
 };
 /**

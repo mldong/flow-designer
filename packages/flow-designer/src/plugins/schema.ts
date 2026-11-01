@@ -1,5 +1,12 @@
 import type { FDFormType } from "../types";
 import { ReapplyModeEnum } from "../types/enums";
+import {
+  castAddSignMaxRounds,
+  omitAddSignMaxRounds,
+  omitAllowAddSign,
+  showAddSignRounds,
+  validateAddSignMaxRounds,
+} from "./task-properties";
 
 /**
  * 表单元数据。label / helpMessage / options[].label 写 `fd.` 词条 key，由 FDSchemaForm
@@ -172,6 +179,38 @@ export const task:FDFormType = {
           value: ReapplyModeEnum.returnToSource
         }
       ]
+    }
+  }, {
+    name: "allowAddSign",
+    label: "fd.field.allowAddSign",
+    component: 'Select',
+    defaultValue: false,
+    helpMessage: 'fd.help.allowAddSign',
+    omit: omitAllowAddSign,
+    componentProps: {
+      options: [
+        {
+          label: 'fd.opt.no',
+          value: false
+        },
+        {
+          label: 'fd.opt.yes',
+          value: true
+        }
+      ]
+    }
+  }, {
+    name: "addSignMaxRounds",
+    label: "fd.field.addSignMaxRounds",
+    component: 'Input',
+    defaultValue: 0,
+    helpMessage: 'fd.help.addSignMaxRounds',
+    show: showAddSignRounds,
+    omit: omitAddSignMaxRounds,
+    validate: validateAddSignMaxRounds,
+    cast: castAddSignMaxRounds,
+    componentProps: {
+      placeholder: 'fd.field.addSignMaxRounds.ph'
     }
   }, {
     name: "actionBtns",

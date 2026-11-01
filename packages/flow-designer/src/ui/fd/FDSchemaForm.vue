@@ -73,21 +73,24 @@ function placeholderOf(item: FDFormItemType, label: string): string | undefined 
 }
 
 const items = computed(() =>
-  (props.formItems || []).map((item) => {
-    const label = resolveText(item.label) ?? ''
-    const options = item.componentProps?.options
-    return {
-      ...item,
-      label,
-      help: helpOf(item),
-      componentProps: {
-        ...item.componentProps,
-        placeholder: placeholderOf(item, label),
-        options: Array.isArray(options)
-          ? options.map((opt: any) => ({ ...opt, label: resolveText(opt.label) }))
-          : options,
-      },
-    }
-  })
+  (props.formItems || [])
+    // 条件显隐（item.show）在这里统一生效：三处共用本渲染器的表单都不必各写一遍隐藏规则
+    .filter((item) => !item.show || item.show(props.model))
+    .map((item) => {
+      const label = resolveText(item.label) ?? ''
+      const options = item.componentProps?.options
+      return {
+        ...item,
+        label,
+        help: helpOf(item),
+        componentProps: {
+          ...item.componentProps,
+          placeholder: placeholderOf(item, label),
+          options: Array.isArray(options)
+            ? options.map((opt: any) => ({ ...opt, label: resolveText(opt.label) }))
+            : options,
+        },
+      }
+    })
 )
 </script>
