@@ -48,10 +48,10 @@
   "homepage": "https://www.npmjs.com/package/mldong-flow-designer-plus",
   "repository": {
     "type": "git",
-    "url": "git+https://gitee.com/mldong/flow-designer.git"
+    "url": "git+https://github.com/mldong/flow-designer.git"
   },
   "bugs": {
-    "url": "https://gitee.com/mldong/flow-designer/issues"
+    "url": "https://github.com/mldong/flow-designer/issues"
   },
   "dependencies": {
     "@logicflow/core": "^2.2.3",
