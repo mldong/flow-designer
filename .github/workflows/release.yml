@@ -27,6 +27,8 @@ jobs:
   publish-plus:
     name: Publish mldong-flow-designer-plus
     needs: setup
+    # 手工 dispatch 只重建演示站，不碰 npm：没有 tag 就不该发版（否则会把未 bump 的当前版本号推上去）
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -53,6 +55,7 @@ jobs:
   publish-lite:
     name: Publish mldong-flow-designer-dingtalk
     needs: setup
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
