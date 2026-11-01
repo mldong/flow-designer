@@ -16,9 +16,9 @@
 <script setup lang="ts">
 import { computed, PropType, reactive, ref, watch } from 'vue';
 import { FDDrawer, FDSchemaForm, FDMessage } from '../fd';
-import { FDFormType } from '../../types';
+import { FDFormType, FDFormItemType } from '../../types';
 import { fdLabelWidth, resolveText, t } from '../../locales'
-import { normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
+import { decidePropertyWrite, normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
 
 const visible = ref(false)
 const props = defineProps({
@@ -42,6 +42,31 @@ const widthStr = computed(() => {
 const form = ref<FDFormType>({} as any)
 const currentData = ref()
 let watchMap: any = {}
+// 业务属性写回：按表单项声明决定写值 / 删键 / 保持原值，与钉钉模式共用同一判据
+function writeProperty(lf: any, item: FDFormItemType, value: any) {
+  const decision = decidePropertyWrite(item, value, formState)
+  if (decision.kind === 'skip') {
+    // 非法值只提示，不写回，也不覆盖定义里已有的值
+    if (decision.error) FDMessage.error(t(decision.error))
+    return
+  }
+  if (decision.kind === 'remove') {
+    lf.deleteProperty(formState.name, item.name)
+    return
+  }
+  lf.setProperties(formState.name, {
+    [item.name]: decision.value,
+  })
+}
+// 本次改动让别的条件项隐藏或回到缺省时，那些键一起消失，否则定义里留下看不见也改不动的配置
+function sweepHiddenProperties(lf: any, item: FDFormItemType) {
+  form.value?.formItems?.forEach(sibling => {
+    if (sibling.name === item.name || !sibling.show) return
+    if (decidePropertyWrite(sibling, formState[sibling.name], formState).kind === 'remove') {
+      lf.deleteProperty(formState.name, sibling.name)
+    }
+  })
+}
 defineExpose({
   show(e: any){
     currentData.value = e;
@@ -73,9 +98,8 @@ defineExpose({
             lf.updateText(formState.name, n);
           } else {
             // 务属性变化=>修改节点属性
-            lf.setProperties(formState.name, {
-              [item.name]: n,
-            });
+            writeProperty(lf, item, n);
+            sweepHiddenProperties(lf, item);
           }
         } else {
           if(item.name == 'name') {
@@ -89,9 +113,8 @@ defineExpose({
           } else {
             // 务属性变化=>修改节点属性
             const lf = currentData.value.lf
-            lf.setProperties(formState.name, {
-              [item.name]: n,
-            });
+            writeProperty(lf, item, n);
+            sweepHiddenProperties(lf, item);
           }
         }
       }, {
