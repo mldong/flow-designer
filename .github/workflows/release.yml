@@ -83,14 +83,29 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run build
+      # 上传前断言产物非空：否则下面的 rm -rf dist 会把线上清成空站
+      - name: Assert build output
+        run: |
+          test -f dist/index.html
+          n=$(find dist -type f | wc -l)
+          [ "$n" -ge 3 ] || { echo "dist 只有 $n 个文件，不像完整产物，拒绝部署"; exit 1; }
+          echo "产物文件数=$n"
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+      # 备份机制与文档站（jeeflow-doc release.yml）同形：替换前打时间戳 tar.gz，只留最近 3 份
+      - name: Backup current site (keep last 3)
+        run: |
+          ssh root@${{ secrets.DEPLOY_HOST }} "cd /java_projects/flow-designer && \
+            { [ -d dist ] && tar -czf dist-backup-\$(date +%Y%m%d-%H%M%S).tar.gz dist || true; } && \
+            ls -1t dist-backup-*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm -f"
       - name: Deploy to flow-designer.mldong.com
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: root
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: dist/
-          target: /java_projects/flow-designer/dist/
-          strip_components: 1
-          overwrite: true
-          rm: true
+        run: |
+          tar -czf /tmp/fd-dist.tar.gz -C dist .
+          scp /tmp/fd-dist.tar.gz root@${{ secrets.DEPLOY_HOST }}:/java_projects/flow-designer/
+          ssh root@${{ secrets.DEPLOY_HOST }} "cd /java_projects/flow-designer && \
+            rm -rf dist && mkdir -p dist && tar -xzf fd-dist.tar.gz -C dist && rm fd-dist.tar.gz"
+          echo "✅ 演示站部署完成（保留备份 $(ssh root@${{ secrets.DEPLOY_HOST }} "ls -1 /java_projects/flow-designer/dist-backup-*.tar.gz 2>/dev/null | wc -l") 份）"
