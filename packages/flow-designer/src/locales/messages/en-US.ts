@@ -37,7 +37,8 @@ const enUS: FDMessages = {
   'fd.field.countersignType': 'Countersign type',
   'fd.field.countersignCompletionCondition': 'Completion condition',
   'fd.field.reapplyMode': 'Reapply after return to initiator',
-  'fd.field.allowAddSign': 'Allow post add-sign',
+  'fd.field.collabMode': 'Collaboration mode',
+  'fd.field.allowRecall': 'Allow recall of completed task',
   'fd.field.addSignMaxRounds': 'Post add-sign round limit',
   'fd.field.actionBtns': 'Action buttons',
   'fd.field.reminderTime': 'Reminder time',
@@ -73,7 +74,8 @@ const enUS: FDMessages = {
   'fd.help.relTableName': 'Table the business data is written to when the process ends; defaults to the process code when empty',
   'fd.help.countersignCompletionCondition': 'Applies when perform type is countersign, e.g. {nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
   'fd.help.reapplyMode': 'Nodes already approved are not approved again; assignees follow the rules of the node that returned it.',
-  'fd.help.allowAddSign': 'When enabled, an assignee can add the next approver on submit. The added approver continues on this node and may add again; the token leaves the node only when nobody is added.',
+  'fd.help.collabMode': 'None = no add-sign (default); post add-sign = designate successors on submit who relay on this node, the token leaves only when nobody is added; dynamic countersign = the task stays open while pulled assignees collect opinions, and the host decides after all are in. Post add-sign and dynamic countersign are mutually exclusive.',
+  'fd.help.allowRecall': 'When enabled, an assignee can recall their own completed task before downstream processing and redo it (the original record is kept; a new task row is created).',
   'fd.help.addSignMaxRounds': '0 = unlimited; exceeding the limit fails the add-sign request instead of forcing it through.',
   'fd.help.actionBtns.1': 'Separate buttons with commas. Normal participation accepts {AGREE} / {REJECT} / {ROLLBACK} (back one step) / {ROLLBACK_TO_OPERATOR} (back to initiator) / {JUMP}',
   'fd.help.actionBtns.2': 'Countersign participation accepts {AGREE} / {COUNTERSIGN_DISAGREE} / {ADD_CANDIDATE}',
@@ -83,6 +85,7 @@ const enUS: FDMessages = {
   'fd.help.selectUserApi': 'Applies when "pick assignees on start" is "{yes}". POST only, following the common dropdown API convention',
 
   'fd.err.addSignMaxRounds': 'Post add-sign round limit must be an integer of 0 or more',
+  'fd.err.collabMutex': 'Post add-sign and dynamic countersign are mutually exclusive; pick one',
 
   'fd.opt.major': 'Primary',
   'fd.opt.aidant': 'Assistant',
@@ -94,6 +97,9 @@ const enUS: FDMessages = {
   'fd.opt.reapplyReturnToSource': 'Return directly to this node',
   'fd.opt.yes': 'Yes',
   'fd.opt.no': 'No',
+  'fd.opt.collabNone': 'None (default)',
+  'fd.opt.collabAfterSign': 'Post add-sign (relay)',
+  'fd.opt.collabDynamic': 'Dynamic countersign (collect)',
   'fd.opt.persistArchive': 'Archive',
   'fd.opt.persistSync': 'Sync',
 

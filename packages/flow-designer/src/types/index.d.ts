@@ -101,7 +101,8 @@ export declare type FDFormItemType = {
   omit?: (value: any, model: Record<string, any>) => boolean; // 命中＝删键，用于「缺省即不写键」的引擎属性
   validate?: (value: any, model: Record<string, any>) => string | undefined; // 返回错误词条 key＝这次改动不写回
   cast?: (value: any) => any; // 写回前的类型归一，如文本输入的整数
-} 
+  multiWrite?: (value: any, model: Record<string, any>) => Array<{ key: string; value?: any; remove?: boolean }>; // 一值写多键（办理协同三档）：写集逐键写值/删键
+}
 /**
  * 「退回发起人后的重提方式」取值（任务节点 properties.reapplyMode）
  * NORMAL = 按流程重新审批（缺省/空值同此）；RETURN_TO_SOURCE = 直接返回本节点
@@ -119,7 +120,9 @@ export declare type FDTaskNodeProperties = {
   countersignType?: 'PARALLEL' | 'SEQUENTIAL'; // 会签类型
   reapplyMode?: FDReapplyMode; // 退回发起人后的重提方式
   allowAddSign?: boolean; // 允许后加签（缺省＝不写键＝false）
-  addSignMaxRounds?: number; // 后加签轮次上限，0＝不限（缺省＝不写键＝0）
+  dynamicCountersign?: boolean; // 动态会签（征询模式）开关（缺省＝不写键＝false；与 allowAddSign 互斥）
+  allowRecall?: boolean; // 允许已办撤回（缺省＝不写键＝false）
+  addSignMaxRounds?: number; // 协同轮次上限，0＝不限（缺省＝不写键＝0；后加签/动态会签两档共用）
   [key: string]: any; // 其余引擎属性原样透传
 };
 /**

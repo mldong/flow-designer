@@ -113,7 +113,7 @@ import NodeChain from './NodeChain.vue'
 import ControlPanel from './ControlPanel.vue'
 import { FDModal, FDDrawer, FDTextarea, FDSchemaForm, FDJsonViewer, FDMessage } from '../../ui/fd'
 import * as schema from '../../plugins/schema'
-import { decidePropertyWrite, normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
+import { decidePropertyWrite, deriveCollabMode, isCountersignNode, normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
 import { fdLabelWidth, t } from '../../locales'
 import '../styles/dingtalk.scss'
 
@@ -1029,6 +1029,16 @@ function handleEditNode(node: DingNode) {
       editFormData.reapplyMode = normalizeReapplyMode(editFormData.reapplyMode)
     }
   }
+  // 办理协同三档回显派生（issues/246/247）：互斥脏态红错拦写。
+  // 钉钉模式暂只做会签节点隐藏（无画布 graphModel，start 后继判据待钉钉树结构专案）——引擎解析闸兜底
+  if (editFormFields.value.some(f => f.name === 'collabMode')) {
+    editFormData.collabMode = deriveCollabMode(editFormData)
+    if (editFormData.collabMode === '') {
+      FDMessage.error(t('fd.err.collabMutex'))
+    }
+    // editFormData 键类型是 string，这里必须落布尔（showCollabGroup 判严格 !== true）；投射收敛在这一处
+    (editFormData as any).__collabHidden = isCountersignNode(node.properties)
+  }
 
   // emit 与画布模式 lf.eventCenter.on('node:click') 拿到的签名一致，
   // 业务方在钉钉/画布模式下都能用 @node-click="(p) => {...}" 监听
@@ -1600,6 +1610,13 @@ function applyEditFormToTarget() {
       }
       if (decision.kind === 'remove') {
         delete nextProps[f.name]
+        continue
+      }
+      if (decision.kind === 'writes') {
+        decision.writes.forEach(w => {
+          if (w.remove) delete nextProps[w.key]
+          else nextProps[w.key] = w.value
+        })
         continue
       }
       nextProps[f.name] = decision.value
