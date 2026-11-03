@@ -37,7 +37,8 @@ const zhCN: FDMessages = {
   'fd.field.countersignType': '会签类型',
   'fd.field.countersignCompletionCondition': '会签完成条件',
   'fd.field.reapplyMode': '退回发起人后的重提方式',
-  'fd.field.allowAddSign': '允许后加签',
+  'fd.field.collabMode': '办理协同',
+  'fd.field.allowRecall': '允许已办撤回',
   'fd.field.addSignMaxRounds': '后加签轮次上限',
   'fd.field.actionBtns': '操作按钮',
   'fd.field.reminderTime': '提醒时间',
@@ -74,7 +75,8 @@ const zhCN: FDMessages = {
   'fd.help.countersignType': '参与类型为会签参与时生效',
   'fd.help.countersignCompletionCondition': '参与类型为会签参与时生效，如：{nrOfCompletedInstances}/{nrOfInstances} >= 0.6',
   'fd.help.reapplyMode': '前面已审批的节点不再重复审批；审批人按返回节点规则确定。',
-  'fd.help.allowAddSign': '开启后办理人提交时可「加签给下一位」，被加签人在本节点续办且可继续加签，直到无人再点才流出本节点。',
+  'fd.help.collabMode': '无＝不加人（缺省）；后加签＝办结时指定后继在本节点接力，无人再点才流出；动态会签＝任务挂起，运行期拉人收意见，收齐后主办再拍板。后加签与动态会签互斥。',
+  'fd.help.allowRecall': '开启后办理人可在下游未办理前撤回自己刚办结的任务并重办（原记录保留，新行重办）。',
   'fd.help.addSignMaxRounds': '0＝不限轮次；超出上限时加签提交报错，不强制放行。',
   'fd.help.actionBtns.1': '多个按钮用英文逗号分隔，普通参与可选：{AGREE}(同意)/{REJECT}(拒绝)/{ROLLBACK}(退回上一步)/{ROLLBACK_TO_OPERATOR}(退回发起人)/{JUMP}(跳转)',
   'fd.help.actionBtns.2': '会签参与可选：{AGREE}(同意)/{COUNTERSIGN_DISAGREE}(会签不同意)/{ADD_CANDIDATE}(加签)',
@@ -86,6 +88,7 @@ const zhCN: FDMessages = {
 
   // 表单项校验提示：值非法时只提示，不写回，定义里的原值保持不变
   'fd.err.addSignMaxRounds': '后加签轮次上限只能填不小于 0 的整数',
+  'fd.err.collabMutex': '后加签与动态会签互斥，请选择其一',
 
   // 下拉选项
   'fd.opt.major': '主办',
@@ -98,6 +101,9 @@ const zhCN: FDMessages = {
   'fd.opt.reapplyReturnToSource': '直接返回本节点',
   'fd.opt.yes': '是',
   'fd.opt.no': '否',
+  'fd.opt.collabNone': '无（缺省）',
+  'fd.opt.collabAfterSign': '后加签（接力）',
+  'fd.opt.collabDynamic': '动态会签（征询）',
   'fd.opt.persistArchive': '归档',
   'fd.opt.persistSync': '同步',
 

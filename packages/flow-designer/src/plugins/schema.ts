@@ -2,10 +2,13 @@ import type { FDFormType } from "../types";
 import { ReapplyModeEnum } from "../types/enums";
 import {
   castAddSignMaxRounds,
+  collabModeWrites,
   omitAddSignMaxRounds,
-  omitAllowAddSign,
+  omitAllowRecall,
   showAddSignRounds,
+  showCollabGroup,
   validateAddSignMaxRounds,
+  validateCollabMode,
 } from "./task-properties";
 
 /**
@@ -181,21 +184,27 @@ export const task:FDFormType = {
       ]
     }
   }, {
-    name: "allowAddSign",
-    label: "fd.field.allowAddSign",
+    name: "collabMode",
+    label: "fd.field.collabMode",
     component: 'Select',
-    defaultValue: false,
-    helpMessage: 'fd.help.allowAddSign',
-    omit: omitAllowAddSign,
+    defaultValue: 'none',
+    helpMessage: 'fd.help.collabMode',
+    show: showCollabGroup,
+    multiWrite: collabModeWrites,
+    validate: validateCollabMode,
     componentProps: {
       options: [
         {
-          label: 'fd.opt.no',
-          value: false
+          label: 'fd.opt.collabNone',
+          value: 'none'
         },
         {
-          label: 'fd.opt.yes',
-          value: true
+          label: 'fd.opt.collabAfterSign',
+          value: 'afterSign'
+        },
+        {
+          label: 'fd.opt.collabDynamic',
+          value: 'dynamicCountersign'
         }
       ]
     }
@@ -211,6 +220,26 @@ export const task:FDFormType = {
     cast: castAddSignMaxRounds,
     componentProps: {
       placeholder: 'fd.field.addSignMaxRounds.ph'
+    }
+  }, {
+    name: "allowRecall",
+    label: "fd.field.allowRecall",
+    component: 'Select',
+    defaultValue: false,
+    helpMessage: 'fd.help.allowRecall',
+    show: showCollabGroup,
+    omit: omitAllowRecall,
+    componentProps: {
+      options: [
+        {
+          label: 'fd.opt.no',
+          value: false
+        },
+        {
+          label: 'fd.opt.yes',
+          value: true
+        }
+      ]
     }
   }, {
     name: "actionBtns",

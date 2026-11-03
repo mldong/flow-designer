@@ -18,7 +18,7 @@ import { computed, PropType, reactive, ref, watch } from 'vue';
 import { FDDrawer, FDSchemaForm, FDMessage } from '../fd';
 import { FDFormType, FDFormItemType } from '../../types';
 import { fdLabelWidth, resolveText, t } from '../../locales'
-import { decidePropertyWrite, normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
+import { decidePropertyWrite, deriveCollabMode, isApplyNode, isCountersignNode, normalizeReapplyMode, isInvalidReapplyMode } from '../../plugins/task-properties'
 
 const visible = ref(false)
 const props = defineProps({
@@ -54,6 +54,13 @@ function writeProperty(lf: any, item: FDFormItemType, value: any) {
     lf.deleteProperty(formState.name, item.name)
     return
   }
+  if (decision.kind === 'writes') {
+    decision.writes.forEach(w => {
+      if (w.remove) lf.deleteProperty(formState.name, w.key)
+      else lf.setProperties(formState.name, { [w.key]: w.value })
+    })
+    return
+  }
   lf.setProperties(formState.name, {
     [item.name]: decision.value,
   })
@@ -62,9 +69,15 @@ function writeProperty(lf: any, item: FDFormItemType, value: any) {
 function sweepHiddenProperties(lf: any, item: FDFormItemType) {
   form.value?.formItems?.forEach(sibling => {
     if (sibling.name === item.name || !sibling.show) return
-    if (decidePropertyWrite(sibling, formState[sibling.name], formState).kind === 'remove') {
-      lf.deleteProperty(formState.name, sibling.name)
+    if (decidePropertyWrite(sibling, formState[sibling.name], formState).kind !== 'remove') return
+    if (sibling.multiWrite) {
+      // 多键项（办理协同）隐藏＝两枚引擎键一起清，删虚键本身没有意义
+      sibling.multiWrite('none', formState).forEach(w => {
+        if (w.remove) lf.deleteProperty(formState.name, w.key)
+      })
+      return
     }
+    lf.deleteProperty(formState.name, sibling.name)
   })
 }
 defineExpose({
@@ -167,6 +180,16 @@ defineExpose({
         } else {
           formState.reapplyMode = normalizeReapplyMode(formState.reapplyMode)
         }
+      }
+      // 办理协同三档回显派生（issues/246/247）：两键同 true＝互斥脏态，红错拦写；
+      // 会签节点与申请节点整组隐藏（伪键 __collabHidden 只进表单模型，永不写回定义）
+      if (form.value?.formItems?.some(item => item.name === 'collabMode')) {
+        formState.collabMode = deriveCollabMode(formState)
+        if (formState.collabMode === '') {
+          FDMessage.error(t('fd.err.collabMutex'))
+        }
+        formState.__collabHidden = isCountersignNode(formState)
+          || isApplyNode(e.data.id, lf.graphModel, typePrefix)
       }
     }
     visible.value = true
