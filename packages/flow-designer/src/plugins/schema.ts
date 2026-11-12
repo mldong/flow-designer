@@ -111,22 +111,6 @@ export const task:FDFormType = {
     label: "fd.field.candidateHandler",
     component: 'Input'
   }, {
-    name: "taskType",
-    label: "fd.field.taskType",
-    component: 'Select',
-    componentProps: {
-      options: [
-        {
-          label: 'fd.opt.major',
-          value: 'Major'
-        },
-        {
-          label: 'fd.opt.aidant',
-          value: 'Aidant'
-        }
-      ]
-    }
-  }, {
     name: "performType",
     label: "fd.field.performType",
     component: 'Select',
