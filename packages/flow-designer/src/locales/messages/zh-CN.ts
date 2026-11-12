@@ -32,7 +32,6 @@ const zhCN: FDMessages = {
   'fd.field.candidateUsers': '候选用户',
   'fd.field.candidateGroups': '候选用户组',
   'fd.field.candidateHandler': '候选用户处理类',
-  'fd.field.taskType': '任务类型',
   'fd.field.performType': '参与类型',
   'fd.field.countersignType': '会签类型',
   'fd.field.countersignCompletionCondition': '会签完成条件',
@@ -91,8 +90,6 @@ const zhCN: FDMessages = {
   'fd.err.collabMutex': '后加签与动态会签互斥，请选择其一',
 
   // 下拉选项
-  'fd.opt.major': '主办',
-  'fd.opt.aidant': '协办',
   'fd.opt.performAny': '普通参与',
   'fd.opt.performAll': '会签参与',
   'fd.opt.csParallel': '并行会签',

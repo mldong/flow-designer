@@ -32,7 +32,6 @@ const enUS: FDMessages = {
   'fd.field.candidateUsers': 'Candidate users',
   'fd.field.candidateGroups': 'Candidate groups',
   'fd.field.candidateHandler': 'Candidate handler',
-  'fd.field.taskType': 'Task type',
   'fd.field.performType': 'Perform type',
   'fd.field.countersignType': 'Countersign type',
   'fd.field.countersignCompletionCondition': 'Completion condition',
@@ -87,8 +86,6 @@ const enUS: FDMessages = {
   'fd.err.addSignMaxRounds': 'Post add-sign round limit must be an integer of 0 or more',
   'fd.err.collabMutex': 'Post add-sign and dynamic countersign are mutually exclusive; pick one',
 
-  'fd.opt.major': 'Primary',
-  'fd.opt.aidant': 'Assistant',
   'fd.opt.performAny': 'Normal',
   'fd.opt.performAll': 'Countersign',
   'fd.opt.csParallel': 'Parallel',
