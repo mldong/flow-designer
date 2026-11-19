@@ -8,7 +8,11 @@ import {
   showAddSignRounds,
   showCollabGroup,
   validateAddSignMaxRounds,
+  validateCallbackName,
   validateCollabMode,
+  validateExpireTime,
+  validateReminderRepeat,
+  validateReminderTime,
 } from "./task-properties";
 
 /**
@@ -239,19 +243,26 @@ export const task:FDFormType = {
   }, {
     name: "reminderTime",
     label: "fd.field.reminderTime",
-    component: 'Input'
+    component: 'Input',
+    helpMessage: 'fd.help.reminderTime',
+    validate: validateReminderTime
   }, {
     name: "reminderRepeat",
     label: "fd.field.reminderRepeat",
-    component: 'Input'
+    component: 'Input',
+    helpMessage: 'fd.help.reminderRepeat',
+    validate: validateReminderRepeat
   }, {
     name: "expireTime",
     label: "fd.field.expireTime",
-    component: 'Input'
+    component: 'Input',
+    helpMessage: 'fd.help.expireTime',
+    validate: validateExpireTime
   }, {
     name: "autoExecute",
     label: "fd.field.autoExecute",
     component: 'Select',
+    helpMessage: 'fd.help.autoExecute',
     componentProps: {
       options: [
         {
@@ -267,7 +278,9 @@ export const task:FDFormType = {
   }, {
     name: "callback",
     label: "fd.field.callback",
-    component: 'Input'
+    component: 'Input',
+    helpMessage: 'fd.help.callback',
+    validate: validateCallbackName
   }]
 }
 /**
