@@ -96,7 +96,9 @@ let resizeObserver: ResizeObserver | null = null
 function updateLines() {
   if (!branchesRef.value) return
   const container = branchesRef.value
-  const cols = container.querySelectorAll('.ding-branch-col')
+  // 只认直接子列：分支可以嵌套，后代选择器会把内层分支列也算进来，
+  // 横线就会延伸到内层列中心（画布上多出一段悬空虚线）
+  const cols = Array.from(container.children).filter((el) => el.classList.contains('ding-branch-col'))
   if (cols.length < 2) {
     lineWidth.value = '0px'
     return
