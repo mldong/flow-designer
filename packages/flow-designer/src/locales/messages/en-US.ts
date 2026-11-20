@@ -76,6 +76,11 @@ const enUS: FDMessages = {
   'fd.help.collabMode': 'None = no add-sign (default); post add-sign = designate successors on submit who relay on this node, the token leaves only when nobody is added; dynamic countersign = the task stays open while pulled assignees collect opinions, and the host decides after all are in. Post add-sign and dynamic countersign are mutually exclusive.',
   'fd.help.allowRecall': 'When enabled, an assignee can recall their own completed task before downstream processing and redo it (the original record is kept; a new task row is created).',
   'fd.help.addSignMaxRounds': '0 = unlimited; exceeding the limit fails the add-sign request instead of forcing it through.',
+  'fd.help.reminderTime': 'Relative like 15m (anchored at task creation), daily HH:mm, absolute yyyy-MM-dd HH:mm:ss, or a process variable name; empty = no reminder.',
+  'fd.help.reminderRepeat': 'Positive integer + unit s/m/h/d (e.g. 30m); empty = remind once.',
+  'fd.help.expireTime': 'Same formats as reminder time; drives auto-complete and overdue checks.',
+  'fd.help.autoExecute': 'When yes, the task is approved automatically by flow.auto on expiry; requires a due time.',
+  'fd.help.callback': 'Registered post-completion callback name on the backend; empty = no callback.',
   'fd.help.actionBtns.1': 'Separate buttons with commas. Normal participation accepts {AGREE} / {REJECT} / {ROLLBACK} (back one step) / {ROLLBACK_TO_OPERATOR} (back to initiator) / {JUMP}',
   'fd.help.actionBtns.2': 'Countersign participation accepts {AGREE} / {COUNTERSIGN_DISAGREE} / {ADD_CANDIDATE}',
   'fd.help.instanceUrl': 'For a metadata form, the data model table name must match the process code',
@@ -85,6 +90,10 @@ const enUS: FDMessages = {
 
   'fd.err.addSignMaxRounds': 'Post add-sign round limit must be an integer of 0 or more',
   'fd.err.collabMutex': 'Post add-sign and dynamic countersign are mutually exclusive; pick one',
+  'fd.err.reminderTime': 'Invalid format: use 15m, HH:mm, yyyy-MM-dd HH:mm:ss or a variable name',
+  'fd.err.expireTime': 'Invalid format: use 15m, HH:mm, yyyy-MM-dd HH:mm:ss or a variable name',
+  'fd.err.reminderRepeat': 'Repeat interval must be a positive integer plus s/m/h/d (e.g. 30m)',
+  'fd.err.callback': 'Callback name must not contain whitespace',
 
   'fd.opt.performAny': 'Normal',
   'fd.opt.performAll': 'Countersign',

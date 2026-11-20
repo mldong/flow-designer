@@ -162,3 +162,55 @@ export function decidePropertyWrite(
   if (item.omit?.(value, model)) return { kind: 'remove' }
   return { kind: 'set', value: item.cast ? item.cast(value) : value }
 }
+
+// ── 任务时限四键＋回调（spec 02 §4.5 / spec 04）──────────────────────────────
+// reminderTime / expireTime 接受：相对量（锚点＝任务创建时刻，如 15m / +2h）、
+// 每日 HH:mm、绝对时间 yyyy-MM-dd HH:mm:ss，或流程变量名；留空＝不配。
+// 判据与引擎一致：以数字开头的串必须落进前三档，否则报错；含空白但不是绝对时间也报错
+// （变量名不会有空白）。reminderRepeat 只收「正整数＋s/m/h/d」，0 不等于不限——它是非法值。
+// callback 只校验形状（不含空白）；是否已注册由运行时判定（未注册＝可见失败）。
+
+const RELATIVE = /^\+?\d+[smhd]$/
+const HHMM = /^(\d{1,2}):(\d{2})$/
+const DATETIME = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/
+
+function validateTimeExpr(value: unknown, errKey: string): string | undefined {
+  const raw = String(value ?? '').trim()
+  if (!raw) return undefined
+  if (RELATIVE.test(raw)) return undefined
+  const hm = HHMM.exec(raw)
+  if (hm) return Number(hm[1]) <= 23 && Number(hm[2]) <= 59 ? undefined : errKey
+  const dt = DATETIME.exec(raw)
+  if (dt) {
+    const d = new Date(`${dt[1]}-${dt[2]}-${dt[3]}T${dt[4]}:${dt[5]}:${dt[6]}`)
+    return Number.isNaN(d.getTime()) ? errKey : undefined
+  }
+  if (/^\d/.test(raw) || /\s/.test(raw)) return errKey
+  return undefined
+}
+
+/** 提醒时间（变量名允许，不做存在性校验——发起时才求值） */
+export function validateReminderTime(value: unknown): string | undefined {
+  return validateTimeExpr(value, 'fd.err.reminderTime')
+}
+
+/** 期待完成时间（格式同提醒时间） */
+export function validateExpireTime(value: unknown): string | undefined {
+  return validateTimeExpr(value, 'fd.err.expireTime')
+}
+
+/** 重复提醒间隔：正整数＋s/m/h/d；留空＝只提醒一次 */
+export function validateReminderRepeat(value: unknown): string | undefined {
+  const raw = String(value ?? '').trim()
+  if (!raw) return undefined
+  const m = /^(\d+)([smhd])$/.exec(raw)
+  if (!m) return 'fd.err.reminderRepeat'
+  return Number(m[1]) > 0 ? undefined : 'fd.err.reminderRepeat'
+}
+
+/** 回调名称：留空＝不回调；只校验形状（不含空白） */
+export function validateCallbackName(value: unknown): string | undefined {
+  const raw = String(value ?? '').trim()
+  if (!raw) return undefined
+  return /\s/.test(raw) ? 'fd.err.callback' : undefined
+}

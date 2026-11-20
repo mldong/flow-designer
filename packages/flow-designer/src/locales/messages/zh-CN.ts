@@ -77,6 +77,11 @@ const zhCN: FDMessages = {
   'fd.help.collabMode': '无＝不加人（缺省）；后加签＝办结时指定后继在本节点接力，无人再点才流出；动态会签＝任务挂起，运行期拉人收意见，收齐后主办再拍板。后加签与动态会签互斥。',
   'fd.help.allowRecall': '开启后办理人可在下游未办理前撤回自己刚办结的任务并重办（原记录保留，新行重办）。',
   'fd.help.addSignMaxRounds': '0＝不限轮次；超出上限时加签提交报错，不强制放行。',
+  'fd.help.reminderTime': '相对量 15m（锚点＝任务创建时刻）、每日 HH:mm、绝对时间 yyyy-MM-dd HH:mm:ss，或流程变量名；留空＝不提醒。',
+  'fd.help.reminderRepeat': '正整数＋单位 s/m/h/d（如 30m）；留空＝只提醒一次。',
+  'fd.help.expireTime': '与提醒时间同格式；自动完成与到期判定都以它为准。',
+  'fd.help.autoExecute': '选「是」时任务到期由系统以 flow.auto 自动同意；仅在配置了期待完成时间时生效。',
+  'fd.help.callback': '节点完成后回调已注册的处理器名称（与后端注册名一致）；留空＝不回调。',
   'fd.help.actionBtns.1': '多个按钮用英文逗号分隔，普通参与可选：{AGREE}(同意)/{REJECT}(拒绝)/{ROLLBACK}(退回上一步)/{ROLLBACK_TO_OPERATOR}(退回发起人)/{JUMP}(跳转)',
   'fd.help.actionBtns.2': '会签参与可选：{AGREE}(同意)/{COUNTERSIGN_DISAGREE}(会签不同意)/{ADD_CANDIDATE}(加签)',
   'fd.help.instanceUrl': '如果为元数据表单，数据模型的表名称和流程唯一编码要保持一致',
@@ -88,6 +93,10 @@ const zhCN: FDMessages = {
   // 表单项校验提示：值非法时只提示，不写回，定义里的原值保持不变
   'fd.err.addSignMaxRounds': '后加签轮次上限只能填不小于 0 的整数',
   'fd.err.collabMutex': '后加签与动态会签互斥，请选择其一',
+  'fd.err.reminderTime': '格式不合法：支持 15m、HH:mm、yyyy-MM-dd HH:mm:ss 或变量名',
+  'fd.err.expireTime': '格式不合法：支持 15m、HH:mm、yyyy-MM-dd HH:mm:ss 或变量名',
+  'fd.err.reminderRepeat': '重复间隔须为 正整数＋s/m/h/d（如 30m），且必须大于 0',
+  'fd.err.callback': '回调名称不能包含空白字符',
 
   // 下拉选项
   'fd.opt.performAny': '普通参与',
